@@ -62,7 +62,7 @@ var featured = {
   symbol: 'PMIL',
   decimal: 18,
   // address: '0x5B611c2935BB1c1fBE231292eDB02774425D4821',
-  address: "0x82546044488199dAb10F0eA0DdF534134C3B8a61",
+  address: "0x2483A51D8941792945A72c5c1364d4d573a686d5",
   token_address: 'TBA',
   abi_name: '',
   raised: 0,
@@ -279,7 +279,6 @@ function IDO() {
   async function buyToken() {
     const usdPerShare = featured.usd_per_share
     let stake = (BigNumber.from(10).pow(18) * amount * usdPerShare).toString()
-    console.log(stake);
     try {
       await ido.attendIDO(stake)
     } catch (error) {
@@ -472,21 +471,7 @@ function IDO() {
                                                 toastError(t('Error'), t('Not connected'))
                                                 return
                                               }
-                                              var balance = await ido.getBalance(account)
-                                              if (balance == 0) {
-                                                if (amount >= 100 && amount <= 1000) {
-                                                  buyToken(amount)
-                                                } else {
-                                                  toastError(t('Error'), t('The first amount have to bewteen 100 and 1000'))
-                                                }
-                                              } else {
-                                                var added = balance.add(BigNumber.from(10).pow(18).mul(amount))
-                                                if (added > BigNumber.from(10).pow(18) * 1000) {
-                                                  toastError(t('Error'), t('Total amount have to be smaller than 1000'))
-                                                } else {
-                                                  buyToken(amount)
-                                                }
-                                              }
+                                              buyToken(amount)
                                             } else {
                                               toastError(t('Error'), t('Not start yet'))
                                             }
