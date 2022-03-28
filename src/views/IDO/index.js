@@ -62,7 +62,7 @@ var featured = {
   symbol: 'PMIL',
   decimal: 18,
   // address: '0x5B611c2935BB1c1fBE231292eDB02774425D4821',
-  address: "0x2483A51D8941792945A72c5c1364d4d573a686d5",
+  address: "0xae64C7ED694287e7b2ECC25931D2f473e062e27D",
   token_address: 'TBA',
   abi_name: '',
   raised: 0,
@@ -124,6 +124,7 @@ let closes_seconds = ''
 
 
 function IDO() {
+  const isSmallerScreen = useMediaQuery('(max-width: 960px)')
   const { t } = useTranslation()
   const { toastSuccess, toastError } = useToast()
   const { chainID, library } = useActiveWeb3React()
@@ -158,7 +159,7 @@ function IDO() {
       const endUnixStamp = Date.parse(endDate)
       const currentSeconds = Math.floor(now / 1000)
       let secondsRemainingCalc
-      if (now < startUnixStamp ) {
+      if (now < startUnixStamp) {
         secondsRemainingCalc = startUnixStamp - now
       } else if (startUnixStamp < now && now < endUnixStamp) {
         secondsRemainingCalc = endUnixStamp - now
@@ -267,8 +268,9 @@ function IDO() {
     var balance = await ido.getIDOBalance(account);
     setBalance(balance);
 
-    setPMILBalance(await ido.balances(account));
-    
+    var pmilBalance = await ido.balances(account)
+    setPMILBalance(pmilBalance);
+
     var total = await ido.IDOTotal();
     featured.raised = total;
     setNumber1(((featured.raised * featured.up_pool_raise) / 10 ** 18 / (featured.total_supply * featured.idoPercent)) * 100);
@@ -503,8 +505,17 @@ function IDO() {
                               </div>
                             </div>
                             <div>
-                              <p>IDO Balance:{formatUnits(balance, 18)} USDT</p>
-                              <p>PMIL Balance:{formatUnits(PMLIBalance, 18)} PMIL</p>
+                              {isSmallerScreen ? (
+                                <>
+                                  <p>IDO: {formatUnits(balance, 18)} USDT</p>
+                                  <p>PMIL: {trim(formatUnits(PMLIBalance, 18), 9)}</p>
+                                </>
+                              ) : (
+                                <>
+                                  <p>IDO Balance: {formatUnits(balance, 18)} USDT</p>
+                                  <p>PMIL: {formatUnits(PMLIBalance, 18)}</p>
+                                </>
+                              )}
                             </div>
                           </div>
                         </div>

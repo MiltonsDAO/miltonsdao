@@ -11,7 +11,7 @@ export default {
   component: BottomNav,
   argTypes: {
     activeItem: {
-      options: ["/stake", "/mints", "/liquidity", "/ido"],
+      options: ["/ido", "/stake", "/liquidity"],
       control: { type: "select" },
     },
   },
@@ -30,6 +30,6 @@ const Template: React.FC<BottomNavProps> = (args) => {
 export const Default = Template.bind({});
 Default.args = {
   items: MenuItemsMock,
-  activeItem: "/stake",
+  activeItem: "/ido",
   activeSubItem: "",
 };

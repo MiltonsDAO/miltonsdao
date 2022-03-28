@@ -39,7 +39,7 @@ export const links: MenuItemsType[] = [
         href: "/swap",
       },
       {
-        label: "Liquidity",
+        label: "Honor",
         href: "/liquidity",
       },
       {

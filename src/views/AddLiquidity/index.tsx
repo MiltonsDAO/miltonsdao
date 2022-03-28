@@ -283,10 +283,10 @@ export default function AddLiquidity() {
     <Page>
       <AppBody>
         <AppHeader
-          title={t('Add Liquidity')}
-          subtitle={t('Add liquidity to receive LP tokens')}
+          title={t('Honer Token Exchange')}
+          subtitle={t('Add Honer Token to receive mainnet tokens')}
           helper={t(
-            'Liquidity providers earn a 0.17% trading fee on all trades made for that token pair, proportional to their share of the liquidity pool.',
+            '',
           )}
           backTo="/liquidity"
         />
@@ -297,7 +297,7 @@ export default function AddLiquidity() {
                 <Message variant="warning">
                   <div>
                     <Text bold mb="8px">
-                      {t('You are the first liquidity provider.')}
+                      {t('You are the first Honer Token provider.')}
                     </Text>
                     <Text mb="8px">{t('The ratio of tokens you add will set the price of this pool.')}</Text>
                     <Text>{t('Once you are happy with the rate click supply to review.')}</Text>

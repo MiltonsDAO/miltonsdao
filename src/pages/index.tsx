@@ -9,9 +9,10 @@ import { getBlocksFromTimestamps } from 'views/Info/hooks/useBlocksFromTimestamp
 import Home from '../views/Home'
 import IDO from '../views/IDO'
 import AddLiquidity from '../views/AddLiquidity'
+import Pool from '../views/Pool'
 
 const IndexPage = ({ totalTx30Days, addressCount30Days, tvl }) => {
-  return <AddLiquidity />
+  return <Pool />
 }
 
 // Values fetched from TheGraph and BitQuery jan 24, 2022
