@@ -1,0 +1,5 @@
+--hints:off
+--warnings:off
+--define:release
+--threads:on
+--define:ssl

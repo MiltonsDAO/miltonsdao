@@ -1,0 +1,375 @@
+.ido-view {
+    width: 89%;
+    max-width: 833px;
+    margin: auto;
+    color: white;
+    .ido-card {
+        position: relative;
+        z-index: 2;
+
+        @supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
+            background: rgba(36, 39, 41, 0.1);
+            backdrop-filter: blur(40px);
+        }
+
+        /* slightly transparent fallback for Firefox (not supporting backdrop-filter) */
+        @supports not ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
+            background: #181B1C;
+        }
+
+        border-radius: 10px;
+        // padding: 20px;
+        width: 100%;
+
+        .ido-card-grid {
+            margin: 0;
+            width: 100%;
+        }
+
+        .ido-card-header {
+            .ido-card-header-title {
+                font-family: Montserrat Bold;
+                font-weight: bold;
+                font-size: 20px;
+                color: #FFFFFF;
+                margin-bottom: 4px;
+            }
+
+            .ido-card-header-subtitle {
+                font-family: Montserrat SemiBold;
+                font-style: normal;
+                font-weight: 600;
+                font-size: 12px;
+                line-height: 15px;
+                color: #FFFFFF;
+            }
+        }
+
+        .ido-card-metrics {
+            display: flex;
+            width: 100%;
+            padding: 0;
+            text-align: center;
+            margin-top: 10px;
+
+            .ido-card-apy,
+            .ido-card-tvl,
+            .ido-card-index {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                overflow: hidden;
+
+                .ido-card-metrics-title {
+                    font-family: Montserrat Medium;
+                    font-style: normal;
+                    font-weight: 500;
+                    font-size: 20px;
+                    color: rgba(255, 255, 255, 0.6);
+                    margin-bottom: 2px;
+                }
+
+                .ido-card-metrics-value {
+                    font-family: Montserrat Bold;
+                    font-style: normal;
+                    font-weight: bold;
+                    font-size: 24px;
+                    line-height: 29px;
+                    color: #FFFFFF;
+                }
+            }
+        }
+
+        .ido-card-area {
+            .ido-card-wallet-notification {
+                text-align: center;
+
+                .ido-card-wallet-connect-btn {
+                    background: rgba(255, 255, 255, 0.2);
+                    box-shadow: 0px 0px 10px rgba(44, 39, 109, 0.1);
+                    border-radius: 10px;
+                    padding: 14px 58px;
+                    cursor: pointer;
+                    margin: auto;
+                    max-width: 280px;
+                    margin-top: 20px;
+
+                    p {
+                        font-family: Montserrat SemiBold;
+                        font-weight: 600;
+                        font-size: 18px;
+                        color: #FFFFFF;
+                    }
+                }
+
+                .ido-card-wallet-desc-text {
+                    font-family: Montserrat Light;
+                    font-weight: 300;
+                    font-size: 14px;
+                    color: rgba(255, 255, 255, 0.6);
+                    margin-top: 10px;
+                    margin-bottom: 6px;
+                }
+            }
+
+            .ido-card-action-area {
+                width: 100%;
+                margin-top: 25px;
+
+                .ido-card-action-stage-btns-wrap{
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+          
+                    .ido-card-action-stage-btn{
+                      margin: 0px 30px;
+                      padding: 6px;
+                      cursor: pointer;
+                      transition: all .4s ease;
+                      
+                      p{
+                        font-family: Montserrat SemiBold;
+                        font-style: normal;
+                        font-weight: 600;
+                        font-size: 18px;
+                        color: rgba(255, 255, 255, 0.6);
+                      }
+                    }
+          
+                    .ido-card-action-stage-btn.active{
+          
+                      p{
+                        color: #FFFFFF;
+                      }
+          
+                      border-bottom: 1px solid #FFFFFF;;
+                    }
+                  }
+          
+                  .ido-card-action-row{
+                    display: flex;
+                    align-items: center;
+                    margin-top: 20px;
+          
+                    .ido-card-action-input{
+                      width: 100%;
+          
+                      background: rgba(255, 255, 255, 0.2);
+                      border: 1px solid rgba(255, 255, 255, 0.2);
+                      border-radius: 10px;
+                      outline: none;
+                      
+                      .MuiOutlinedInput-input{
+                        font-family: Montserrat Medium;
+                        font-style: normal;
+                        font-weight: 500;
+                        font-size: 16px;
+                        color: rgba(255, 255, 255, 0.6);
+                        padding: 14px 20px;
+                      }
+                      
+                      .MuiOutlinedInput-notchedOutline{
+                        border-color: rgba(255, 255, 255, 0.2) !important;
+                      }
+                      
+                      .ido-card-action-input-btn{
+                        cursor: pointer;
+                          
+                        p{
+                          font-family: Montserrat SemiBold;
+                          font-weight: 600;
+                          font-size: 18px;
+                          color: #FFFFFF;
+                        }
+                      }
+                    } 
+                    
+                    .ido-card-tab-panel{
+                      min-width: 215px;
+                      margin-left: 10px;
+          
+                      .ido-card-tab-panel-btn{
+                        background: rgba(255, 255, 255, 0.2);
+                        box-shadow: 0px 0px 10px rgba(44, 39, 109, 0.1);
+                        border-radius: 10px;
+                        padding: 14px 0px;
+                        cursor: pointer;
+                        text-align: center;
+                    
+                        p{
+                          font-family: Montserrat SemiBold;
+                          font-style: normal;
+                          font-weight: 600;
+                          font-size: 18px;
+                          color: #FFFFFF;
+                        }
+                      }
+                    }
+                  }
+          
+                  .ido-card-action-help-text{
+                    margin-top: 10px;
+                    
+                    p{
+                      font-family: Montserrat Light;
+                      font-style: normal;
+                      font-weight: 300;
+                      font-size: 14px;
+                      line-height: 17px;
+                      text-align: center;
+                      color: rgba(255, 255, 255, 0.6);
+                    }
+                  }
+                .ido-card-action-area-inp-wrap{
+                    .ido-card-action-area-inp-wrap-title{
+                        font-family: Montserrat Medium;
+                        font-style: normal;
+                        font-weight: 500;
+                        font-size: 16px;
+                        color: #FFFFFF;
+                        margin-bottom: 5px;
+                        margin-left: 10px;
+                    }
+
+                    .ido-card-action-input{
+                        width: 100%;
+            
+                        background: rgba(255, 255, 255, 0.2);
+                        border: 1px solid rgba(255, 255, 255, 0.2);
+                        border-radius: 10px;
+                        outline: none;
+                        
+                        .MuiOutlinedInput-input{
+                          font-family: Montserrat Medium;
+                          font-style: normal;
+                          font-weight: 500;
+                          font-size: 16px;
+                          color: rgba(255, 255, 255, 0.6);
+                          padding: 14px 20px;
+                        }
+                        
+                        .MuiOutlinedInput-notchedOutline{
+                          border-color: rgba(255, 255, 255, 0.2) !important;
+                        }
+                        
+                        .ido-card-action-input-btn{
+                          cursor: pointer;
+                            
+                          p{
+                            font-family: Montserrat SemiBold;
+                            font-weight: 600;
+                            font-size: 18px;
+                            color: #FFFFFF;
+                          }
+                        }
+                      } 
+                }
+            }
+
+            .ido-days-slider-wrap{
+                margin-top: 30px;
+
+                .ido-days-slider-wrap-title{
+                    font-family: Montserrat Medium;
+                    font-style: normal;
+                    font-weight: 500;
+                    font-size: 16px;
+                    color: #FFFFFF;
+                    margin-bottom: 10px;
+                }
+
+                .ido-days-slider{
+                    .MuiSlider-rail, .MuiSlider-track{
+                        height: 10px;
+                    }
+
+                    .MuiSlider-rail{
+                        background: #232323;
+                        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+                        border-radius: 10px;
+                        border: 1px solid #64C9FC;
+                    }
+
+                    .MuiSlider-track{
+                        border-top-left-radius: 10px;
+                        border-bottom-left-radius: 10px;
+                        background: linear-gradient(90deg, #64C9FC 0%, #446CF6 90%);
+                        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+                    }
+
+                    .MuiSlider-thumb{
+                        width: 20px;
+                        height: 20px;
+                        background: #232323;
+                        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+                        border: 2px solid #446CF6;
+                    }
+                }
+            }
+
+            .ido-user-data {
+                justify-content: center;
+                margin: auto;
+                padding: 0 5px;
+                margin-top: 30px;
+            }
+        }
+    }
+}
+.data-row{
+    display: flex;
+    justify-content: space-between;
+    margin: 12px 0px;
+  
+    .data-row-name{
+      font-family: Montserrat Medium;
+      font-style: normal;
+      font-weight: 500;
+      font-size: 14px;
+      color: #FFFFFF;
+    }
+    .data-row-value{
+      font-family: Montserrat;
+      font-size: 14px;
+      line-height: 17px;
+      color: #FFFFFF;
+    }
+  }
+@media screen and (max-width: 600px) {
+    .ido-view {
+        .ido-card {
+            .ido-card-metrics {
+
+                .ido-card-apy,
+                .ido-card-tvl,
+                .ido-card-index {
+                    align-items: flex-start;
+                }
+
+                .ido-card {
+                    width: 50%;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                }
+            }
+
+            .ido-card-area {
+                .ido-card-action-area {
+                    .ido-card-action-row {
+                        flex-direction: column;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 1240px) {
+    .ido-view {
+        width: 100%;
+    }
+}
