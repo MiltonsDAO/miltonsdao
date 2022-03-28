@@ -62,7 +62,7 @@ var featured = {
   symbol: 'PMIL',
   decimal: 18,
   // address: '0x5B611c2935BB1c1fBE231292eDB02774425D4821',
-  address: "0x503aaB14254846718Cdc8D9C808fbFDE6e27719f",
+  address: "0x82546044488199dAb10F0eA0DdF534134C3B8a61",
   token_address: 'TBA',
   abi_name: '',
   raised: 0,
@@ -133,6 +133,7 @@ function IDO() {
   const [number1, setNumber1] = useState(0)
   const [number2, setNumber2] = useState(0)
   const [balance, setBalance] = useState(BigNumber.from(0))
+  const [PMLIBalance, setPMILBalance] = useState(BigNumber.from(0))
   const [amount, setAmount] = useState(100)
   const [startTime, setStartTime] = useState(0)
   const [startTimeMobile, setStartTimeMobile] = useState(0)
@@ -146,7 +147,7 @@ function IDO() {
 
   ido = new ethers.Contract(featured.address, JSON.stringify(poolabi), signer)
   // usdt = new ethers.Contract('0x55d398326f99059fF775485246999027B3197955', JSON.stringify(usdtabi), signer)
-  usdt = new ethers.Contract("0xba3bbC92C70BF973920CdE3DdAFab34F7ad44A15", JSON.stringify(usdtabi), signer);
+  usdt = new ethers.Contract("0xc362B3ed5039447dB7a06F0a3d0bd9238E74d57c", JSON.stringify(usdtabi), signer);
 
   const useNextEventCountdown = (startDate, endDate) => {
     const [secondsRemaining, setSecondsRemaining] = useState(null)
@@ -263,9 +264,11 @@ function IDO() {
     var allowance = await usdt.allowance(account, featured.address);
     setApproved(BigNumber.from(allowance) >= uint256MAX / 2);
 
-    var balance = await ido.getBalance(account);
+    var balance = await ido.getIDOBalance(account);
     setBalance(balance);
 
+    setPMILBalance(await ido.balances(account));
+    
     var total = await ido.IDOTotal();
     featured.raised = total;
     setNumber1(((featured.raised * featured.up_pool_raise) / 10 ** 18 / (featured.total_supply * featured.idoPercent)) * 100);
@@ -276,6 +279,7 @@ function IDO() {
   async function buyToken() {
     const usdPerShare = featured.usd_per_share
     let stake = (BigNumber.from(10).pow(18) * amount * usdPerShare).toString()
+    console.log(stake);
     try {
       await ido.attendIDO(stake)
     } catch (error) {
@@ -514,8 +518,8 @@ function IDO() {
                               </div>
                             </div>
                             <div>
-                              <p>My Balance</p>
-                              <p>{formatUnits(balance, 18)} USDT</p>
+                              <p>IDO Balance:{formatUnits(balance, 18)} USDT</p>
+                              <p>PMIL Balance:{formatUnits(PMLIBalance, 18)} PMIL</p>
                             </div>
                           </div>
                         </div>
