@@ -8,9 +8,10 @@ import { bitQueryServerClient, infoServerClient } from 'utils/graphql'
 import { getBlocksFromTimestamps } from 'views/Info/hooks/useBlocksFromTimestamps'
 import Home from '../views/Home'
 import IDO from '../views/IDO'
+import AddLiquidity from '../views/AddLiquidity'
 
 const IndexPage = ({ totalTx30Days, addressCount30Days, tvl }) => {
-  return <IDO />
+  return <AddLiquidity />
 }
 
 // Values fetched from TheGraph and BitQuery jan 24, 2022
