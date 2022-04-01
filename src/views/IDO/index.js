@@ -280,7 +280,7 @@ function IDO(props) {
     let stake = (BigNumber.from(10).pow(18).mul(amount).mul(usdPerShare)).toString()
     try {
       var balance = await usdt.balanceOf(web3Account);
-      if (balance.toNumber() == 0) {
+      if (balance.toString() == "0") {
         toastError(t('Error'), t('No USDT'))
         return
       }
@@ -299,7 +299,7 @@ function IDO(props) {
   }
   return (
     <Page>
-      <div className='ido-view'>
+      <div className='ido-view' style={isSmallerScreen ? { margin: "unset" } : {}}>
         <Zoom in={true}>
           <div className="ido-card">
             <div className="home">

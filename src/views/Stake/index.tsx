@@ -35,6 +35,7 @@ import { Grid, InputAdornment, OutlinedInput, Zoom } from '@material-ui/core'
 import { useSelector, useDispatch } from 'react-redux'
 import { AppDispatch, AppState } from '../../state'
 import classnames from "classnames";
+import useMediaQuery from '@material-ui/core/useMediaQuery'
 
 import fromExponential from 'from-exponential'
 
@@ -498,10 +499,11 @@ export default function Stake() {
     true,
     'removeLiquidityModal',
   )
+  const isSmallerScreen = useMediaQuery('(max-width: 960px)')
 
   return (
     <Page>
-      <div className="ido-view">
+      <div className="ido-view" style={isSmallerScreen ? { margin: "unset" } : {}}>
         <Zoom in={true}>
           <div className="ido-card">
             <Grid className="ido-card-grid" container direction="column" spacing={2}>
