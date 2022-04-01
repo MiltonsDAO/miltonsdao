@@ -134,7 +134,7 @@ function IDO(props) {
   const [number1, setNumber1] = useState(0)
   const [number2, setNumber2] = useState(0)
   const [balance, setBalance] = useState(BigNumber.from(0))
-  const [PMLIBalance, setPMLSBalance] = useState(BigNumber.from(0))
+  const [PMLSBalance, setPMLSBalance] = useState(BigNumber.from(0))
   const [amount, setAmount] = useState(100)
   const [startTime, setStartTime] = useState(0)
   const [startTimeMobile, setStartTimeMobile] = useState(0)
@@ -279,6 +279,11 @@ function IDO(props) {
     const usdPerShare = featured.usd_per_share
     let stake = (BigNumber.from(10).pow(18).mul(amount).mul(usdPerShare)).toString()
     try {
+      var balance = await usdt.balanceOf(web3Account);
+      if (balance.toNumber() == 0) {
+        toastError(t('Error'), t('No USDT'))
+        return
+      }
       await ido.attendIDO(stake)
     } catch (error) {
       metamaskErrorWrap(error, dispatch)
@@ -503,12 +508,12 @@ function IDO(props) {
                               {isSmallerScreen ? (
                                 <>
                                   <p>IDO: {formatUnits(balance, 18)} USDT</p>
-                                  <p>PMLS: {trim(formatUnits(PMLIBalance, 18), 9)}</p>
+                                  <p>PMLS: {trim(formatUnits(PMLSBalance, 18), 9)}</p>
                                 </>
                               ) : (
                                 <>
                                   <p>IDO {t("Balance")}: {formatUnits(balance, 18)} USDT</p>
-                                  <p>PMLS: {formatUnits(PMLIBalance, 18)}</p>
+                                  <p>PMLS: {formatUnits(PMLSBalance, 18)}</p>
                                 </>
                               )}
                             </div>
