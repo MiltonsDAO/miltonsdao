@@ -10,15 +10,7 @@ import { Button, Text, AddIcon, ArrowDownIcon, CardBody, Slider, Box, Flex, useM
 import { BigNumber } from '@ethersproject/bignumber'
 import { useTranslation } from 'contexts/Localization'
 import { CHAIN_ID } from 'config/constants/networks'
-import { AutoColumn, ColumnCenter } from '../../components/Layout/Column'
-import CurrencyInputPanel from '../../components/CurrencyInputPanel'
-import { MinimalPositionCard } from '../../components/PositionCard'
-import { AppHeader, AppBody } from '../../components/App'
-import { RowBetween } from '../../components/Layout/Row'
-import ConnectWalletButton from '../../components/ConnectWalletButton'
-import { LightGreyCard } from '../../components/Card'
 
-import { CurrencyLogo } from '../../components/Logo'
 import { ROUTER_ADDRESS } from '../../config/constants'
 import useActiveWeb3React from '../../hooks/useActiveWeb3React'
 import { useCurrency } from '../../hooks/TokensPancake'
@@ -26,13 +18,11 @@ import { usePairContract } from '../../hooks/useContract'
 import useTransactionDeadline from '../../hooks/useTransactionDeadline'
 
 import { useTransactionAdder } from '../../state/transactions/hooks'
-import StyledInternalLink from '../../components/Links'
 import { calculateGasMargin, calculateSlippageAmount, getRouterContract } from '../../utils'
 import { currencyId } from '../../utils/currencyId'
 import useDebouncedChangeHandler from '../../hooks/useDebouncedChangeHandler'
 import { wrappedCurrency } from '../../utils/wrappedCurrency'
 import { useApproveCallback, ApprovalState } from '../../hooks/useApproveCallback'
-import Dots from '../../components/Loader/Dots'
 import { useBurnActionHandlers, useDerivedBurnInfo, useBurnState } from '../../state/burn/hooks'
 
 import { Field } from '../../state/burn/actions'
@@ -77,7 +67,6 @@ export default function Stake() {
     [currencyA, currencyB, chainId],
   )
   const dispatch = useDispatch<AppDispatch>()
-  // const { provider, account, connect, chainID, checkWrongNetwork } = useWeb3Context()
   const [view, setView] = useState(0)
   const [quantity, setQuantity] = useState<string>('')
 
@@ -182,8 +171,8 @@ export default function Stake() {
     [Field.LIQUIDITY_PERCENT]: parsedAmounts[Field.LIQUIDITY_PERCENT].equalTo('0')
       ? '0'
       : parsedAmounts[Field.LIQUIDITY_PERCENT].lessThan(new Percent('1', '100'))
-      ? '<1'
-      : parsedAmounts[Field.LIQUIDITY_PERCENT].toFixed(0),
+        ? '<1'
+        : parsedAmounts[Field.LIQUIDITY_PERCENT].toFixed(0),
     [Field.LIQUIDITY]:
       independentField === Field.LIQUIDITY ? typedValue : parsedAmounts[Field.LIQUIDITY]?.toSignificant(6) ?? '',
     [Field.CURRENCY_A]:
@@ -414,9 +403,8 @@ export default function Stake() {
         .then((response: TransactionResponse) => {
           setLiquidityState({ attemptingTxn: false, liquidityErrorMessage: undefined, txHash: response.hash })
           addTransaction(response, {
-            summary: `Remove ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${
-              currencyA?.symbol
-            } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${currencyB?.symbol}`,
+            summary: `Remove ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${currencyA?.symbol
+              } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${currencyB?.symbol}`,
           })
         })
         .catch((err) => {
@@ -450,8 +438,8 @@ export default function Stake() {
   const oneCurrencyIsETH = currencyA === ETHER || currencyB === ETHER
   const oneCurrencyIsWETH = Boolean(
     chainId &&
-      ((currencyA && currencyEquals(WETH[chainId], currencyA)) ||
-        (currencyB && currencyEquals(WETH[chainId], currencyB))),
+    ((currencyA && currencyEquals(WETH[chainId], currencyA)) ||
+      (currencyB && currencyEquals(WETH[chainId], currencyB))),
   )
 
   const handleSelectCurrencyA = useCallback(
@@ -570,95 +558,94 @@ export default function Stake() {
               </Grid>
 
               <div className="ido-card-area">
-                {account && (
-                  <div>
-                    <div className="ido-card-action-area">
-                      <div className="ido-card-action-stage-btns-wrap">
-                        <div
-                          onClick={changeView(0)}
-                          className={classnames('ido-card-action-stage-btn', { active: !view })}
-                        >
-                          <p>{t("Stake")}</p>
-                        </div>
-                        <div
-                          onClick={changeView(1)}
-                          className={classnames('ido-card-action-stage-btn', { active: view })}
-                        >
-                          <p>{t("Unstake")}</p>
-                        </div>
+                <div>
+                  <div className="ido-card-action-area">
+                    <div className="ido-card-action-stage-btns-wrap">
+                      <div
+                        onClick={changeView(0)}
+                        className={classnames('ido-card-action-stage-btn', { active: !view })}
+                      >
+                        <p>{t("Stake")}</p>
                       </div>
-
-                      <div className="ido-card-action-row">
-                        <OutlinedInput
-                          type="number"
-                          placeholder="Amount"
-                          className="ido-card-action-input"
-                          value={quantity}
-                          onChange={(e) => setQuantity(e.target.value)}
-                          labelWidth={0}
-                          endAdornment={
-                            <InputAdornment position="end">
-                              <div onClick={setMax} className="ido-card-action-input-btn">
-                                <p>{t("Max")}</p>
-                              </div>
-                            </InputAdornment>
-                          }
-                        />
-
-                        {view === 0 && (
-                          <div className="ido-card-tab-panel">
-                            {account && hasAllowance('mls') ? (
-                              <div
-                                className="ido-card-tab-panel-btn"
-                                onClick={() => {
-                                  // if (isPendingTxn(pendingTransactions, 'staking')) return
-                                  onChangeStake('stake')
-                                }}
-                              >
-                                {/* <p>{txnButtonText(pendingTransactions, 'staking', 'Stake PMLS')}</p> */}
-                              </div>
-                            ) : (
-                              <div
-                                className="ido-card-tab-panel-btn"
-                                onClick={() => {
-                                  // if (isPendingTxn(pendingTransactions, 'approve_staking')) return
-                                  onSeekApproval('mls')
-                                }}
-                              >
-                                {/* <p>{txnButtonText(pendingTransactions, 'approve_staking', 'Approve')}</p> */}
-                              </div>
-                            )}
-                          </div>
-                        )}
-
-                        {view === 1 && (
-                          <div className="ido-card-tab-panel">
-                            {account && hasAllowance('smls') ? (
-                              <div
-                                className="ido-card-tab-panel-btn"
-                                onClick={() => {
-                                  // if (isPendingTxn(pendingTransactions, 'unstaking')) return
-                                  onChangeStake('unstake')
-                                }}
-                              >
-                                {/* <p>{txnButtonText(pendingTransactions, 'unstaking', 'Unstake PMLS')}</p> */}
-                              </div>
-                            ) : (
-                              <div
-                                className="ido-card-tab-panel-btn"
-                                onClick={() => {
-                                  // if (isPendingTxn(pendingTransactions, 'approve_unstaking')) return
-                                  onSeekApproval('smls')
-                                }}
-                              >
-                                {/* <p>{txnButtonText(pendingTransactions, 'approve_unstaking', 'Approve')}</p> */}
-                              </div>
-                            )}
-                          </div>
-                        )}
+                      <div
+                        onClick={changeView(1)}
+                        className={classnames('ido-card-action-stage-btn', { active: view })}
+                      >
+                        <p>{t("Unstake")}</p>
                       </div>
+                    </div>
 
-                      {/* <div className="ido-card-action-help-text">
+                    <div className="ido-card-action-row">
+                      <OutlinedInput
+                        type="number"
+                        placeholder="Amount"
+                        className="ido-card-action-input"
+                        value={quantity}
+                        onChange={(e) => setQuantity(e.target.value)}
+                        labelWidth={0}
+                        endAdornment={
+                          <InputAdornment position="end">
+                            <div onClick={setMax} className="ido-card-action-input-btn">
+                              <p>{t("Max")}</p>
+                            </div>
+                          </InputAdornment>
+                        }
+                      />
+
+                      {view === 0 && (
+                        <div className="ido-card-tab-panel">
+                          {account && hasAllowance('mls') ? (
+                            <div
+                              className="ido-card-tab-panel-btn"
+                              onClick={() => {
+                                // if (isPendingTxn(pendingTransactions, 'staking')) return
+                                onChangeStake('stake')
+                              }}
+                            >
+                              {/* <p>{txnButtonText(pendingTransactions, 'staking', 'Stake PMLS')}</p> */}
+                            </div>
+                          ) : (
+                            <div
+                              className="ido-card-tab-panel-btn"
+                              onClick={() => {
+                                // if (isPendingTxn(pendingTransactions, 'approve_staking')) return
+                                onSeekApproval('mls')
+                              }}
+                            >
+                              {/* <p>{txnButtonText(pendingTransactions, 'approve_staking', 'Approve')}</p> */}
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {view === 1 && (
+                        <div className="ido-card-tab-panel">
+                          {account && hasAllowance('smls') ? (
+                            <div
+                              className="ido-card-tab-panel-btn"
+                              onClick={() => {
+                                // if (isPendingTxn(pendingTransactions, 'unstaking')) return
+                                onChangeStake('unstake')
+                              }}
+                            >
+                              {/* <p>{txnButtonText(pendingTransactions, 'unstaking', 'Unstake PMLS')}</p> */}
+                            </div>
+                          ) : (
+                            <div
+                              className="ido-card-tab-panel-btn"
+                              onClick={() => {
+                                // if (isPendingTxn(pendingTransactions, 'approve_unstaking')) return
+                                onSeekApproval('smls')
+                              }}
+                            >
+                              {/* <p>{txnButtonText(pendingTransactions, 'approve_unstaking', 'Approve')}</p> */}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* <div className="ido-card-action-help-text">
                         {account && ((!hasAllowance('mls') && view === 0) || (!hasAllowance('smls') && view === 1)) && (
                           <p>
                             Note: The "Approve" transaction is only needed when staking/unstaking for the first time;
@@ -667,46 +654,45 @@ export default function Stake() {
                           </p>
                         )}
                       </div> */}
+                  </div>
+
+                  <div className="ido-user-data">
+                    <div className="data-row">
+                      <p className="data-row-name">{t("Your Balance")}</p>
+                      <p className="data-row-value">
+                        {isAppLoading ? <Skeleton width="80px" /> : <>{trim(Number(timeBalance), 4)} PMLS</>}
+                      </p>
                     </div>
 
-                    <div className="ido-user-data">
-                      <div className="data-row">
-                        <p className="data-row-name">{t("Your Balance")}</p>
-                        <p className="data-row-value">
-                          {isAppLoading ? <Skeleton width="80px" /> : <>{trim(Number(timeBalance), 4)} PMLS</>}
-                        </p>
-                      </div>
+                    <div className="data-row">
+                      <p className="data-row-name">{t("Your Staked Balance")}</p>
+                      <p className="data-row-value">
+                        {isAppLoading ? <Skeleton width="80px" /> : <>{trimmedMemoBalance} sMLS</>}
+                      </p>
+                    </div>
 
-                      <div className="data-row">
-                        <p className="data-row-name">{t("Your Staked Balance")}</p>
-                        <p className="data-row-value">
-                          {isAppLoading ? <Skeleton width="80px" /> : <>{trimmedMemoBalance} sMLS</>}
-                        </p>
-                      </div>
+                    <div className="data-row">
+                      <p className="data-row-name">{t("Next Reward Amount")}</p>
+                      <p className="data-row-value">
+                        {isAppLoading ? <Skeleton width="80px" /> : <>{nextRewardValue} sMLS</>}
+                      </p>
+                    </div>
 
-                      <div className="data-row">
-                        <p className="data-row-name">{t("Next Reward Amount")}</p>
-                        <p className="data-row-value">
-                          {isAppLoading ? <Skeleton width="80px" /> : <>{nextRewardValue} sMLS</>}
-                        </p>
-                      </div>
+                    <div className="data-row">
+                      <p className="data-row-name">{t("Next Reward Yield")}</p>
+                      <p className="data-row-value">
+                        {isAppLoading ? <Skeleton width="80px" /> : <>{stakingRebasePercentage}%</>}
+                      </p>
+                    </div>
 
-                      <div className="data-row">
-                        <p className="data-row-name">{t("Next Reward Yield")}</p>
-                        <p className="data-row-value">
-                          {isAppLoading ? <Skeleton width="80px" /> : <>{stakingRebasePercentage}%</>}
-                        </p>
-                      </div>
-
-                      <div className="data-row">
-                        <p className="data-row-name">{t("ROI (5-Day Rate)")}</p>
-                        <p className="data-row-value">
-                          {isAppLoading ? <Skeleton width="80px" /> : <>{trim(Number(fiveDayRate) * 100, 4)}%</>}
-                        </p>
-                      </div>
+                    <div className="data-row">
+                      <p className="data-row-name">{t("ROI (5-Day Rate)")}</p>
+                      <p className="data-row-value">
+                        {isAppLoading ? <Skeleton width="80px" /> : <>{trim(Number(fiveDayRate) * 100, 4)}%</>}
+                      </p>
                     </div>
                   </div>
-                )}
+                </div>
               </div>
             </Grid>
           </div>

@@ -18,7 +18,6 @@ import { messages } from '../../constants/messages'
 import classnames from 'classnames'
 import { error, warning, success, info } from '../../store/slices/messages-slice'
 import { ethers, BigNumber } from 'ethers'
-import { IAccountSlice, fetchAccountSuccess } from 'store/slices/account-slice'
 import { Skeleton } from '@material-ui/lab'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 import { shorten, trim } from '../../helpers'
@@ -62,7 +61,7 @@ var featured = {
   symbol: 'PMLS',
   decimal: 18,
   // address: '0x5B611c2935BB1c1fBE231292eDB02774425D4821',
-  address: "0x363281f3dD4Ae5f2Ed70f2C1BbFEbFa68317f3F7",
+  address: "0x66fad0E7A2dAfA1c70980134Ec22677eEcD430Cb",
   token_address: 'TBA',
   abi_name: '',
   raised: 0,
@@ -125,10 +124,6 @@ let closes_seconds = ''
 
 function IDO(props) {
   let web3Account = props.account;
-  // if (!web3Account) {
-  //   const { account } = useWeb3React();
-  //   web3Account = account;
-  // }
 
   const isSmallerScreen = useMediaQuery('(max-width: 960px)')
   const { t } = useTranslation()
@@ -469,7 +464,7 @@ function IDO(props) {
                                           className="wrap-action-input-btn"
                                           onClick={async () => {
                                             if (endDate && closesIn) {
-                                              if (!account) {
+                                              if (!web3Account) {
                                                 toastError(t('Error'), t('Not connected'))
                                                 return
                                               }
@@ -488,7 +483,7 @@ function IDO(props) {
                                   <button
                                     className="btnn_white"
                                     onClick={async () => {
-                                      if (!account) {
+                                      if (!web3Account) {
                                         toastError(t('Error'), t('Not connected'))
                                         return
                                       }
