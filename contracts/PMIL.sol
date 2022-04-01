@@ -101,7 +101,7 @@ contract Ownable is Context {
     }
 }
 
-contract PMIL is Ownable {
+contract PMLS is Ownable {
     using SafeMath for uint256;
 
     uint256 public totalSupply;

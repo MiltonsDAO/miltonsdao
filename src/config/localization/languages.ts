@@ -30,9 +30,11 @@ export const ZHCN: Language = { locale: 'zh-CN', language: '简体中文', code:
 export const ZHTW: Language = { locale: 'zh-TW', language: '繁體中文', code: 'zh-tw' }
 
 export const languages = {
+  'zh-CN': ZHCN,
+  'zh-TW': ZHTW,
+  'en-US': EN,
   'ar-SA': AR,
   'bn-BD': BN,
-  'en-US': EN,
   'de-DE': DE,
   'el-GR': EL,
   'es-ES': ESES,
@@ -56,8 +58,6 @@ export const languages = {
   'tr-TR': TR,
   'uk-UA': UK,
   'vi-VN': VI,
-  'zh-CN': ZHCN,
-  'zh-TW': ZHTW,
 }
 
 export const languageList = Object.values(languages)

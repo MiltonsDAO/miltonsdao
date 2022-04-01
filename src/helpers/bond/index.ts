@@ -51,7 +51,7 @@ export const dai = new StableBond({
 
 export const daiOHM = new LPBond({
   name: 'dai_ohm_lp',
-  displayName: 'PMIL-USDT LP',
+  displayName: 'PMLS-USDT LP',
   bondToken: 'USDT',
   bondIconSvg: MimTimeIcon,
   bondContractABI: LpBondContract,
@@ -69,7 +69,7 @@ export const daiOHM = new LPBond({
 
 // export const avaxTime = new CustomLPBond({
 //     name: "avax_time_lp",
-//     displayName: "PMIL-AVAX LP",
+//     displayName: "PMLS-AVAX LP",
 //     bondToken: "AVAX",
 //     bondIconSvg: AvaxTimeIcon,
 //     bondContractABI: LpBondContract,

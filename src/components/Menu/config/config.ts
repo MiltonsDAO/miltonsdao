@@ -43,6 +43,7 @@ const config: (t: ContextApi['t']) => ConfigMenuItemsType[] = (t) => [
     href: '/stake',
     icon: NftIcon,
     fillIcon: NftFillIcon,
+    showItemsOnMobile: false,
     items: [
     ],
   },
@@ -51,6 +52,7 @@ const config: (t: ContextApi['t']) => ConfigMenuItemsType[] = (t) => [
     href: '/liquidity',
     icon: SwapIcon,
     fillIcon: SwapFillIcon,
+    showItemsOnMobile: false,
     items: [
     ],
   },

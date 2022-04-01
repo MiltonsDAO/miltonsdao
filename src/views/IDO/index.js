@@ -47,7 +47,7 @@ var featured = {
   start_date: Date.parse(new Date('2022-03-25 00:00:00 GMT+0800')),
   end_date: Date.parse(new Date('2022-04-06 00:00:00 GMT+0800')),
   pool_type: 'featured',
-  title: 'PMIL',
+  title: 'PMLS',
   up_pool_raise: 1 / 2.2,
   usd_per_share: 1,
   content:
@@ -59,16 +59,16 @@ var featured = {
   participants: 0,
   swap_amount: null,
   min_swap_level: '',
-  symbol: 'PMIL',
+  symbol: 'PMLS',
   decimal: 18,
   // address: '0x5B611c2935BB1c1fBE231292eDB02774425D4821',
-  address: "0xae64C7ED694287e7b2ECC25931D2f473e062e27D",
+  address: "0x363281f3dD4Ae5f2Ed70f2C1BbFEbFa68317f3F7",
   token_address: 'TBA',
   abi_name: '',
   raised: 0,
   total_supply: 1000000,
   idoPercent: 1,
-  description: '<p>PMIL Eco</p>',
+  description: '<p>PMLS Eco</p>',
   twitter_link: '',
   git_link: '',
   telegram_link: '',
@@ -134,7 +134,7 @@ function IDO() {
   const [number1, setNumber1] = useState(0)
   const [number2, setNumber2] = useState(0)
   const [balance, setBalance] = useState(BigNumber.from(0))
-  const [PMLIBalance, setPMILBalance] = useState(BigNumber.from(0))
+  const [PMLIBalance, setPMLSBalance] = useState(BigNumber.from(0))
   const [amount, setAmount] = useState(100)
   const [startTime, setStartTime] = useState(0)
   const [startTimeMobile, setStartTimeMobile] = useState(0)
@@ -268,8 +268,8 @@ function IDO() {
     var balance = await ido.getIDOBalance(account);
     setBalance(balance);
 
-    var pmilBalance = await ido.balances(account)
-    setPMILBalance(pmilBalance);
+    var pmlsBalance = await ido.balances(account)
+    setPMLSBalance(pmlsBalance);
 
     var total = await ido.IDOTotal();
     featured.raised = total;
@@ -280,7 +280,7 @@ function IDO() {
 
   async function buyToken() {
     const usdPerShare = featured.usd_per_share
-    let stake = (BigNumber.from(10).pow(18) * amount * usdPerShare).toString()
+    let stake = (BigNumber.from(10).pow(18).mul(amount).mul(usdPerShare)).toString()
     try {
       await ido.attendIDO(stake)
     } catch (error) {
@@ -324,7 +324,6 @@ function IDO() {
                                 <p>
                                   {length ? featured.content.substring(0, 170) : featured.content}
                                   {length ? '...' : ''}
-                                  {length && <a href="#read-more">Read More</a>}
                                 </p>
                               </div>
                             </div>
@@ -337,7 +336,6 @@ function IDO() {
                               <p>
                                 {length ? featured.content.substring(0, 170) : featured.content}
                                 {length ? '...' : ''}
-                                {length && <a href="#read-more">Read More</a>}
                               </p>
                             </div>
                           </div>
@@ -346,14 +344,14 @@ function IDO() {
                         <div className="home-progress">
                           <div className="raise-three mob">
                             <div className="raise">
-                              <p className="total_raise">Total Raised</p>
+                              <p className="total_raise">{t("Total Raised")}</p>
                               <h2>
                                 {number2 ? number2.toFixed(2) : '0'} {featured.crypto_type === 'USDT' ? 'USDT' : 'BNB'}
                               </h2>
                             </div>
                             <div className="allocation">
                               <div>
-                                <p className="feature_max">Maximum</p>
+                                <p className="feature_max">{t("Maximum")}</p>
                                 <h3>
                                   {featured.max_allocation
                                     ? featured.max_allocation + (featured.crypto_type === 'USDT' ? ' USDT' : ' BNB')
@@ -361,14 +359,14 @@ function IDO() {
                                 </h3>
                               </div>
                               <div>
-                                <p className="feature_max">Access</p>
+                                <p className="feature_max">{t("Access")}</p>
                                 <h3>{featured.up_pool_access}</h3>
                               </div>
                             </div>
                           </div>
                           <div className="allocation-mob">
                             <div>
-                              <p className="feature_max">Maximum</p>
+                              <p className="feature_max">{t("Maximum")}</p>
                               <h3>
                                 {featured.max_allocation
                                   ? featured.max_allocation + (featured.crypto_type === 'USDT' ? ' USDT' : ' BNB')
@@ -376,12 +374,12 @@ function IDO() {
                               </h3>
                             </div>
                             <div>
-                              <p className="feature_max">Access</p>
+                              <p className="feature_max">{t("Access")}</p>
                               <h3>{featured.up_pool_access}</h3>
                             </div>
                           </div>
                           <div className="rts">
-                            {startIn ? <p className="status-p">Start in</p> : ''}
+                            {startIn ? <p className="status-p">{t("Starts in")}</p> : ''}
                             <div className="timer_desktop">
                               {startIn === 1 ? (
                                 <h3 style={{ color: "white", fontSize: 18 }} id="poolonpagestart">
@@ -400,7 +398,7 @@ function IDO() {
                                 ''
                               )}
                             </div>
-                            {closesIn ? <p className="status-p">Ends in</p> : ''}
+                            {closesIn ? <p className="status-p">{t("Ends in")}</p> : ''}
                             <div className="timer_desktop">
                               {closesIn === 1 ? (
                                 <h3 style={{ color: 'white', fontSize: 18 }} id="poolonpagestart">
@@ -419,13 +417,13 @@ function IDO() {
                                 ''
                               )}
                             </div>
-                            {closed ? <p className="status-p">Status</p> : ''}
+                            {closed ? <p className="status-p">{t("Status")}</p> : ''}
                             {closed ? <h3>Closed</h3> : ''}
                             {filled ? <h3>Filled</h3> : ''}
                           </div>
                           <div className="prog_bar">
                             <div className="prog_bar_grd">
-                              <span className="prog">Progress</span>
+                              <span className="prog">{t("Progress")}</span>
                               {/* <span className="parti">
                                                             Max Participants <span className="white_text">{participants.toString()}</span>
                                                         </span> */}
@@ -479,7 +477,7 @@ function IDO() {
                                             }
                                           }}
                                         >
-                                          <p>Buy</p>
+                                          <p>{t("Buy")}</p>
                                         </div>
                                       </InputAdornment>
                                     }
@@ -499,7 +497,7 @@ function IDO() {
                                       }
                                     }}
                                   >
-                                    Approve
+                                    {t("Approve")}
                                   </button>
                                 )}
                               </div>
@@ -508,12 +506,12 @@ function IDO() {
                               {isSmallerScreen ? (
                                 <>
                                   <p>IDO: {formatUnits(balance, 18)} USDT</p>
-                                  <p>PMIL: {trim(formatUnits(PMLIBalance, 18), 9)}</p>
+                                  <p>PMLS: {trim(formatUnits(PMLIBalance, 18), 9)}</p>
                                 </>
                               ) : (
                                 <>
-                                  <p>IDO Balance: {formatUnits(balance, 18)} USDT</p>
-                                  <p>PMIL: {formatUnits(PMLIBalance, 18)}</p>
+                                  <p>IDO {t("Balance")}: {formatUnits(balance, 18)} USDT</p>
+                                  <p>PMLS: {formatUnits(PMLIBalance, 18)}</p>
                                 </>
                               )}
                             </div>

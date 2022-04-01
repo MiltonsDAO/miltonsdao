@@ -80,7 +80,7 @@ export const getStaticProps: GetStaticProps = async () => {
       }
     }
   `
-
+    
   if (process.env.BIT_QUERY_HEADER) {
     try {
       const result = await bitQueryServerClient.request(usersQuery, {

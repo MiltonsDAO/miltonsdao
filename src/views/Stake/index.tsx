@@ -135,8 +135,8 @@ export default function Stake() {
 
   const hasAllowance = useCallback(
     (token) => {
-      // if (token === 'lwh') return stakeAllowance > 0
-      // if (token === 'slwh') return unstakeAllowance > 0
+      // if (token === 'mls') return stakeAllowance > 0
+      // if (token === 'smls') return unstakeAllowance > 0
       return 0
     },
     [stakeAllowance],
@@ -519,7 +519,7 @@ export default function Stake() {
             <Grid className="ido-card-grid" container direction="column" spacing={2}>
               <Grid item>
                 <div className="ido-card-header">
-                  <p className="ido-card-header-title">PMIL Staking (🎩, 🎩)</p>
+                  <p className="ido-card-header-title">PMLS {t("Staking")} (🎩, 🎩)</p>
                 </div>
               </Grid>
 
@@ -528,7 +528,7 @@ export default function Stake() {
                   <Grid container spacing={2}>
                     <Grid item xs={12} sm={4} md={4} lg={4}>
                       <div className="ido-card-apy">
-                        <p className="ido-card-metrics-title">APY</p>
+                        <p className="ido-card-metrics-title">{t("APY")}</p>
                         <p className="ido-card-metrics-value">
                           {stakingAPY ? (
                             <>{new Intl.NumberFormat('en-US').format(Number(trimmedStakingAPY))}%</>
@@ -541,7 +541,7 @@ export default function Stake() {
 
                     <Grid item xs={6} sm={4} md={4} lg={4}>
                       <div className="ido-card-tvl">
-                        <p className="ido-card-metrics-title">TVL</p>
+                        <p className="ido-card-metrics-title">{t("TVL")}</p>
                         <p className="ido-card-metrics-value">
                           {stakingTVL ? (
                             new Intl.NumberFormat('en-US', {
@@ -559,9 +559,9 @@ export default function Stake() {
 
                     <Grid item xs={6} sm={4} md={4} lg={4}>
                       <div className="ido-card-index">
-                        <p className="ido-card-metrics-title">Current Index</p>
+                        <p className="ido-card-metrics-title">{t("Current Index")}</p>
                         <p className="ido-card-metrics-value">
-                          {currentIndex ? <>{trim(Number(currentIndex), 2)} PMIL</> : <Skeleton width="150px" />}
+                          {currentIndex ? <>{trim(Number(currentIndex), 2)} PMLS</> : <Skeleton width="150px" />}
                         </p>
                       </div>
                     </Grid>
@@ -578,13 +578,13 @@ export default function Stake() {
                           onClick={changeView(0)}
                           className={classnames('ido-card-action-stage-btn', { active: !view })}
                         >
-                          <p>Stake</p>
+                          <p>{t("Stake")}</p>
                         </div>
                         <div
                           onClick={changeView(1)}
                           className={classnames('ido-card-action-stage-btn', { active: view })}
                         >
-                          <p>Unstake</p>
+                          <p>{t("Unstake")}</p>
                         </div>
                       </div>
 
@@ -599,7 +599,7 @@ export default function Stake() {
                           endAdornment={
                             <InputAdornment position="end">
                               <div onClick={setMax} className="ido-card-action-input-btn">
-                                <p>Max</p>
+                                <p>{t("Max")}</p>
                               </div>
                             </InputAdornment>
                           }
@@ -607,7 +607,7 @@ export default function Stake() {
 
                         {view === 0 && (
                           <div className="ido-card-tab-panel">
-                            {account && hasAllowance('lwh') ? (
+                            {account && hasAllowance('mls') ? (
                               <div
                                 className="ido-card-tab-panel-btn"
                                 onClick={() => {
@@ -615,14 +615,14 @@ export default function Stake() {
                                   onChangeStake('stake')
                                 }}
                               >
-                                {/* <p>{txnButtonText(pendingTransactions, 'staking', 'Stake PMIL')}</p> */}
+                                {/* <p>{txnButtonText(pendingTransactions, 'staking', 'Stake PMLS')}</p> */}
                               </div>
                             ) : (
                               <div
                                 className="ido-card-tab-panel-btn"
                                 onClick={() => {
                                   // if (isPendingTxn(pendingTransactions, 'approve_staking')) return
-                                  onSeekApproval('lwh')
+                                  onSeekApproval('mls')
                                 }}
                               >
                                 {/* <p>{txnButtonText(pendingTransactions, 'approve_staking', 'Approve')}</p> */}
@@ -633,7 +633,7 @@ export default function Stake() {
 
                         {view === 1 && (
                           <div className="ido-card-tab-panel">
-                            {account && hasAllowance('slwh') ? (
+                            {account && hasAllowance('smls') ? (
                               <div
                                 className="ido-card-tab-panel-btn"
                                 onClick={() => {
@@ -641,14 +641,14 @@ export default function Stake() {
                                   onChangeStake('unstake')
                                 }}
                               >
-                                {/* <p>{txnButtonText(pendingTransactions, 'unstaking', 'Unstake PMIL')}</p> */}
+                                {/* <p>{txnButtonText(pendingTransactions, 'unstaking', 'Unstake PMLS')}</p> */}
                               </div>
                             ) : (
                               <div
                                 className="ido-card-tab-panel-btn"
                                 onClick={() => {
                                   // if (isPendingTxn(pendingTransactions, 'approve_unstaking')) return
-                                  onSeekApproval('slwh')
+                                  onSeekApproval('smls')
                                 }}
                               >
                                 {/* <p>{txnButtonText(pendingTransactions, 'approve_unstaking', 'Approve')}</p> */}
@@ -658,48 +658,48 @@ export default function Stake() {
                         )}
                       </div>
 
-                      <div className="ido-card-action-help-text">
-                        {account && ((!hasAllowance('lwh') && view === 0) || (!hasAllowance('slwh') && view === 1)) && (
+                      {/* <div className="ido-card-action-help-text">
+                        {account && ((!hasAllowance('mls') && view === 0) || (!hasAllowance('smls') && view === 1)) && (
                           <p>
                             Note: The "Approve" transaction is only needed when staking/unstaking for the first time;
                             subsequent staking/unstaking only requires you to perform the "Stake" or "Unstake"
                             transaction.
                           </p>
                         )}
-                      </div>
+                      </div> */}
                     </div>
 
                     <div className="ido-user-data">
                       <div className="data-row">
-                        <p className="data-row-name">Your Balance</p>
+                        <p className="data-row-name">{t("Your Balance")}</p>
                         <p className="data-row-value">
-                          {isAppLoading ? <Skeleton width="80px" /> : <>{trim(Number(timeBalance), 4)} PMIL</>}
+                          {isAppLoading ? <Skeleton width="80px" /> : <>{trim(Number(timeBalance), 4)} PMLS</>}
                         </p>
                       </div>
 
                       <div className="data-row">
-                        <p className="data-row-name">Your Staked Balance</p>
+                        <p className="data-row-name">{t("Your Staked Balance")}</p>
                         <p className="data-row-value">
-                          {isAppLoading ? <Skeleton width="80px" /> : <>{trimmedMemoBalance} sMIL</>}
+                          {isAppLoading ? <Skeleton width="80px" /> : <>{trimmedMemoBalance} sMLS</>}
                         </p>
                       </div>
 
                       <div className="data-row">
-                        <p className="data-row-name">Next Reward Amount</p>
+                        <p className="data-row-name">{t("Next Reward Amount")}</p>
                         <p className="data-row-value">
-                          {isAppLoading ? <Skeleton width="80px" /> : <>{nextRewardValue} sMIL</>}
+                          {isAppLoading ? <Skeleton width="80px" /> : <>{nextRewardValue} sMLS</>}
                         </p>
                       </div>
 
                       <div className="data-row">
-                        <p className="data-row-name">Next Reward Yield</p>
+                        <p className="data-row-name">{t("Next Reward Yield")}</p>
                         <p className="data-row-value">
                           {isAppLoading ? <Skeleton width="80px" /> : <>{stakingRebasePercentage}%</>}
                         </p>
                       </div>
 
                       <div className="data-row">
-                        <p className="data-row-name">ROI (5-Day Rate)</p>
+                        <p className="data-row-name">{t("ROI (5-Day Rate)")}</p>
                         <p className="data-row-value">
                           {isAppLoading ? <Skeleton width="80px" /> : <>{trim(Number(fiveDayRate) * 100, 4)}%</>}
                         </p>

@@ -16,7 +16,6 @@ const BottomNav: React.FC<BottomNavProps> = ({ items = [], activeItem = "", acti
       <StyledBottomNav justifyContent="space-around" {...props}>
         {items.map(
           ({ label, items: menuItems, href, icon, fillIcon, showOnMobile = true, showItemsOnMobile = true }, index) => {
-            console.log("menuItems:",menuItems);
             const statusColor = menuItems?.find((menuItem) => menuItem.status !== undefined)?.status?.color;
             return (
               showOnMobile && (
