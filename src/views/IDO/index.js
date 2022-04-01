@@ -60,8 +60,8 @@ var featured = {
   min_swap_level: '',
   symbol: 'PMLS',
   decimal: 18,
-  // address: '0x5B611c2935BB1c1fBE231292eDB02774425D4821',
-  address: "0x66fad0E7A2dAfA1c70980134Ec22677eEcD430Cb",
+  address: '0xdaBeF048B7DaB6f10638f59Debde38B1c35bB1B0',
+  // address: "0xCB84B99463e1703bF4038d9164F93EA1911CeA7f",
   token_address: 'TBA',
   abi_name: '',
   raised: 0,
@@ -141,8 +141,8 @@ function IDO(props) {
 
   const signer = library.getSigner()
   ido = new ethers.Contract(featured.address, JSON.stringify(poolabi), signer)
-  usdt = new ethers.Contract("0xc362B3ed5039447dB7a06F0a3d0bd9238E74d57c", JSON.stringify(usdtabi), signer)
-  // usdt = new ethers.Contract('0x55d398326f99059fF775485246999027B3197955', JSON.stringify(usdtabi), signer)
+  // usdt = new ethers.Contract("0xc362B3ed5039447dB7a06F0a3d0bd9238E74d57c", JSON.stringify(usdtabi), signer)
+  usdt = new ethers.Contract('0x55d398326f99059fF775485246999027B3197955', JSON.stringify(usdtabi), signer)
 
   const useNextEventCountdown = (startDate, endDate) => {
     const [secondsRemaining, setSecondsRemaining] = useState(null)
