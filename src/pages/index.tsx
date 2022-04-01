@@ -6,11 +6,12 @@ import { SWRConfig } from 'swr'
 import { DeBankTvlResponse } from 'hooks/api'
 import { bitQueryServerClient, infoServerClient } from 'utils/graphql'
 import { getBlocksFromTimestamps } from 'views/Info/hooks/useBlocksFromTimestamps'
+import { useWeb3React } from '@web3-react/core'
+
 import Home from '../views/Home'
 import IDO from '../views/IDO'
 import AddLiquidity from '../views/AddLiquidity'
 import Pool from '../views/Pool'
-import { useWeb3React } from '@web3-react/core'
 
 const IndexPage = () => {
   const { account } = useWeb3React()
