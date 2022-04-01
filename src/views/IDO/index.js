@@ -123,12 +123,17 @@ let y = 0
 let closes_seconds = ''
 
 
-function IDO() {
+function IDO(props) {
+  let web3Account = props.account;
+  // if (!web3Account) {
+  //   const { account } = useWeb3React();
+  //   web3Account = account;
+  // }
+
   const isSmallerScreen = useMediaQuery('(max-width: 960px)')
   const { t } = useTranslation()
   const { toastSuccess, toastError } = useToast()
   const { chainID, library } = useActiveWeb3React()
-  const { account } = useWeb3React()
   const dispatch = useAppDispatch()
   const [approved, setApproved] = useState(false)
   const [number1, setNumber1] = useState(0)
@@ -139,20 +144,15 @@ function IDO() {
   const [startTime, setStartTime] = useState(0)
   const [startTimeMobile, setStartTimeMobile] = useState(0)
 
-  title =
-    featured.title && featured.title.length && featured.title.length >= 20
-      ? `${featured.title.substring(0, 20)}...`
-      : featured.title
-
   const signer = library.getSigner()
-
   ido = new ethers.Contract(featured.address, JSON.stringify(poolabi), signer)
+  usdt = new ethers.Contract("0xc362B3ed5039447dB7a06F0a3d0bd9238E74d57c", JSON.stringify(usdtabi), signer)
   // usdt = new ethers.Contract('0x55d398326f99059fF775485246999027B3197955', JSON.stringify(usdtabi), signer)
-  usdt = new ethers.Contract("0xc362B3ed5039447dB7a06F0a3d0bd9238E74d57c", JSON.stringify(usdtabi), signer);
 
   const useNextEventCountdown = (startDate, endDate) => {
     const [secondsRemaining, setSecondsRemaining] = useState(null)
     const timer = useRef(null)
+
     useEffect(() => {
       const now = Date.now()
       const startUnixStamp = Date.parse(startDate)
@@ -176,7 +176,7 @@ function IDO() {
         })
       }, 1000)
       return () => clearInterval(timer.current)
-    }, [setSecondsRemaining, timer])
+    }, [setSecondsRemaining, timer, web3Account])
     return secondsRemaining
 
   }
@@ -255,20 +255,22 @@ function IDO() {
 
       setStartTime(desktopTimer)
       setStartTimeMobile(mobileTimer)
-      if (account) {
+
+      if (web3Account) {
         updatePool();
       }
     }
-  }, [secondsRemaining])
+  }, [secondsRemaining, web3Account])
 
   const updatePool = useCallback(async () => {
-    var allowance = await usdt.allowance(account, featured.address);
+
+    var allowance = await usdt.allowance(web3Account, featured.address);
     setApproved(BigNumber.from(allowance) >= uint256MAX / 2);
 
-    var balance = await ido.getIDOBalance(account);
+    var balance = await ido.getIDOBalance(web3Account);
     setBalance(balance);
 
-    var pmlsBalance = await ido.balances(account)
+    var pmlsBalance = await ido.balances(web3Account)
     setPMLSBalance(pmlsBalance);
 
     var total = await ido.IDOTotal();
@@ -276,7 +278,7 @@ function IDO() {
     setNumber1(((featured.raised * featured.up_pool_raise) / 10 ** 18 / (featured.total_supply * featured.idoPercent)) * 100);
     setNumber2(featured.raised / 10 ** 18);
 
-  }, [secondsRemaining, account]);
+  }, [secondsRemaining, web3Account]);
 
   async function buyToken() {
     const usdPerShare = featured.usd_per_share
