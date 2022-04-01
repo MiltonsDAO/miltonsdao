@@ -319,7 +319,7 @@ function IDO(props) {
                               </h3>
                               <div className="title-info">
                                 <p>
-                                  {length ? featured.content.substring(0, 170) : featured.content}
+                                  {length ? featured.content.substring(0, 170) : t(featured.content)}
                                   {length ? '...' : ''}
                                 </p>
                               </div>
@@ -327,11 +327,11 @@ function IDO(props) {
                           </div>
                           <div className="title-head-mob">
                             {/* <h3>
-                                                        <div className="h-title">{title}</div>
-                                                    </h3> */}
+                              <div className="h-title">{title}</div>
+                            </h3> */}
                             <div className="title-info">
                               <p>
-                                {length ? featured.content.substring(0, 170) : featured.content}
+                                {length ? featured.content.substring(0, 170) : t(featured.content)}
                                 {length ? '...' : ''}
                               </p>
                             </div>
