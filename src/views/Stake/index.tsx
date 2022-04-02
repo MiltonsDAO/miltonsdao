@@ -509,7 +509,7 @@ export default function Stake() {
             <Grid className="ido-card-grid" container direction="column" spacing={2}>
               <Grid item>
                 <div className="ido-card-header">
-                  <p className="ido-card-header-title">PMLS {t("Staking")} (🎩, 🎩)</p>
+                  <p className="ido-card-header-title">MLS {t("Staking")} (🎩, 🎩)</p>
                 </div>
               </Grid>
 
@@ -551,7 +551,7 @@ export default function Stake() {
                       <div className="ido-card-index">
                         <p className="ido-card-metrics-title">{t("Current Index")}</p>
                         <p className="ido-card-metrics-value">
-                          {currentIndex ? <>{trim(Number(currentIndex), 2)} PMLS</> : <Skeleton width="150px" />}
+                          {currentIndex ? <>{trim(Number(currentIndex), 2)} MLS</> : <Skeleton width="150px" />}
                         </p>
                       </div>
                     </Grid>
@@ -604,7 +604,7 @@ export default function Stake() {
                                 onChangeStake('stake')
                               }}
                             >
-                              {/* <p>{txnButtonText(pendingTransactions, 'staking', 'Stake PMLS')}</p> */}
+                              {/* <p>{txnButtonText(pendingTransactions, 'staking', 'Stake MLS')}</p> */}
                             </div>
                           ) : (
                             <div
@@ -630,7 +630,7 @@ export default function Stake() {
                                 onChangeStake('unstake')
                               }}
                             >
-                              {/* <p>{txnButtonText(pendingTransactions, 'unstaking', 'Unstake PMLS')}</p> */}
+                              {/* <p>{txnButtonText(pendingTransactions, 'unstaking', 'Unstake MLS')}</p> */}
                             </div>
                           ) : (
                             <div
@@ -662,7 +662,7 @@ export default function Stake() {
                     <div className="data-row">
                       <p className="data-row-name">{t("Your Balance")}</p>
                       <p className="data-row-value">
-                        {isAppLoading ? <Skeleton width="80px" /> : <>{trim(Number(timeBalance), 4)} PMLS</>}
+                        {isAppLoading ? <Skeleton width="80px" /> : <>{trim(Number(timeBalance), 4)} MLS</>}
                       </p>
                     </div>
 
