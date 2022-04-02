@@ -507,7 +507,6 @@ function IDO(props) {
                             <div>
                               {isSmallerScreen ? (
                                 <>
-                                  <p>IDO: {formatUnits(balance, 18)} USDT</p>
                                   <p>PMLS: {trim(formatUnits(PMLSBalance, 18), 9)}</p>
                                 </>
                               ) : (
