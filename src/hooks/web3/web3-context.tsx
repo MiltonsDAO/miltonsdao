@@ -53,7 +53,7 @@ export const Web3ContextProvider: React.FC<{ children: ReactElement }> = ({ chil
   const [chainID, setChainID] = useState(DEFAULT_NETWORK)
   const [providerChainID, setProviderChainID] = useState(DEFAULT_NETWORK)
   const [address, setAddress] = useState('')
-  const mainnet = Number(DEFAULT_NETWORK) == Networks.BSC
+  const mainnet = Number(DEFAULT_NETWORK)
 
   const [uri, setUri] = useState(getMainnetURI(mainnet))
   const [provider, setProvider] = useState<JsonRpcProvider>(new StaticJsonRpcProvider(uri))

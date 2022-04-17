@@ -3,12 +3,12 @@ import { Grid, Zoom } from '@material-ui/core'
 import { trim } from 'helpers'
 // import "./dashboard.scss";
 import { Skeleton } from '@material-ui/lab'
-import { IReduxState } from '../../store/slices/state.interface'
 import { IAppSlice } from '../../store/slices/app-slice'
+import { AppState } from 'state'
 
 function Dashboard() {
-  const isAppLoading = useSelector<IReduxState, boolean>((state) => state.app.loading)
-  const app = useSelector<IReduxState, IAppSlice>((state) => state.app)
+  const isAppLoading = useSelector<AppState, boolean>((state) => state.app.loading)
+  const app = useSelector<AppState, IAppSlice>((state) => state.app)
   let trimmedStakingAPY = trim(app.stakingAPY * 100, 1)
 
   if (app.stakingAPY > Math.pow(10, 10)) {

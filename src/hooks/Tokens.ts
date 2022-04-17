@@ -2,8 +2,8 @@ import { useSelector } from 'react-redux'
 import { useEffect, useState } from 'react'
 import allTokens from '../helpers/tokens'
 import { IUserTokenDetails } from '../store/slices/account-slice'
-import { IReduxState } from '../store/slices/state.interface'
 import { IToken } from '../helpers/tokens'
+import { AppState } from 'state'
 
 // Smash all the interfaces together to get the BondData Type
 export interface IAllTokenData extends IToken, IUserTokenDetails {}
@@ -11,8 +11,8 @@ export interface IAllTokenData extends IToken, IUserTokenDetails {}
 const initialTokenArray = allTokens
 
 function useTokens() {
-  const accountLoading = useSelector<IReduxState, boolean>((state) => state.account.loading)
-  const accountTokensState = useSelector<IReduxState, { [key: string]: IUserTokenDetails }>(
+  const accountLoading = useSelector<AppState, boolean>((state) => state.account.loading)
+  const accountTokensState = useSelector<AppState, { [key: string]: IUserTokenDetails }>(
     (state) => state.account.tokens,
   )
   //@ts-ignore

@@ -7,13 +7,14 @@ import FixedSubgraphHealthIndicator from 'components/SubgraphHealthIndicator'
 import { ToastListener } from 'contexts/ToastsContext'
 import useEagerConnect from 'hooks/useEagerConnect'
 import { useInactiveListener } from 'hooks/useInactiveListener'
-import useSentryUser from 'hooks/useSentryUser'
+import {useLoadDetails} from 'hooks/useLoadDetails'
 import useUserAgent from 'hooks/useUserAgent'
+import useSentryUser from 'hooks/useSentryUser'
 import type { AppProps } from 'next/app'
 import Head from 'next/head'
-import { Fragment } from 'react'
+import { useEffect, useState, useCallback, Fragment } from 'react'
 import { PersistGate } from 'redux-persist/integration/react'
-import { useStore, persistor } from 'state'
+import { useStore, persistor, AppState } from 'state'
 import { usePollBlockNumber } from 'state/block/hooks'
 import { usePollCoreFarmData } from 'state/farms/hooks'
 import { NextPage } from 'next'
@@ -24,6 +25,11 @@ import Providers from '../Providers'
 import GlobalStyle from '../style/Global'
 import "./ido.scss";
 import "./index.scss";
+import "./bond.scss";
+import "./bondSettings.scss";
+import "./zapin.scss";
+import "./choose-token.scss";
+import { useWeb3React } from '@web3-react/core'
 
 const EasterEgg = dynamic(() => import('components/EasterEgg'), { ssr: false })
 
@@ -34,19 +40,19 @@ BigNumber.config({
 })
 
 function GlobalHooks() {
-  usePollBlockNumber()
+  // usePollBlockNumber()
   useEagerConnect()
-  usePollCoreFarmData()
-  useUserAgent()
+  // usePollCoreFarmData()
+  // useUserAgent()
   useInactiveListener()
   useSentryUser()
+
   return null
 }
 
 function MyApp(props: AppProps) {
   const { pageProps } = props
   const store = useStore(pageProps.initialReduxState)
-
   return (
     <>
       <Head>
@@ -69,19 +75,6 @@ function MyApp(props: AppProps) {
           </PersistGate>
         </Blocklist>
       </Providers>
-      {/* <Script
-        strategy="afterInteractive"
-        id="google-tag"
-        dangerouslySetInnerHTML={{
-          __html: `
-            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-            })(window,document,'script','dataLayer', '${process.env.NEXT_PUBLIC_GTAG}');
-          `,
-        }}
-      /> */}
     </>
   )
 }
@@ -97,8 +90,8 @@ type AppPropsWithLayout = AppProps & {
 const ProductionErrorBoundary = process.env.NODE_ENV === 'production' ? ErrorBoundary : Fragment
 
 const App = ({ Component, pageProps }: AppPropsWithLayout) => {
-  // Use the layout defined at the page level, if available
   const Layout = Component.Layout || Fragment
+
   return (
     <ProductionErrorBoundary>
       <Menu>
@@ -106,7 +99,6 @@ const App = ({ Component, pageProps }: AppPropsWithLayout) => {
           <Component {...pageProps} />
         </Layout>
       </Menu>
-      <EasterEgg iterations={2} />
       <ToastListener />
       <FixedSubgraphHealthIndicator />
     </ProductionErrorBoundary>

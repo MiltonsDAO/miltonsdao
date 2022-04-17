@@ -37,6 +37,7 @@ import { useAppDispatch } from 'state'
 import useToast from 'hooks/useToast'
 import { useTranslation } from 'contexts/Localization'
 import { useWeb3React } from '@web3-react/core'
+import { Box, Flex, FlexProps, useMatchBreakpoints, StyledButton } from '@pancakeswap/uikit'
 
 
 var featured = {
@@ -125,7 +126,8 @@ let closes_seconds = ''
 function IDO(props) {
   let web3Account = props.account;
 
-  const isSmallerScreen = useMediaQuery('(max-width: 960px)')
+  const { isMobile } = useMatchBreakpoints()
+
   const { t } = useTranslation()
   const { toastSuccess, toastError } = useToast()
   const { chainID, library } = useActiveWeb3React()
@@ -299,7 +301,7 @@ function IDO(props) {
   }
   return (
     <Page>
-      <div className='ido-view' style={isSmallerScreen ? { margin: "unset" } : {}}>
+      <div className='ido-view' style={isMobile ? { margin: "unset" } : {}}>
         <Zoom in={true}>
           <div className="ido-card">
             <div className="home">
@@ -505,7 +507,7 @@ function IDO(props) {
                               </div>
                             </div>
                             <div>
-                              {isSmallerScreen ? (
+                              {isMobile ? (
                                 <>
                                   <p>PMLS: {trim(formatUnits(PMLSBalance, 18), 9)}</p>
                                 </>

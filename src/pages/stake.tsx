@@ -1,7 +1,10 @@
+import { useWeb3React } from '@web3-react/core'
 import Stake from '../views/Stake'
 
 const StakePage = () => {
-  return <Stake />
+  const { account } = useWeb3React()
+  return <Stake account={account}/>
+  // return <Stake />
 }
 
 export default StakePage

@@ -1,1 +1,1 @@
-export const CHAIN_ID = "56"
+export const CHAIN_ID = "97"

@@ -12,4 +12,5 @@ export interface BondAddresses {
 
 export interface NetworkAddresses {
   [Networks.BSC]: BondAddresses
+  [Networks.BSC_TESTNET]: BondAddresses
 }

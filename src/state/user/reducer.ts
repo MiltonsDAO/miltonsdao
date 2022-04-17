@@ -117,6 +117,7 @@ export const initialState: UserState = {
   hideTimestampPhishingWarningBanner: null,
 }
 
+
 export default createReducer(initialState, (builder) =>
   builder
     .addCase(updateVersion, (state) => {

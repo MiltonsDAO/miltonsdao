@@ -54,6 +54,7 @@ export abstract class Bond {
 
   public getContractForBond(networkID: Networks, provider: StaticJsonRpcProvider | JsonRpcSigner) {
     const bondAddress = this.getAddressForBond(networkID)
+    console.log("bondAddress:",bondAddress)
     return new Contract(bondAddress, this.bondContractABI, provider)
   }
 

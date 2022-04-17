@@ -25,5 +25,5 @@
     }
   },
   "exclude": ["node_modules", "cypress"],
-  "include": ["next-env.d.ts", "./src/**/*.ts", "./src/**/*.tsx", "src/views/IDO/index.js", "src/views/IDO/index"]
+  "include": ["next-env.d.ts", "./src/**/*.ts", "./src/**/*.tsx", "src/views/IDO/index.js", "src/views/IDO/index", "src/views/Stake/index.js"]
 }

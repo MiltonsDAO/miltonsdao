@@ -17,7 +17,7 @@ import {
 } from '../../abi'
 
 export const dai = new StableBond({
-  name: 'dai',
+  name: 'USDT',
   displayName: 'USDT',
   bondToken: 'USDT',
   bondIconSvg: MimIcon,
@@ -26,8 +26,12 @@ export const dai = new StableBond({
   reserveContractAbi: StableReserveContract,
   networkAddrs: {
     [Networks.BSC]: {
-      bondAddress: '0x635763D7952A48257D12FE2e1461a0BFC27b5541',
-      reserveAddress: '0xa76cfDbEdF7883428B0e847AC354DeBA21B58CfC',
+      bondAddress: '0x0a5572622800fDF2F06B63BD8F4108F14902a38e',
+      reserveAddress: '0x4aEeB8D61FEABC8695Db1831c03914DD94067120',
+    },
+    [Networks.BSC_TESTNET]: {
+      bondAddress: '0xA6Fb3c1f4164aD5598266958f9B852AF201F4AE2',
+      reserveAddress: '0xc362B3ed5039447dB7a06F0a3d0bd9238E74d57c',
     },
   },
   tokensInStrategy: '60500000000000000000000000',
@@ -50,8 +54,8 @@ export const dai = new StableBond({
 // });
 
 export const daiOHM = new LPBond({
-  name: 'dai_ohm_lp',
-  displayName: 'PMLS-USDT LP',
+  name: 'usdt_mls_lp',
+  displayName: 'MLS-USDT LP',
   bondToken: 'USDT',
   bondIconSvg: MimTimeIcon,
   bondContractABI: LpBondContract,
@@ -59,28 +63,18 @@ export const daiOHM = new LPBond({
   reserveContractAbi: LpReserveContract,
   networkAddrs: {
     [Networks.BSC]: {
-      bondAddress: '0x635763D7952A48257D12FE2e1461a0BFC27b5541',
-      reserveAddress: '0x3a5beff5ae20fc1170b508c48849bda10af715e1',
+      bondAddress: '0x0a5572622800fDF2F06B63BD8F4108F14902a38e',
+      reserveAddress: '0x4aEeB8D61FEABC8695Db1831c03914DD94067120',
+    },
+    [Networks.BSC_TESTNET]: {
+      bondAddress: '0x88fa1324278dCE16a35a468605f38d0f443A429B',
+      reserveAddress: '0xb49E82043217Af96cF233bE8a8b1fB0Ca8679949',
     },
   },
   lpUrl:
-    'https://www.traderjoexyz.com/#/pool/0x130966628846BFd36ff31a822705796e8cb8C18D/0xb54f16fB19478766A268F172C9480f8da1a7c9C3',
+    'https://testnet.bscscan.com/#/pool/',
 })
 
-// export const avaxTime = new CustomLPBond({
-//     name: "avax_time_lp",
-//     displayName: "PMLS-AVAX LP",
-//     bondToken: "AVAX",
-//     bondIconSvg: AvaxTimeIcon,
-//     bondContractABI: LpBondContract,
-//     reserveContractAbi: LpReserveContract,
-//     networkAddrs: {
-//         [Networks.BSC]: {
-//             bondAddress: "0xc26850686ce755FFb8690EA156E5A6cf03DcBDE1",
-//             reserveAddress: "0xf64e1c5B6E17031f5504481Ac8145F4c3eab4917",
-//         },
-//     },
-//     lpUrl: "https://www.traderjoexyz.com/#/pool/AVAX/0xb54f16fB19478766A268F172C9480f8da1a7c9C3",
-// });
+
 
 export default [dai, daiOHM]

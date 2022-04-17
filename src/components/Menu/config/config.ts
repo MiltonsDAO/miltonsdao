@@ -28,15 +28,6 @@ const config: (t: ContextApi['t']) => ConfigMenuItemsType[] = (t) => [
     
     ],
   },
-  // {
-  //   label: t('Mint'),
-  //   href: '/mints',
-  //   icon: EarnIcon,
-  //   fillIcon: EarnFillIcon,
-  //   items: [
-      
-  //   ],
-  // },
  
   {
     label: 'Stake',
@@ -45,6 +36,16 @@ const config: (t: ContextApi['t']) => ConfigMenuItemsType[] = (t) => [
     fillIcon: NftFillIcon,
     showItemsOnMobile: false,
     items: [
+    ],
+  },
+  {
+    label: t('Mint'),
+    href: '/mints',
+    icon: EarnIcon,
+    fillIcon: EarnFillIcon,
+    showItemsOnMobile: false,
+    items: [
+      
     ],
   },
   {

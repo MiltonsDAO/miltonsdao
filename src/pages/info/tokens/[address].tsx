@@ -7,7 +7,6 @@ const TokenPage = ({ address }: { address: string }) => {
   if (!address) {
     return null
   }
-
   return <Token routeAddress={address} />
 }
 

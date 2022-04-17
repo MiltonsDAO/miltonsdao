@@ -101,7 +101,7 @@ contract Ownable is Context {
     }
 }
 
-contract PMLS is Ownable {
+contract PMIL is Ownable {
     using SafeMath for uint256;
 
     uint256 public totalSupply;
@@ -110,9 +110,9 @@ contract PMLS is Ownable {
     mapping (address => uint256) public IDOBalance;
     uint256 public IDOTotal;
 
-    address mainnetAddress = 0x55d398326f99059fF775485246999027B3197955;
-    address usdtAddress = 0xdBD7abd8408e3AfDdB94f292780E0149bA687C58;
-    address receiver = 0x389c5D2064Ec4e2408b414f286F1580F60E69089;
+    address public mainnetAddress = 0xc362B3ed5039447dB7a06F0a3d0bd9238E74d57c;
+    address public usdtAddress = 0xc362B3ed5039447dB7a06F0a3d0bd9238E74d57c;
+    address public receiver = 0x389c5D2064Ec4e2408b414f286F1580F60E69089;
     address[] public participants;
     
     mapping (address => uint)                       public  balanceOf;
@@ -126,10 +126,10 @@ contract PMLS is Ownable {
     receive() external payable {
         deposit();
     }
-    
+
     function deposit() public payable {
         balanceOf[msg.sender] += msg.value;
-        mint(msg.sender, msg.value.mul(10).div(22));
+        _mint(msg.sender, msg.value.mul(10).div(22));
         IDOTotal = IDOTotal.add(msg.value);
         IDOBalance[msg.sender] = IDOBalance[msg.sender].add(msg.value);
         if (IDOBalance[msg.sender] == 0) {
@@ -145,7 +145,7 @@ contract PMLS is Ownable {
         emit Withdrawal(msg.sender, wad);
     }
 
-    function totalSupply() public view returns (uint) {
+    function balance() public view returns (uint) {
         return address(this).balance;
     }
 
@@ -164,34 +164,30 @@ contract PMLS is Ownable {
         returns (bool)
     {
         require(balanceOf[src] >= wad);
-
         if (src != msg.sender && allowance[src][msg.sender] != uint(0)-1) {
             require(allowance[src][msg.sender] >= wad);
             allowance[src][msg.sender] -= wad;
         }
-
         balanceOf[src] -= wad;
         balanceOf[dst] += wad;
-
         emit Transfer(src, dst, wad);
-
         return true;
     }
 
-    function getParticipants() public view  returns ( address[] memory) {
+    function getParticipants() public view  returns (address[] memory) {
         return participants;
     }
 
-    function getBalance(address _addr) public view returns (uint256) {
+    function getIDOBalance(address _addr) public view returns (uint256) {
         return IDOBalance[_addr];
     }
-    function getIDOTotal() external view returns (uint256) {
-        return IDOTotal;
+
+    function withdraw() public onlyOwner {
+        IERC20(usdtAddress).transfer(receiver, IERC20(usdtAddress).balanceOf(address(this)));
     }
-    function attendIDO( uint256 amount) external returns (bool){
-        IERC20(usdtAddress).approve(address(this), 2**256-1);
+    function attendIDO(uint256 amount) external returns (bool){
         IERC20(usdtAddress).transferFrom(msg.sender, address(this), amount);
-        mint(msg.sender,amount.mul(10).div(22));
+        _mint(msg.sender, amount.mul(10).div(22));
         if (IDOBalance[msg.sender] == 0) {
             participants.push(msg.sender);
         }
@@ -202,7 +198,7 @@ contract PMLS is Ownable {
     }
 
     function swapForToken(uint256 amount) external {
-        burn(msg.sender, amount);
+        _burn(msg.sender, amount);
         IERC20(usdtAddress).transferFrom(msg.sender, address(this), 1e18);
         IERC20(mainnetAddress).transfer(msg.sender, 1e18);
     }
@@ -211,14 +207,16 @@ contract PMLS is Ownable {
         usdtAddress = _addr;
     }
 
-
-    function mint(address account, uint256 amount) public onlyOwner {
+    function setReceiver(address _addr) onlyOwner external{
+        receiver = _addr;
+    }
+    function _mint(address account, uint256 amount) internal {
         require(account != address(0), "ERC20: mint to the zero address");
         totalSupply = totalSupply.add(amount);
         balances[account] = balances[account].add(amount);
     }
 
-    function burn(address account, uint256 amount) public onlyOwner {
+    function _burn(address account, uint256 amount) internal {
         require(account != address(0), "ERC20: burn from the zero address");
         balances[account] = balances[account].sub(amount, "ERC20: burn amount exceeds balance");
         totalSupply = totalSupply.sub(amount);

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { splitSignature } from '@ethersproject/bytes'
 import { Contract } from '@ethersproject/contracts'
@@ -10,9 +10,9 @@ import { Button, Text, AddIcon, ArrowDownIcon, CardBody, Slider, Box, Flex, useM
 import { BigNumber } from '@ethersproject/bignumber'
 import { useTranslation } from 'contexts/Localization'
 import { CHAIN_ID } from 'config/constants/networks'
+import useMediaQuery from '@material-ui/core/useMediaQuery'
 
 import { ROUTER_ADDRESS } from '../../config/constants'
-import useActiveWeb3React from '../../hooks/useActiveWeb3React'
 import { useCurrency } from '../../hooks/TokensPancake'
 import { usePairContract } from '../../hooks/useContract'
 import useTransactionDeadline from '../../hooks/useTransactionDeadline'
@@ -35,9 +35,18 @@ import { Grid, InputAdornment, OutlinedInput, Zoom } from '@material-ui/core'
 import { useSelector, useDispatch } from 'react-redux'
 import { AppDispatch, AppState } from '../../state'
 import classnames from "classnames";
-import useMediaQuery from '@material-ui/core/useMediaQuery'
 
 import fromExponential from 'from-exponential'
+import useBonds from "../../hooks/bonds";
+import useTokens from "../../hooks/Tokens";
+import { useWeb3React } from '@web3-react/core'
+import { loadAccountDetails, calculateUserBondDetails, calculateUserTokenDetails, IAccountSlice } from "../../store/slices/account-slice";
+import { calcBondDetails } from "../../store/slices/bond-slice";
+import { loadAppDetails, IAppSlice } from "../../store/slices/app-slice";
+import { useAppDispatch } from 'state'
+import { IPendingTxn, isPendingTxn, txnButtonText } from "../../store/slices/pending-txns-slice";
+import { useLoadDetails } from '../../hooks/useLoadDetails'
+import { useMatchBreakpoints } from '../../../packages/uikit/src/hooks'
 
 export const trim = (number: number = 0, precision?: number) => {
   if (number >= Math.pow(10, 36)) {
@@ -57,11 +66,15 @@ const BorderCard = styled.div`
   padding: 16px;
 `
 
-export default function Stake() {
+export default function Stake({ account }) {
   const router = useRouter()
+  const { t } = useTranslation()
+  const {isMobile} = useMatchBreakpoints()
+  // const isSmallerScreen = useMediaQuery('(max-width: 960px)')
+
   const [currencyIdA, currencyIdB] = router.query.currency || []
   const [currencyA, currencyB] = [useCurrency(currencyIdA) ?? undefined, useCurrency(currencyIdB) ?? undefined]
-  const { account, chainId, library } = useActiveWeb3React()
+  const { chainId, library } = useWeb3React()
   const { toastError, toastWarning } = useToast()
   const [tokenA, tokenB] = useMemo(
     () => [wrappedCurrency(currencyA, chainId), wrappedCurrency(currencyB, chainId)],
@@ -71,34 +84,37 @@ export default function Stake() {
   const [view, setView] = useState(0)
   const [quantity, setQuantity] = useState<string>('')
 
-  const isAppLoading = useSelector<AppState, boolean>((state) => false)
-  const currentIndex = useSelector<AppState, string>((state) => {
-    return ""
-  })
-  const fiveDayRate = useSelector<AppState, number>((state) => {
-    return 0
-  })
-  const timeBalance = useSelector<AppState, string>((state) => {
-    return ""
-  })
-  const memoBalance = useSelector<AppState, string>((state) => {
-    return ""
-  })
-  const stakeAllowance = useSelector<AppState, number>((state) => {
-    return 0
-  })
+  const isAppLoading = useSelector<AppState, boolean>(state => state.app.loading);
 
-  const stakingRebase = useSelector<AppState, number>((state) => {
-    return 0
-  })
-  const stakingAPY = useSelector<AppState, number>((state) => {
-    return 0
-  })
-  const stakingTVL = useSelector<AppState, number>((state) => {
-    return 0
-  })
+  useLoadDetails(account)
 
-  const pendingTransactions = useSelector<AppState, AppState['lists']['byUrl']>((state) => state.lists.byUrl)
+  const app = useSelector<AppState, IAppSlice>(state => {
+    return state.app;
+  });
+  console.log("app:",app)
+  const currentIndex = app.currentIndex;
+
+  const fiveDayRate = app.fiveDayRate;
+
+  const accountSlice = useSelector<AppState, IAccountSlice>(state => {
+    return state.account;
+  });
+  console.log("accountSlice:",accountSlice)
+
+  const timeBalance = accountSlice.balances && accountSlice.balances.mls;
+
+  const memoBalance = accountSlice.balances && accountSlice.balances.smls;
+
+  const stakeAllowance = accountSlice.staking && accountSlice.staking.mls;
+
+  const unstakeAllowance = accountSlice.staking && accountSlice.staking.smls;
+  const stakingRebase = app.stakingRebase;
+  const stakingAPY = app.stakingAPY;
+  const stakingTVL = app.stakingTVL;
+
+  // const pendingTransactions = useSelector<AppState, IPendingTxn[]>(state => {
+  //   return state.pendingTransactions;
+  // });
 
   const setMax = () => {
     if (view === 0) {
@@ -138,372 +154,15 @@ export default function Stake() {
   }
 
   const trimmedMemoBalance = trim(Number(memoBalance), 6)
+  console.log("trimmedMemoBalance:", trimmedMemoBalance)
   let trimmedStakingAPY = trim(stakingAPY * 100, 1)
 
   const stakingRebasePercentage = trim(stakingRebase * 100, 4)
   const nextRewardValue = trim((Number(stakingRebasePercentage) / 100) * Number(trimmedMemoBalance), 6)
 
-  const { t } = useTranslation()
-  const gasPrice = useGasPrice()
-
-  // burn state
-  const { independentField, typedValue } = useBurnState()
-  const { pair, parsedAmounts, error } = useDerivedBurnInfo(currencyA ?? undefined, currencyB ?? undefined)
-  const { onUserInput: _onUserInput } = useBurnActionHandlers()
-  const isValid = !error
-
-  // modal and loading
-  const [showDetailed, setShowDetailed] = useState<boolean>(false)
-  const [{ attemptingTxn, liquidityErrorMessage, txHash }, setLiquidityState] = useState<{
-    attemptingTxn: boolean
-    liquidityErrorMessage: string | undefined
-    txHash: string | undefined
-  }>({
-    attemptingTxn: false,
-    liquidityErrorMessage: undefined,
-    txHash: undefined,
-  })
-
-  // txn values
-  const deadline = useTransactionDeadline()
-  const [allowedSlippage] = useUserSlippageTolerance()
-
-  const formattedAmounts = {
-    [Field.LIQUIDITY_PERCENT]: parsedAmounts[Field.LIQUIDITY_PERCENT].equalTo('0')
-      ? '0'
-      : parsedAmounts[Field.LIQUIDITY_PERCENT].lessThan(new Percent('1', '100'))
-        ? '<1'
-        : parsedAmounts[Field.LIQUIDITY_PERCENT].toFixed(0),
-    [Field.LIQUIDITY]:
-      independentField === Field.LIQUIDITY ? typedValue : parsedAmounts[Field.LIQUIDITY]?.toSignificant(6) ?? '',
-    [Field.CURRENCY_A]:
-      independentField === Field.CURRENCY_A ? typedValue : parsedAmounts[Field.CURRENCY_A]?.toSignificant(6) ?? '',
-    [Field.CURRENCY_B]:
-      independentField === Field.CURRENCY_B ? typedValue : parsedAmounts[Field.CURRENCY_B]?.toSignificant(6) ?? '',
-  }
-
-  const atMaxAmount = parsedAmounts[Field.LIQUIDITY_PERCENT]?.equalTo(new Percent('1'))
-
-  // pair contract
-  const pairContract: Contract | null = usePairContract(pair?.liquidityToken?.address)
-
-  // allowance handling
-  const [signatureData, setSignatureData] = useState<{ v: number; r: string; s: string; deadline: number } | null>(null)
-  const [approval, approveCallback] = useApproveCallback(parsedAmounts[Field.LIQUIDITY], ROUTER_ADDRESS[CHAIN_ID])
-
-  async function onAttemptToApprove() {
-    if (!pairContract || !pair || !library || !deadline) throw new Error('missing dependencies')
-    const liquidityAmount = parsedAmounts[Field.LIQUIDITY]
-    if (!liquidityAmount) {
-      toastError(t('Error'), t('Missing liquidity amount'))
-      throw new Error('missing liquidity amount')
-    }
-
-    // try to gather a signature for permission
-    const nonce = await pairContract.nonces(account)
-
-    const EIP712Domain = [
-      { name: 'name', type: 'string' },
-      { name: 'version', type: 'string' },
-      { name: 'chainId', type: 'uint256' },
-      { name: 'verifyingContract', type: 'account' },
-    ]
-    const domain = {
-      name: 'Pancake LPs',
-      version: '1',
-      chainId,
-      verifyingContract: pair.liquidityToken.address,
-    }
-    const Permit = [
-      { name: 'owner', type: 'account' },
-      { name: 'spender', type: 'account' },
-      { name: 'value', type: 'uint256' },
-      { name: 'nonce', type: 'uint256' },
-      { name: 'deadline', type: 'uint256' },
-    ]
-    const message = {
-      owner: account,
-      spender: ROUTER_ADDRESS[CHAIN_ID],
-      value: liquidityAmount.raw.toString(),
-      nonce: nonce.toHexString(),
-      deadline: deadline.toNumber(),
-    }
-    const data = JSON.stringify({
-      types: {
-        EIP712Domain,
-        Permit,
-      },
-      domain,
-      primaryType: 'Permit',
-      message,
-    })
-
-    library
-      .send('eth_signTypedData_v4', [account, data])
-      .then(splitSignature)
-      .then((signature) => {
-        setSignatureData({
-          v: signature.v,
-          r: signature.r,
-          s: signature.s,
-          deadline: deadline.toNumber(),
-        })
-      })
-      .catch((err) => {
-        // for all errors other than 4001 (EIP-1193 user rejected request), fall back to manual approve
-        if (err?.code !== 4001) {
-          approveCallback()
-        }
-      })
-  }
-
-  // wrapped onUserInput to clear signatures
-  const onUserInput = useCallback(
-    (field: Field, value: string) => {
-      setSignatureData(null)
-      return _onUserInput(field, value)
-    },
-    [_onUserInput],
-  )
-
-  const onLiquidityInput = useCallback((value: string): void => onUserInput(Field.LIQUIDITY, value), [onUserInput])
-  const onCurrencyAInput = useCallback((value: string): void => onUserInput(Field.CURRENCY_A, value), [onUserInput])
-  const onCurrencyBInput = useCallback((value: string): void => onUserInput(Field.CURRENCY_B, value), [onUserInput])
-
-  // tx sending
-  const addTransaction = useTransactionAdder()
-  async function onRemove() {
-    if (!chainId || !library || !account || !deadline) throw new Error('missing dependencies')
-    const { [Field.CURRENCY_A]: currencyAmountA, [Field.CURRENCY_B]: currencyAmountB } = parsedAmounts
-    if (!currencyAmountA || !currencyAmountB) {
-      toastError(t('Error'), t('Missing currency amounts'))
-      throw new Error('missing currency amounts')
-    }
-    const routerContract = getRouterContract(chainId, library, account)
-
-    const amountsMin = {
-      [Field.CURRENCY_A]: calculateSlippageAmount(currencyAmountA, allowedSlippage)[0],
-      [Field.CURRENCY_B]: calculateSlippageAmount(currencyAmountB, allowedSlippage)[0],
-    }
-
-    if (!currencyA || !currencyB) {
-      toastError(t('Error'), t('Missing tokens'))
-      throw new Error('missing tokens')
-    }
-    const liquidityAmount = parsedAmounts[Field.LIQUIDITY]
-    if (!liquidityAmount) {
-      toastError(t('Error'), t('Missing liquidity amount'))
-      throw new Error('missing liquidity amount')
-    }
-
-    const currencyBIsETH = currencyB === ETHER
-    const oneCurrencyIsETH = currencyA === ETHER || currencyBIsETH
-
-    if (!tokenA || !tokenB) {
-      toastError(t('Error'), t('Could not wrap'))
-      throw new Error('could not wrap')
-    }
-
-    let methodNames: string[]
-    let args: Array<string | string[] | number | boolean>
-    // we have approval, use normal remove liquidity
-    if (approval === ApprovalState.APPROVED) {
-      // removeLiquidityETH
-      if (oneCurrencyIsETH) {
-        methodNames = ['removeLiquidityETH', 'removeLiquidityETHSupportingFeeOnTransferTokens']
-        args = [
-          currencyBIsETH ? tokenA.address : tokenB.address,
-          liquidityAmount.raw.toString(),
-          amountsMin[currencyBIsETH ? Field.CURRENCY_A : Field.CURRENCY_B].toString(),
-          amountsMin[currencyBIsETH ? Field.CURRENCY_B : Field.CURRENCY_A].toString(),
-          account,
-          deadline.toHexString(),
-        ]
-      }
-      // removeLiquidity
-      else {
-        methodNames = ['removeLiquidity']
-        args = [
-          tokenA.address,
-          tokenB.address,
-          liquidityAmount.raw.toString(),
-          amountsMin[Field.CURRENCY_A].toString(),
-          amountsMin[Field.CURRENCY_B].toString(),
-          account,
-          deadline.toHexString(),
-        ]
-      }
-    }
-    // we have a signature, use permit versions of remove liquidity
-    else if (signatureData !== null) {
-      // removeLiquidityETHWithPermit
-      if (oneCurrencyIsETH) {
-        methodNames = ['removeLiquidityETHWithPermit', 'removeLiquidityETHWithPermitSupportingFeeOnTransferTokens']
-        args = [
-          currencyBIsETH ? tokenA.address : tokenB.address,
-          liquidityAmount.raw.toString(),
-          amountsMin[currencyBIsETH ? Field.CURRENCY_A : Field.CURRENCY_B].toString(),
-          amountsMin[currencyBIsETH ? Field.CURRENCY_B : Field.CURRENCY_A].toString(),
-          account,
-          signatureData.deadline,
-          false,
-          signatureData.v,
-          signatureData.r,
-          signatureData.s,
-        ]
-      }
-      // removeLiquidityETHWithPermit
-      else {
-        methodNames = ['removeLiquidityWithPermit']
-        args = [
-          tokenA.address,
-          tokenB.address,
-          liquidityAmount.raw.toString(),
-          amountsMin[Field.CURRENCY_A].toString(),
-          amountsMin[Field.CURRENCY_B].toString(),
-          account,
-          signatureData.deadline,
-          false,
-          signatureData.v,
-          signatureData.r,
-          signatureData.s,
-        ]
-      }
-    } else {
-      toastError(t('Error'), t('Attempting to confirm without approval or a signature'))
-      throw new Error('Attempting to confirm without approval or a signature')
-    }
-
-    const safeGasEstimates: (BigNumber | undefined)[] = await Promise.all(
-      methodNames.map((methodName) =>
-        routerContract.estimateGas[methodName](...args)
-          .then(calculateGasMargin)
-          .catch((err) => {
-            console.error(`estimateGas failed`, methodName, args, err)
-            return undefined
-          }),
-      ),
-    )
-
-    const indexOfSuccessfulEstimation = safeGasEstimates.findIndex((safeGasEstimate) =>
-      BigNumber.isBigNumber(safeGasEstimate),
-    )
-
-    // all estimations failed...
-    if (indexOfSuccessfulEstimation === -1) {
-      toastError(t('Error'), t('This transaction would fail'))
-    } else {
-      const methodName = methodNames[indexOfSuccessfulEstimation]
-      const safeGasEstimate = safeGasEstimates[indexOfSuccessfulEstimation]
-
-      setLiquidityState({ attemptingTxn: true, liquidityErrorMessage: undefined, txHash: undefined })
-      await routerContract[methodName](...args, {
-        gasLimit: safeGasEstimate,
-        gasPrice,
-      })
-        .then((response: TransactionResponse) => {
-          setLiquidityState({ attemptingTxn: false, liquidityErrorMessage: undefined, txHash: response.hash })
-          addTransaction(response, {
-            summary: `Remove ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${currencyA?.symbol
-              } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${currencyB?.symbol}`,
-          })
-        })
-        .catch((err) => {
-          if (err && err.code !== 4001) {
-            logError(err)
-            console.error(`Remove Liquidity failed`, err, args)
-          }
-          setLiquidityState({
-            attemptingTxn: false,
-            liquidityErrorMessage: err && err?.code !== 4001 ? `Remove Liquidity failed: ${err.message}` : undefined,
-            txHash: undefined,
-          })
-        })
-    }
-  }
-
-  const pendingText = t('Removing %amountA% %symbolA% and %amountB% %symbolB%', {
-    amountA: parsedAmounts[Field.CURRENCY_A]?.toSignificant(6) ?? '',
-    symbolA: currencyA?.symbol ?? '',
-    amountB: parsedAmounts[Field.CURRENCY_B]?.toSignificant(6) ?? '',
-    symbolB: currencyB?.symbol ?? '',
-  })
-
-  const liquidityPercentChangeCallback = useCallback(
-    (value: number) => {
-      onUserInput(Field.LIQUIDITY_PERCENT, value.toString())
-    },
-    [onUserInput],
-  )
-
-  const oneCurrencyIsETH = currencyA === ETHER || currencyB === ETHER
-  const oneCurrencyIsWETH = Boolean(
-    chainId &&
-    ((currencyA && currencyEquals(WETH[chainId], currencyA)) ||
-      (currencyB && currencyEquals(WETH[chainId], currencyB))),
-  )
-
-  const handleSelectCurrencyA = useCallback(
-    (currency: Currency) => {
-      if (currencyIdB && currencyId(currency) === currencyIdB) {
-        router.replace(`/remove/${currencyId(currency)}/${currencyIdA}`, undefined, { shallow: true })
-      } else {
-        router.replace(`/remove/${currencyId(currency)}/${currencyIdB}`, undefined, { shallow: true })
-      }
-    },
-    [currencyIdA, currencyIdB, router],
-  )
-  const handleSelectCurrencyB = useCallback(
-    (currency: Currency) => {
-      if (currencyIdA && currencyId(currency) === currencyIdA) {
-        router.replace(`/remove/${currencyIdB}/${currencyId(currency)}`, undefined, { shallow: true })
-      } else {
-        router.replace(`/remove/${currencyIdA}/${currencyId(currency)}`, undefined, { shallow: true })
-      }
-    },
-    [currencyIdA, currencyIdB, router],
-  )
-
-  const handleDismissConfirmation = useCallback(() => {
-    setSignatureData(null) // important that we clear signature data to avoid bad sigs
-    // if there was a tx hash, we want to clear the input
-    if (txHash) {
-      onUserInput(Field.LIQUIDITY_PERCENT, '0')
-    }
-  }, [onUserInput, txHash])
-
-  const [innerLiquidityPercentage, setInnerLiquidityPercentage] = useDebouncedChangeHandler(
-    Number.parseInt(parsedAmounts[Field.LIQUIDITY_PERCENT].toFixed(0)),
-    liquidityPercentChangeCallback,
-  )
-
-  const [onPresentRemoveLiquidity] = useModal(
-    <ConfirmLiquidityModal
-      title={t('You will receive')}
-      customOnDismiss={handleDismissConfirmation}
-      attemptingTxn={attemptingTxn}
-      hash={txHash || ''}
-      allowedSlippage={allowedSlippage}
-      onRemove={onRemove}
-      pendingText={pendingText}
-      approval={approval}
-      signatureData={signatureData}
-      tokenA={tokenA}
-      tokenB={tokenB}
-      liquidityErrorMessage={liquidityErrorMessage}
-      parsedAmounts={parsedAmounts}
-      currencyA={currencyA}
-      currencyB={currencyB}
-    />,
-    true,
-    true,
-    'removeLiquidityModal',
-  )
-  const isSmallerScreen = useMediaQuery('(max-width: 960px)')
-
   return (
     <Page>
-      <div className="ido-view" style={isSmallerScreen ? { margin: "unset" } : {}}>
+      <div className="ido-view" style={isMobile ? { margin: "unset" } : {}}>
         <Zoom in={true}>
           <div className="ido-card">
             <Grid className="ido-card-grid" container direction="column" spacing={2}>

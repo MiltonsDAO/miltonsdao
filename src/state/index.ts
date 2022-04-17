@@ -29,6 +29,13 @@ import transactions from './transactions/reducer'
 import user from './user/reducer'
 import limitOrders from './limitOrders/reducer'
 
+import accountReducer from "store/slices/account-slice"
+import bondingReducer from 'store/slices/bond-slice'
+import appReducer from 'store/slices/app-slice'
+import pendingTransactionsReducer from 'store/slices/pending-txns-slice'
+import messagesReducer from 'store/slices/messages-slice'
+import wrappingReducer from 'store/slices/wrap-slice'
+
 const PERSISTED_KEYS: string[] = ['user', 'transactions', 'lists']
 
 const migrations = {
@@ -56,6 +63,13 @@ const persistConfig = {
 const persistedReducer = persistReducer(
   persistConfig,
   combineReducers({
+    account: accountReducer,
+    bonding: bondingReducer,
+    app: appReducer,
+    pendingTransactions: pendingTransactionsReducer,
+    messages: messagesReducer,
+    wrapping: wrappingReducer,
+    
     farms: farmsReducer,
     pools: poolsReducer,
     predictions: predictionsReducer,

@@ -82,8 +82,24 @@ export const loadAppDetails = createAsyncThunk(
   },
 )
 
-const initialState = {
+const initialState: IAppSlice = {
   loading: true,
+  stakingTVL: 0,
+  marketPrice: 0,
+  marketCap: 0,
+  circSupply: 0,
+  currentIndex: "",
+  currentBlock: 0,
+  currentBlockTime: 0,
+  fiveDayRate: 0,
+  treasuryBalance: 0,
+  stakingAPY: 0,
+  stakingRebase: 0,
+  networkID: 0,
+  nextRebase: 0,
+  totalSupply: 0,
+  rfv: 0,
+  runway: 0,
 }
 
 export interface IAppSlice {

@@ -20,8 +20,8 @@ interface IGetBalances {
 
 interface IAccountBalances {
   balances: {
-    slwh: string
-    lwh: string
+    smls: string
+    mls: string
   }
 }
 
@@ -34,15 +34,15 @@ export const getBalances = createAsyncThunk(
     const memoBalance = await memoContract.balanceOf(address)
     const timeContract = new ethers.Contract(addresses.OHM_ADDRESS, TimeTokenContract, provider)
     const timeBalance = await timeContract.balanceOf(address)
-
+    console.log('getBalances:', memoBalance, timeBalance)
     // const wmemoContract = new ethers.Contract(addresses.WMEMO_ADDRESS, wMemoTokenContract, provider);
     // const wmemoBalance = await wmemoContract.balanceOf(address);
     // console.log("wmemoBalance:", wmemoBalance);
 
     return {
       balances: {
-        slwh: ethers.utils.formatUnits(memoBalance, 'gwei'),
-        lwh: ethers.utils.formatUnits(timeBalance, 'gwei'),
+        smls: ethers.utils.formatUnits(memoBalance, 'gwei'),
+        mls: ethers.utils.formatUnits(timeBalance, 'gwei'),
         // wmemo: ethers.utils.formatEther(wmemoBalance),
       },
     }
@@ -56,21 +56,21 @@ interface ILoadAccountDetails {
 }
 
 interface IUserAccountDetails {
-  totalProfit: BigNumber
+  totalProfit: number
   partners: ISonSlice[]
   referral: string
   registered: boolean
   balances: {
-    lwh: string
-    slwh: string
+    mls: string
+    smls: string
     wmemo: string
   }
   staking: {
-    lwh: number
-    slwh: number
+    mls: number
+    smls: number
   }
   wrapping: {
-    slwh: number
+    smls: number
   }
 }
 
@@ -88,39 +88,42 @@ export const loadAccountDetails = createAsyncThunk(
 
     let partners
     let profit = BigNumber.from(0)
-    var totalProfit = BigNumber.from(0)
+    var totalProfit = 0
     let sonslice: ISonSlice[] = []
     let referral = ''
     let registered = false
     const addresses = getAddresses(networkID)
 
     if (addresses.OHM_ADDRESS) {
+      console.log(addresses.OHM_ADDRESS)
       const timeContract = new ethers.Contract(addresses.OHM_ADDRESS, TimeTokenContract, provider)
       timeBalance = await timeContract.balanceOf(address)
       stakeAllowance = await timeContract.allowance(address, addresses.STAKING_HELPER_ADDRESS)
     }
-    if (addresses.JESECO_ADDRESS) {
-      const testContract = new ethers.Contract(addresses.JESECO_ADDRESS, TestContract, provider)
-      referral = await testContract.referral(address)
-      registered = await testContract.registered(address)
-      partners = await testContract.partners(address)
-      for (const son of partners) {
-        profit = await testContract.totalProfit(son)
-        console.log('profit:', profit.toNumber())
-        sonslice.push({ address: son, profit: profit })
-        totalProfit = totalProfit.add(profit)
-      }
-      console.log('totalProfit:', totalProfit.toNumber())
-    }
     if (addresses.sOHM_ADDRESS) {
       const memoContract = new ethers.Contract(addresses.sOHM_ADDRESS, MemoTokenContract, provider)
       memoBalance = await memoContract.balanceOf(address)
+      console.log("memoBalance:", memoBalance)
       unstakeAllowance = await memoContract.allowance(address, addresses.STAKING_ADDRESS)
 
       // if (addresses.WMEMO_ADDRESS) {
       //     memoWmemoAllowance = await memoContract.allowance(address, addresses.WMEMO_ADDRESS);
       // }
     }
+    // if (addresses.JESECO_ADDRESS) {
+    //   const testContract = new ethers.Contract(addresses.JESECO_ADDRESS, TestContract, provider)
+    //   referral = await testContract.referral(address)
+    //   registered = await testContract.registered(address)
+    //   partners = await testContract.partners(address)
+    //   for (const son of partners) {
+    //     profit = await testContract.totalProfit(son)
+    //     console.log('profit:', profit.toNumber())
+    //     sonslice.push({ address: son, profit: profit })
+    //     totalProfit = totalProfit.add(profit)
+    //   }
+    //   console.log('totalProfit:', totalProfit.toNumber())
+    // }
+
 
     // if (addresses.WMEMO_ADDRESS) {
     //     const wmemoContract = new ethers.Contract(addresses.WMEMO_ADDRESS, wMemoTokenContract, provider);
@@ -132,16 +135,16 @@ export const loadAccountDetails = createAsyncThunk(
       referral: referral,
       registered: registered,
       balances: {
-        slwh: ethers.utils.formatUnits(memoBalance, 'gwei'),
-        lwh: ethers.utils.formatUnits(timeBalance, 'gwei'),
+        smls: ethers.utils.formatUnits(memoBalance, 'gwei'),
+        mls: ethers.utils.formatUnits(timeBalance, 'gwei'),
         wmemo: ethers.utils.formatEther(wmemoBalance),
       },
       staking: {
-        lwh: Number(stakeAllowance),
-        slwh: Number(unstakeAllowance),
+        mls: Number(stakeAllowance),
+        smls: Number(unstakeAllowance),
       },
       wrapping: {
-        slwh: Number(memoWmemoAllowance),
+        smls: Number(memoWmemoAllowance),
       },
     }
   },
@@ -290,21 +293,21 @@ export interface ISonSlice {
 export interface IAccountSlice {
   bonds: { [key: string]: IUserBondDetails }
   balances: {
-    slwh: string
-    lwh: string
+    smls: string
+    mls: string
     wmemo: string
   }
   loading: boolean
   partners: ISonSlice[]
   referral: string
   registered: boolean
-  totalProfit: BigNumber
+  totalProfit: number
   staking: {
-    lwh: number
-    slwh: number
+    mls: number
+    smls: number
   }
   wrapping: {
-    slwh: number
+    smls: number
   }
   tokens: { [key: string]: IUserTokenDetails }
 }
@@ -314,11 +317,11 @@ const initialState: IAccountSlice = {
   partners: [],
   referral: '',
   registered: false,
-  totalProfit: BigNumber.from(0),
+  totalProfit: 0,
   bonds: {},
-  balances: { slwh: '', lwh: '', wmemo: '' },
-  staking: { lwh: 0, slwh: 0 },
-  wrapping: { slwh: 0 },
+  balances: { smls: '', mls: '', wmemo: '' },
+  staking: { mls: 0, smls: 0 },
+  wrapping: { smls: 0 },
   tokens: {},
 }
 

@@ -116,11 +116,12 @@ export const calcBondDetails = createAsyncThunk(
 
     const terms = await bondContract.terms()
     const maxBondPrice = (await bondContract.maxPayout()) / Math.pow(10, 9)
+    console.log('maxBondPrice:', maxBondPrice)
 
     let marketPrice = await getMarketPrice(networkID, provider)
 
     const daiPrice = getTokenPrice('USDT')
-    marketPrice = (marketPrice / Math.pow(10, 9)) * daiPrice
+    // marketPrice = (marketPrice / Math.pow(10, 9)) * daiPrice
     try {
       bondPrice = await bondContract.bondPriceInUSD()
       // if (bond.name === avaxTime.name) {
@@ -129,6 +130,8 @@ export const calcBondDetails = createAsyncThunk(
       // }
 
       bondDiscount = (marketPrice * Math.pow(10, 18) - bondPrice) / bondPrice
+      console.log("bondPriceInUSD:",bondPrice, "marketPrice:",marketPrice,"bondDiscount:", bondDiscount)
+
     } catch (e) {
       console.log('error getting bondPriceInUSD', e)
     }

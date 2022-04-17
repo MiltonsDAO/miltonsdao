@@ -36,18 +36,18 @@ export const changeApproval = createAsyncThunk(
     try {
       const gasPrice = await getGasPrice(provider)
 
-      if (token === 'lwh') {
+      if (token === 'mls') {
         approveTx = await timeContract.approve(addresses.STAKING_HELPER_ADDRESS, ethers.constants.MaxUint256, {
           gasPrice,
         })
       }
 
-      if (token === 'slwh') {
+      if (token === 'smls') {
         approveTx = await memoContract.approve(addresses.STAKING_ADDRESS, ethers.constants.MaxUint256, { gasPrice })
       }
 
-      const text = 'Approve ' + (token === 'lwh' ? 'Staking' : 'Unstaking')
-      const pendingTxnType = token === 'lwh' ? 'approve_staking' : 'approve_unstaking'
+      const text = 'Approve ' + (token === 'mls' ? 'Staking' : 'Unstaking')
+      const pendingTxnType = token === 'mls' ? 'approve_staking' : 'approve_unstaking'
 
       dispatch(fetchPendingTxns({ txnHash: approveTx.hash, text, type: pendingTxnType }))
       await approveTx.wait()
@@ -68,7 +68,7 @@ export const changeApproval = createAsyncThunk(
     return dispatch(
       fetchAccountSuccess({
         staking: {
-          // lwh: Number(stakeAllowance),
+          // mls: Number(stakeAllowance),
           timeStake: Number(stakeAllowance),
           memoUnstake: Number(unstakeAllowance),
         },

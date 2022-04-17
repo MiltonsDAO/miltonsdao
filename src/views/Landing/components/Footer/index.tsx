@@ -2,19 +2,19 @@ import React from 'react'
 // import "./footer.scss";
 import { Grid } from '@material-ui/core'
 import { useSelector } from 'react-redux'
-import { IReduxState } from 'store/slices/state.interface'
 import { trim } from 'helpers'
 import { Skeleton } from '@material-ui/lab'
+import { AppState } from 'state'
 
 function Footer() {
-  const isAppLoading = useSelector<IReduxState, boolean>((state) => state.app.loading)
-  const stakingAPY = useSelector<IReduxState, number>((state) => {
+  const isAppLoading = useSelector<AppState, boolean>((state) => state.app.loading)
+  const stakingAPY = useSelector<AppState, number>((state) => {
     return state.app.stakingAPY
   })
-  const treasuryBalance = useSelector<IReduxState, number>((state) => {
+  const treasuryBalance = useSelector<AppState, number>((state) => {
     return state.app.treasuryBalance
   })
-  const circSupply = useSelector<IReduxState, number>((state) => {
+  const circSupply = useSelector<AppState, number>((state) => {
     return state.app.circSupply
   })
 
