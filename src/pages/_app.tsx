@@ -7,7 +7,6 @@ import FixedSubgraphHealthIndicator from 'components/SubgraphHealthIndicator'
 import { ToastListener } from 'contexts/ToastsContext'
 import useEagerConnect from 'hooks/useEagerConnect'
 import { useInactiveListener } from 'hooks/useInactiveListener'
-import {useLoadDetails} from 'hooks/useLoadDetails'
 import useUserAgent from 'hooks/useUserAgent'
 import useSentryUser from 'hooks/useSentryUser'
 import type { AppProps } from 'next/app'
@@ -29,7 +28,6 @@ import "./bond.scss";
 import "./bondSettings.scss";
 import "./zapin.scss";
 import "./choose-token.scss";
-import { useWeb3React } from '@web3-react/core'
 
 const EasterEgg = dynamic(() => import('components/EasterEgg'), { ssr: false })
 

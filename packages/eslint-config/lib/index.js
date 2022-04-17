@@ -34,7 +34,7 @@ module.exports = {
     "react/no-unused-prop-types": 0,
     // Typescript
     "@typescript-eslint/no-unused-vars": [
-      "warn",
+      "off",
       {
         argsIgnorePattern: "^_",
         varsIgnorePattern: "^_",
@@ -54,16 +54,6 @@ module.exports = {
     "react/prop-types": 0,
     "react/jsx-props-no-spreading": 0,
     "react/no-multi-comp": 0,
-    "import/extensions": [
-      "error",
-      "ignorePackages",
-      {
-        js: "never",
-        mjs: "never",
-        jsx: "never",
-        ts: "never",
-        tsx: "never",
-      },
-    ],
+    "import/extensions": ["error","ignorePackages",{js: "never",mjs: "never",jsx: "never",ts: "never",tsx: "never"}],
   },
 };

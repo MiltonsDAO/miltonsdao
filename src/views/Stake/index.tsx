@@ -37,16 +37,16 @@ import { AppDispatch, AppState } from '../../state'
 import classnames from "classnames";
 
 import fromExponential from 'from-exponential'
-import useBonds from "../../hooks/bonds";
-import useTokens from "../../hooks/Tokens";
+
 import { useWeb3React } from '@web3-react/core'
 import { loadAccountDetails, calculateUserBondDetails, calculateUserTokenDetails, IAccountSlice } from "../../store/slices/account-slice";
 import { calcBondDetails } from "../../store/slices/bond-slice";
 import { loadAppDetails, IAppSlice } from "../../store/slices/app-slice";
 import { useAppDispatch } from 'state'
 import { IPendingTxn, isPendingTxn, txnButtonText } from "../../store/slices/pending-txns-slice";
-import { useLoadDetails } from '../../hooks/useLoadDetails'
 import { useMatchBreakpoints } from '../../../packages/uikit/src/hooks'
+import useBonds from '../../hooks/bonds'
+import useTokens from '../../hooks/Tokens'
 
 export const trim = (number: number = 0, precision?: number) => {
   if (number >= Math.pow(10, 36)) {
@@ -70,7 +70,6 @@ export default function Stake({ account }) {
   const router = useRouter()
   const { t } = useTranslation()
   const {isMobile} = useMatchBreakpoints()
-  // const isSmallerScreen = useMediaQuery('(max-width: 960px)')
 
   const [currencyIdA, currencyIdB] = router.query.currency || []
   const [currencyA, currencyB] = [useCurrency(currencyIdA) ?? undefined, useCurrency(currencyIdB) ?? undefined]
@@ -80,13 +79,38 @@ export default function Stake({ account }) {
     () => [wrappedCurrency(currencyA, chainId), wrappedCurrency(currencyB, chainId)],
     [currencyA, currencyB, chainId],
   )
-  const dispatch = useDispatch<AppDispatch>()
   const [view, setView] = useState(0)
   const [quantity, setQuantity] = useState<string>('')
 
   const isAppLoading = useSelector<AppState, boolean>(state => state.app.loading);
+  const { bonds } = useBonds()
+  const { tokens } = useTokens()
+  const dispatch = useDispatch<AppDispatch>()
 
-  useLoadDetails(account)
+  const loadApp = useCallback(
+    (loadProvider) => {
+      dispatch(loadAppDetails({ networkID: chainId, provider: loadProvider }))
+      bonds.map((bond) => {
+        dispatch(calcBondDetails({ bond, value: null, provider: loadProvider, networkID: chainId }))
+      })
+      // tokens.map((token) => {
+      //   dispatch(calculateUserTokenDetails({ address: '', token, networkID: chainId, provider }))
+      // })
+    },
+    [account],
+  )
+  const loadAccount = useCallback(
+    (loadProvider) => {
+      dispatch(loadAccountDetails({ networkID: chainId, address:account, provider: loadProvider }))
+    },
+    [account],
+  )
+  useEffect(() => {
+    if (account) {
+      loadApp(library)
+      loadAccount(library)
+    }
+  }, [account])
 
   const app = useSelector<AppState, IAppSlice>(state => {
     return state.app;

@@ -12,7 +12,6 @@ export async function getMarketPrice(
   const reserves = await pairContract.getReserves()
 
   const marketPrice = reserves[0] / reserves[1]
-  console.log('daiOHMAddress:', daiOHMAddress, 'reserves:', reserves, 'marketPrice:', marketPrice)
 
   return marketPrice
 }
