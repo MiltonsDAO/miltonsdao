@@ -47,6 +47,11 @@ import { IPendingTxn, isPendingTxn, txnButtonText } from "../../store/slices/pen
 import { useMatchBreakpoints } from '../../../packages/uikit/src/hooks'
 import useBonds from '../../hooks/bonds'
 import useTokens from '../../hooks/Tokens'
+import { useApp } from "../../hooks/useApp";
+import {changeApproval} from "../../store/slices/wrap-slice";
+import {changeStake} from "../../store/slices/stake-thunk";
+import { messages } from "../../constants/messages";
+import { warning, success, info, error } from "../../store/slices/messages-slice";
 
 export const trim = (number: number = 0, precision?: number) => {
   if (number >= Math.pow(10, 36)) {
@@ -69,53 +74,29 @@ const BorderCard = styled.div`
 export default function Stake({ account }) {
   const router = useRouter()
   const { t } = useTranslation()
-  const {isMobile} = useMatchBreakpoints()
+  const { loadApp, loadAccount } = useApp()
+  const { isMobile } = useMatchBreakpoints()
+  const dispatch = useDispatch();
 
   const [currencyIdA, currencyIdB] = router.query.currency || []
-  const [currencyA, currencyB] = [useCurrency(currencyIdA) ?? undefined, useCurrency(currencyIdB) ?? undefined]
   const { chainId, library } = useWeb3React()
   const { toastError, toastWarning } = useToast()
-  const [tokenA, tokenB] = useMemo(
-    () => [wrappedCurrency(currencyA, chainId), wrappedCurrency(currencyB, chainId)],
-    [currencyA, currencyB, chainId],
-  )
+
   const [view, setView] = useState(0)
   const [quantity, setQuantity] = useState<string>('')
 
   const isAppLoading = useSelector<AppState, boolean>(state => state.app.loading);
-  const { bonds } = useBonds()
-  const { tokens } = useTokens()
-  const dispatch = useDispatch<AppDispatch>()
 
-  const loadApp = useCallback(
-    (loadProvider) => {
-      dispatch(loadAppDetails({ networkID: chainId, provider: loadProvider }))
-      bonds.map((bond) => {
-        dispatch(calcBondDetails({ bond, value: null, provider: loadProvider, networkID: chainId }))
-      })
-      // tokens.map((token) => {
-      //   dispatch(calculateUserTokenDetails({ address: '', token, networkID: chainId, provider }))
-      // })
-    },
-    [account],
-  )
-  const loadAccount = useCallback(
-    (loadProvider) => {
-      dispatch(loadAccountDetails({ networkID: chainId, address:account, provider: loadProvider }))
-    },
-    [account],
-  )
   useEffect(() => {
     if (account) {
-      loadApp(library)
-      loadAccount(library)
+      loadApp()
+      loadAccount()
     }
   }, [account])
 
   const app = useSelector<AppState, IAppSlice>(state => {
     return state.app;
   });
-  console.log("app:",app)
   const currentIndex = app.currentIndex;
 
   const fiveDayRate = app.fiveDayRate;
@@ -123,7 +104,6 @@ export default function Stake({ account }) {
   const accountSlice = useSelector<AppState, IAccountSlice>(state => {
     return state.account;
   });
-  console.log("accountSlice:",accountSlice)
 
   const timeBalance = accountSlice.balances && accountSlice.balances.mls;
 
@@ -136,9 +116,9 @@ export default function Stake({ account }) {
   const stakingAPY = app.stakingAPY;
   const stakingTVL = app.stakingTVL;
 
-  // const pendingTransactions = useSelector<AppState, IPendingTxn[]>(state => {
-  //   return state.pendingTransactions;
-  // });
+  const pendingTransactions = useSelector<AppState, IPendingTxn[]>(state => {
+    return state.pendingTransactions;
+  });
 
   const setMax = () => {
     if (view === 0) {
@@ -149,24 +129,22 @@ export default function Stake({ account }) {
   }
 
   const onSeekApproval = async (token: string) => {
-    // if (await checkWrongNetwork()) return
-    // await dispatch(changeApproval({ account, token, provider, networkID: chainID }))
+    await dispatch(changeApproval({ address: account, token, provider:library, networkID: chainId }))
   }
 
   const onChangeStake = async (action: string) => {
-    // if (await checkWrongNetwork()) return
-    // if (quantity === '' || parseFloat(quantity) === 0) {
-    //   dispatch(toastWarning(text: action === 'stake' ? messages.before_stake : messages.before_unstake ))
-    // } else {
-    //   await dispatch(changeStake({ account, action, value: String(quantity), provider, networkID: chainID }))
-    //   setQuantity('')
-    // }
+    if (quantity === '' || parseFloat(quantity) === 0) {
+      toastError("error", action === 'stake' ? messages.before_stake : messages.before_unstake )
+    } else {
+      await dispatch(changeStake({ address: account, action, value: String(quantity), provider:library, networkID: chainId }))
+      setQuantity('')
+    }
   }
 
   const hasAllowance = useCallback(
     (token) => {
-      // if (token === 'mls') return stakeAllowance > 0
-      // if (token === 'smls') return unstakeAllowance > 0
+      if (token === 'mls') return stakeAllowance > 0
+      if (token === 'smls') return unstakeAllowance > 0
       return 0
     },
     [stakeAllowance],
@@ -178,11 +156,11 @@ export default function Stake({ account }) {
   }
 
   const trimmedMemoBalance = trim(Number(memoBalance), 6)
-  console.log("trimmedMemoBalance:", trimmedMemoBalance)
   let trimmedStakingAPY = trim(stakingAPY * 100, 1)
 
   const stakingRebasePercentage = trim(stakingRebase * 100, 4)
   const nextRewardValue = trim((Number(stakingRebasePercentage) / 100) * Number(trimmedMemoBalance), 6)
+
 
   return (
     <Page>
@@ -283,21 +261,23 @@ export default function Stake({ account }) {
                             <div
                               className="ido-card-tab-panel-btn"
                               onClick={() => {
-                                // if (isPendingTxn(pendingTransactions, 'staking')) return
+                                var pendingTxn = isPendingTxn(pendingTransactions, 'staking')
+                                console.log("pendingTxn:",pendingTxn)
+                                if (pendingTxn) return
                                 onChangeStake('stake')
                               }}
                             >
-                              {/* <p>{txnButtonText(pendingTransactions, 'staking', 'Stake MLS')}</p> */}
+                              <p>{txnButtonText(pendingTransactions, 'staking', 'Stake MLS')}</p>
                             </div>
                           ) : (
                             <div
                               className="ido-card-tab-panel-btn"
                               onClick={() => {
-                                // if (isPendingTxn(pendingTransactions, 'approve_staking')) return
+                                if (isPendingTxn(pendingTransactions, 'approve_staking')) return
                                 onSeekApproval('mls')
                               }}
                             >
-                              {/* <p>{txnButtonText(pendingTransactions, 'approve_staking', 'Approve')}</p> */}
+                              <p>{txnButtonText(pendingTransactions, 'approve_staking', 'Approve')}</p>
                             </div>
                           )}
                         </div>
@@ -309,21 +289,21 @@ export default function Stake({ account }) {
                             <div
                               className="ido-card-tab-panel-btn"
                               onClick={() => {
-                                // if (isPendingTxn(pendingTransactions, 'unstaking')) return
+                                if (isPendingTxn(pendingTransactions, 'unstaking')) return
                                 onChangeStake('unstake')
                               }}
                             >
-                              {/* <p>{txnButtonText(pendingTransactions, 'unstaking', 'Unstake MLS')}</p> */}
+                              <p>{txnButtonText(pendingTransactions, 'unstaking', 'Unstake MLS')}</p>
                             </div>
                           ) : (
                             <div
                               className="ido-card-tab-panel-btn"
                               onClick={() => {
-                                // if (isPendingTxn(pendingTransactions, 'approve_unstaking')) return
+                                if (isPendingTxn(pendingTransactions, 'approve_unstaking')) return
                                 onSeekApproval('smls')
                               }}
                             >
-                              {/* <p>{txnButtonText(pendingTransactions, 'approve_unstaking', 'Approve')}</p> */}
+                              <p>{txnButtonText(pendingTransactions, 'approve_unstaking', 'Approve')}</p>
                             </div>
                           )}
                         </div>

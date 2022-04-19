@@ -13,26 +13,31 @@ import useDebounce from "../../hooks/debounce";
 import { messages } from "../../constants/messages";
 import { warning } from "../../store/slices/messages-slice";
 import Zapin from "./Zapin";
+import useToast from '../../hooks/useToast'
+import { AppDispatch, AppState } from 'state'
 
 interface IBondPurchaseProps {
     bond: IAllBondData;
     slippage: number;
 }
 
+const zeroAddress = "0x0000000000000000000000000000000000000000"
 function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
     const dispatch = useDispatch();
-    const {account, chainId, library } = useWeb3React()
+    const { toastSuccess, toastError, toastWarning, toastInfo } = useToast()
+
+    const { account, chainId, library } = useWeb3React()
     const address = account
     const provider = library
 
     const [quantity, setQuantity] = useState("");
     const [useAvax, setUseAvax] = useState(false);
-    const [referral, setReferral] = useState("");
+    const [referral, setReferral] = useState(zeroAddress);
 
-    const isBondLoading = useSelector<IReduxState, boolean>(state => state.bonding.loading ?? true);
+    const isBondLoading = useSelector<AppState, boolean>(state => state.bonding.loading ?? true);
     const [zapinOpen, setZapinOpen] = useState(false);
 
-    const pendingTransactions = useSelector<IReduxState, IPendingTxn[]>(state => {
+    const pendingTransactions = useSelector<AppState, IPendingTxn[]>(state => {
         return state.pendingTransactions;
     });
 
@@ -41,11 +46,12 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
     };
 
     async function onBond() {
+        console.log("onBond:", bond)
         if (quantity === "") {
-            dispatch(warning({ text: messages.before_minting }));
+            dispatch(toastWarning("warning", messages.before_minting));
             //@ts-ignore
         } else if (isNaN(quantity)) {
-            dispatch(warning({ text: messages.before_minting }));
+            dispatch(toastWarning("warning", messages.before_minting));
         } else if (bond.interestDue > 0 || bond.pendingPayout > 0) {
             const shouldProceed = window.confirm(messages.existing_mint);
             if (shouldProceed) {
@@ -60,12 +66,15 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
                         provider,
                         address,
                         useAvax,
+                        referral
                     }),
                 );
                 clearInput();
             }
         } else {
             const trimBalance = trim(Number(quantity), 10);
+            console.log("trimBalance:", trimBalance)
+
             await dispatch(
                 //@ts-ignore
                 bondAsset({
@@ -76,6 +85,7 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
                     provider,
                     address,
                     useAvax,
+                    referral
                 }),
             );
             clearInput();
@@ -91,15 +101,11 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
         return bond.allowance > 0;
     }, [bond.allowance]);
 
-    console.log("bond:", bond);
-    console.log("useAvax:", useAvax);
     const setMax = () => {
         let amount: any = Math.min(bond.maxBondPriceToken * 0.9999, useAvax ? bond.avaxBalance * 0.99 : bond.balance);
-
         if (amount) {
             amount = trim(amount);
         }
-
         setQuantity((amount || "").toString());
     };
 
@@ -136,7 +142,15 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
                         </div>
                     </FormControl>
                 )}
-
+                <FormControl className="bond-input-wrap" variant="outlined" color="primary" fullWidth>
+                    <OutlinedInput
+                        placeholder="Referral"
+                        value={referral}
+                        onChange={e => setReferral(e.target.value)}
+                        labelWidth={0}
+                        className="bond-input"
+                    />
+                </FormControl>
                 <FormControl className="bond-input-wrap" variant="outlined" color="primary" fullWidth>
                     <OutlinedInput
                         placeholder="Amount"

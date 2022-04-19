@@ -200,8 +200,9 @@ export const calculateUserBondDetails = createAsyncThunk(
       balance = '0'
 
     allowance = await reserveContract.allowance(address, bond.getAddressForBond(networkID))
-
+    console.log("address:",address)
     balance = await reserveContract.balanceOf(address)
+    console.log("balance:",balance)
 
     const balanceVal = ethers.utils.formatEther(balance)
 

@@ -5,6 +5,7 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { BondTableData, BondDataCard } from "./BondRow";
 import { trim } from "../../helpers";
 import useBonds from "../../hooks/bonds";
+import {useApp} from "../../hooks/useApp";
 import { IReduxState } from "../../store/slices/state.interface";
 import Page from '../Page'
 import { useMatchBreakpoints } from "../../../packages/uikit/src/hooks";
@@ -13,40 +14,31 @@ import { useWeb3React } from '@web3-react/core'
 import { AppDispatch, AppState } from '../../state'
 import { calcBondDetails } from "../../store/slices/bond-slice";
 import { loadAppDetails, IAppSlice } from "../../store/slices/app-slice";
+import { calculateUserBondDetails, getBalances, loadAccountDetails } from '../../store/slices/account-slice'
 
 function ChooseBond() {
     const { bonds } = useBonds();
-    const dispatch = useDispatch<AppDispatch>()
+    const dispatch = useDispatch();
+    const { account, chainId, library } = useWeb3React()
+
 
     const { isMobile } = useMatchBreakpoints()
-    const { account, chainId, library } = useWeb3React()
-    const address = account
-    const provider = library
-    const isAppLoading = useSelector<IReduxState, boolean>(state => state.app.loading);
-    const marketPrice = useSelector<IReduxState, number>(state => {
+    const {loadApp, loadAccount} = useApp()
+    const isAppLoading = useSelector<AppState, boolean>(state => state.app.loading);
+    const marketPrice = useSelector<AppState, number>(state => {
         return state.app.marketPrice;
     });
 
-    const treasuryBalance = useSelector<IReduxState, number>(state => {
+    const treasuryBalance = useSelector<AppState, number>(state => {
         return state.app.treasuryBalance;
     });
-    console.log("bonds:", bonds)
 
-    const loadApp = useCallback(
-        (loadProvider) => {
-          dispatch(loadAppDetails({ networkID: chainId, provider: loadProvider }))
-          bonds.map((bond) => {
-            dispatch(calcBondDetails({ bond, value: null, provider: loadProvider, networkID: chainId }))
-          })
-          // tokens.map((token) => {
-          //   dispatch(calculateUserTokenDetails({ address: '', token, networkID: chainId, provider }))
-          // })
-        },
-        [account],
-      )
     useEffect(() => {
         if (account) {
-            loadApp(provider)
+            loadApp()
+            bonds.map(bond => {
+                dispatch(calculateUserBondDetails({ address:account, bond, provider:library, networkID: chainId }));
+            });
         }
     }, [account])
     return (

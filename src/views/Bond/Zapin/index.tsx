@@ -16,6 +16,7 @@ import { warning } from "../../../store/slices/messages-slice";
 import { messages } from "../../../constants/messages";
 import { calcBondDetails } from "../../../store/slices/bond-slice";
 import ArrowUpImg from "../../../assets/icons/arrow-down.svg";
+import {AppState} from "state"
 
 interface IZapinProps {
     open: boolean;
@@ -30,8 +31,8 @@ function Zapin({ open, handleClose, bond }: IZapinProps) {
     const provider = library
     const dispatch = useDispatch();
 
-    const isBondLoading = useSelector<IReduxState, boolean>(state => state.bonding.loading ?? true);
-    const pendingTransactions = useSelector<IReduxState, IPendingTxn[]>(state => {
+    const isBondLoading = useSelector<AppState, boolean>(state => state.bonding.loading ?? true);
+    const pendingTransactions = useSelector<AppState, IPendingTxn[]>(state => {
         return state.pendingTransactions;
     });
 

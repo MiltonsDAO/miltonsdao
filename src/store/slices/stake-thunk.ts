@@ -11,6 +11,7 @@ import { messages } from 'constants/messages'
 import { getGasPrice } from 'helpers/get-gas-price'
 import { metamaskErrorWrap } from 'helpers/metamask-error-wrap'
 import { sleep } from 'helpers'
+import useToast from 'hooks/useToast'
 
 interface IChangeApproval {
   token: string
@@ -88,8 +89,11 @@ interface IChangeStake {
 export const changeStake = createAsyncThunk(
   'stake/changeStake',
   async ({ action, value, provider, address, networkID }: IChangeStake, { dispatch }) => {
+    console.log("dispatch:",dispatch)
+    // const { toastError, toastWarning } = useToast()
     if (!provider) {
-      dispatch(warning({ text: messages.please_connect_wallet }))
+      dispatch(warning({ text: messages.please_connect_wallet }));
+      console.log('warning', messages.please_connect_wallet)
       return
     }
     const addresses = getAddresses(networkID)
@@ -102,25 +106,33 @@ export const changeStake = createAsyncThunk(
     try {
       const gasPrice = await getGasPrice(provider)
       if (action === 'stake') {
-        stakeTx = await stakingHelper.stake(ethers.utils.parseUnits(value, 'gwei'), { gasPrice })
+        var parsedValue = ethers.utils.parseUnits(value, 'ether')
+        console.log('parsedValue:', parsedValue)
+        stakeTx = await stakingHelper.stake(parsedValue, { gasPrice })
       } else {
-        stakeTx = await staking.unstake(ethers.utils.parseUnits(value, 'gwei'), true, { gasPrice })
+        stakeTx = await staking.unstake(ethers.utils.parseUnits(value, 'ether'), true, { gasPrice })
       }
       const pendingTxnType = action === 'stake' ? 'staking' : 'unstaking'
       dispatch(fetchPendingTxns({ txnHash: stakeTx.hash, text: getStakingTypeText(action), type: pendingTxnType }))
       await stakeTx.wait()
-      dispatch(success({ text: messages.tx_successfully_send }))
+      dispatch(warning({ text: messages.tx_successfully_send }));
+      console.log('warning', messages.tx_successfully_send)
     } catch (err: any) {
-      return metamaskErrorWrap(err, dispatch)
+      // return toastError("error",err.message)
+      console.log(err)
+      return dispatch(error({ text: err.message }));
+      // return metamaskErrorWrap(err, dispatch)
     } finally {
       if (stakeTx) {
         dispatch(clearPendingTxn(stakeTx.hash))
       }
     }
-    dispatch(info({ text: messages.your_balance_update_soon }))
-    await sleep(10)
+    console.log('warning', messages.your_balance_update_soon)
+
+    // await sleep(10)
     await dispatch(getBalances({ address, networkID, provider }))
-    dispatch(info({ text: messages.your_balance_updated }))
+    console.log('warning', messages.your_balance_updated)
+    // toastInfo('Info', messages.your_balance_updated)
     return
   },
 )

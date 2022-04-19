@@ -130,8 +130,7 @@ export const calcBondDetails = createAsyncThunk(
       // }
 
       bondDiscount = (marketPrice * Math.pow(10, 18) - bondPrice) / bondPrice
-      console.log("bondPriceInUSD:",bondPrice, "marketPrice:",marketPrice,"bondDiscount:", bondDiscount)
-
+      console.log('bondPriceInUSD:', bondPrice, 'marketPrice:', marketPrice, 'bondDiscount:', bondDiscount)
     } catch (e) {
       console.log('error getting bondPriceInUSD', e)
     }
@@ -207,11 +206,12 @@ interface IBondAsset {
   provider: StaticJsonRpcProvider | JsonRpcProvider
   slippage: number
   useAvax: boolean
+  referral: string
 }
 
 export const bondAsset = createAsyncThunk(
   'bonding/bondAsset',
-  async ({ value, address, bond, networkID, provider, slippage, useAvax }: IBondAsset, { dispatch }) => {
+  async ({ value, address, bond, networkID, provider, slippage, useAvax, referral }: IBondAsset, { dispatch }) => {
     const depositorAddress = address
     const acceptedSlippage = slippage / 100 || 0.005
     const valueInWei = ethers.utils.parseUnits(value, 'ether')
@@ -220,15 +220,15 @@ export const bondAsset = createAsyncThunk(
 
     const calculatePremium = await bondContract.bondPrice()
     const maxPremium = Math.round(calculatePremium * (1 + acceptedSlippage))
-
+    console.log('maxPremium:', maxPremium)
     let bondTx
     try {
       const gasPrice = await getGasPrice(provider)
-
       if (useAvax) {
         bondTx = await bondContract.deposit(valueInWei, maxPremium, depositorAddress, { value: valueInWei, gasPrice })
       } else {
-        bondTx = await bondContract.deposit(valueInWei, maxPremium, depositorAddress, { gasPrice })
+        console.log('valueInWei:', valueInWei)
+        bondTx = await bondContract.deposit(valueInWei, maxPremium, depositorAddress, referral, { gasPrice })
       }
       dispatch(
         fetchPendingTxns({

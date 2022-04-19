@@ -11,6 +11,7 @@ import { IAllBondData } from "../../hooks/bonds";
 import { IUserBondDetails } from "../../store/slices/account-slice";
 import { messages } from "../../constants/messages";
 import { warning } from "../../store/slices/messages-slice";
+import { AppDispatch, AppState } from 'state'
 
 interface IBondRedeem {
     bond: IAllBondData;
@@ -21,21 +22,21 @@ function BondRedeem({ bond }: IBondRedeem) {
     const {account, chainId, library } = useWeb3React()
     const address = account
     const provider = library
-    const isBondLoading = useSelector<IReduxState, boolean>(state => state.bonding.loading ?? true);
+    const isBondLoading = useSelector<AppState, boolean>(state => state.bonding.loading ?? true);
 
-    const currentBlockTime = useSelector<IReduxState, number>(state => {
+    const currentBlockTime = useSelector<AppState, number>(state => {
         return state.app.currentBlockTime;
     });
 
-    const pendingTransactions = useSelector<IReduxState, IPendingTxn[]>(state => {
+    const pendingTransactions = useSelector<AppState, IPendingTxn[]>(state => {
         return state.pendingTransactions;
     });
 
-    const bondingState = useSelector<IReduxState, IBondDetails>(state => {
+    const bondingState = useSelector<AppState, IBondDetails>(state => {
         return state.bonding && state.bonding[bond.name];
     });
 
-    const bondDetails = useSelector<IReduxState, IUserBondDetails>(state => {
+    const bondDetails = useSelector<AppState, IUserBondDetails>(state => {
         return state.account.bonds && state.account.bonds[bond.name];
     });
 

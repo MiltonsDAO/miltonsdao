@@ -12,47 +12,48 @@ import { clearPendingTxn, fetchPendingTxns, getWrappingTypeText } from './pendin
 import { getGasPrice } from 'helpers/get-gas-price'
 import { fetchAccountSuccess, getBalances } from './account-slice'
 
-export interface IChangeApproval {
-  provider: StaticJsonRpcProvider | JsonRpcProvider
-  networkID: Networks
-  address: string
+interface IChangeApproval {
+  token: string;
+  provider: StaticJsonRpcProvider | JsonRpcProvider;
+  address: string;
+  networkID: Networks;
 }
 
 export const changeApproval = createAsyncThunk(
   'wrapping/changeApproval',
   async ({ provider, address, networkID }: IChangeApproval, { dispatch }) => {
-    // if (!provider) {
-    //     dispatch(warning({ text: messages.please_connect_wallet }));
-    //     return;
-    // }
-    // const addresses = getAddresses(networkID);
-    // const signer = provider.getSigner();
-    // const memoContract = new ethers.Contract(addresses.sOHM_ADDRESS, wMemoTokenContract, signer);
-    // let approveTx;
-    // try {
-    //     const gasPrice = await getGasPrice(provider);
-    //     approveTx = await memoContract.approve(addresses.WMEMO_ADDRESS, ethers.constants.MaxUint256, { gasPrice });
-    //     const text = "Approve Wrapping";
-    //     const pendingTxnType = "approve_wrapping";
-    //     dispatch(fetchPendingTxns({ txnHash: approveTx.hash, text, type: pendingTxnType }));
-    //     await approveTx.wait();
-    //     dispatch(success({ text: messages.tx_successfully_send }));
-    // } catch (err: any) {
-    //     return metamaskErrorWrap(err, dispatch);
-    // } finally {
-    //     if (approveTx) {
-    //         dispatch(clearPendingTxn(approveTx.hash));
-    //     }
-    // }
-    // await sleep(2);
-    // const wmemoAllowance = await memoContract.allowance(address, addresses.WMEMO_ADDRESS);
-    // return dispatch(
-    //     fetchAccountSuccess({
-    //         wrapping: {
-    //             wmemo: Number(wmemoAllowance),
-    //         },
-    //     }),
-    // );
+    if (!provider) {
+        dispatch(warning({ text: messages.please_connect_wallet }));
+        return;
+    }
+    const addresses = getAddresses(networkID);
+    const signer = provider.getSigner();
+    const memoContract = new ethers.Contract(addresses.sOHM_ADDRESS, wMemoTokenContract, signer);
+    let approveTx;
+    try {
+        const gasPrice = await getGasPrice(provider);
+        approveTx = await memoContract.approve(addresses.WMEMO_ADDRESS, ethers.constants.MaxUint256, { gasPrice });
+        const text = "Approve Wrapping";
+        const pendingTxnType = "approve_wrapping";
+        dispatch(fetchPendingTxns({ txnHash: approveTx.hash, text, type: pendingTxnType }));
+        await approveTx.wait();
+        dispatch(success({ text: messages.tx_successfully_send }));
+    } catch (err: any) {
+        return metamaskErrorWrap(err, dispatch);
+    } finally {
+        if (approveTx) {
+            dispatch(clearPendingTxn(approveTx.hash));
+        }
+    }
+    await sleep(2);
+    const wmemoAllowance = await memoContract.allowance(address, addresses.WMEMO_ADDRESS);
+    return dispatch(
+        fetchAccountSuccess({
+            wrapping: {
+                wmemo: Number(wmemoAllowance),
+            },
+        }),
+    );
   },
 )
 

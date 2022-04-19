@@ -12,6 +12,8 @@ import BondPurchase from "./BondPurchase";
 import { IReduxState } from "../../store/slices/state.interface";
 import { IAllBondData } from "../../hooks/bonds";
 import Page from '../Page'
+import { GetStaticPaths, GetStaticProps } from 'next'
+import { AppState } from 'state'
 
 function TabPanel(props: any) {
     const { children, value, index, ...other } = props;
@@ -28,15 +30,11 @@ export interface IBondProps {
 }
 
 export function Bond({ bond }: IBondProps) {
-    const { account, chainId, library } = useWeb3React()
-    const address = account
-    const provider = library
-
     const [slippage, setSlippage] = useState(0.5);
 
     const [view, setView] = useState(0);
 
-    const isBondLoading = useSelector<IReduxState, boolean>(state => state.bonding.loading ?? true);
+    const isBondLoading = useSelector<AppState, boolean>(state => state.bonding.loading ?? true);
 
     const onSlippageChange = (value: any) => {
         return setSlippage(value);

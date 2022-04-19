@@ -155,7 +155,7 @@ function IDO(props) {
       const startUnixStamp = Date.parse(startDate)
       const endUnixStamp = Date.parse(endDate)
       const currentSeconds = Math.floor(now / 1000)
-      let secondsRemainingCalc
+      let secondsRemainingCalc = 1
       if (now < startUnixStamp) {
         secondsRemainingCalc = startUnixStamp - now
       } else if (startUnixStamp < now && now < endUnixStamp) {
@@ -252,29 +252,27 @@ function IDO(props) {
 
       setStartTime(desktopTimer)
       setStartTimeMobile(mobileTimer)
-
-      if (web3Account) {
-        updatePool();
-      }
     }
+    updatePool()
   }, [secondsRemaining, web3Account])
 
+
   const updatePool = useCallback(async () => {
-
-    var allowance = await usdt.allowance(web3Account, featured.address);
-    setApproved(BigNumber.from(allowance) >= uint256MAX / 2);
-
-    var balance = await ido.getIDOBalance(web3Account);
-    setBalance(balance);
-
-    var pmlsBalance = await ido.balances(web3Account)
-    setPMLSBalance(pmlsBalance);
-
     var total = await ido.IDOTotal();
     featured.raised = total;
     setNumber1(((featured.raised * featured.up_pool_raise) / 10 ** 18 / (featured.total_supply * featured.idoPercent)) * 100);
     setNumber2(featured.raised / 10 ** 18);
 
+    if (secondsRemaining && web3Account) {
+      var allowance = await usdt.allowance(web3Account, featured.address);
+      setApproved(BigNumber.from(allowance) >= uint256MAX / 2);
+
+      var balance = await ido.getIDOBalance(web3Account);
+      setBalance(balance);
+
+      var pmlsBalance = await ido.balances(web3Account)
+      setPMLSBalance(pmlsBalance);
+    }
   }, [secondsRemaining, web3Account]);
 
   async function buyToken() {

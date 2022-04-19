@@ -11,7 +11,7 @@ export async function getMarketPrice(
   const pairContract = new ethers.Contract(daiOHMAddress, LpReserveContract, provider)
   const reserves = await pairContract.getReserves()
 
-  const marketPrice = reserves[0] / reserves[1]
+  const marketPrice = reserves[1] / reserves[0]
 
   return marketPrice
 }
