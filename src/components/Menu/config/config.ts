@@ -33,8 +33,8 @@ const config: (t: ContextApi['t']) => ConfigMenuItemsType[] = (t) => [
   //   href: '/mints',
   //   icon: EarnIcon,
   //   fillIcon: EarnFillIcon,
+  //   showItemsOnMobile: false,
   //   items: [
-      
   //   ],
   // },
  

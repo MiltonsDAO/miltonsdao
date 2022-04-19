@@ -257,7 +257,7 @@
         },
         {
             "inputs": [],
-            "name": "sMIL",
+            "name": "sOHM",
             "outputs": [
                 {
                     "internalType": "address",

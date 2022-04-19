@@ -37,6 +37,7 @@ import { useAppDispatch } from 'state'
 import useToast from 'hooks/useToast'
 import { useTranslation } from 'contexts/Localization'
 import { useWeb3React } from '@web3-react/core'
+import { Box, Flex, FlexProps, useMatchBreakpoints, StyledButton } from '@pancakeswap/uikit'
 
 
 var featured = {
@@ -44,7 +45,7 @@ var featured = {
   distribute_token: 0,
   _id: '',
   start_date: Date.parse(new Date('2022-03-25 00:00:00 GMT+0800')),
-  end_date: Date.parse(new Date('2022-04-06 00:00:00 GMT+0800')),
+  end_date: Date.parse(new Date('2022-04-19 00:00:00 GMT+0800')),
   pool_type: 'featured',
   title: 'PMLS',
   up_pool_raise: 1 / 2.2,
@@ -125,7 +126,8 @@ let closes_seconds = ''
 function IDO(props) {
   let web3Account = props.account;
 
-  const isSmallerScreen = useMediaQuery('(max-width: 960px)')
+  const { isMobile } = useMatchBreakpoints()
+
   const { t } = useTranslation()
   const { toastSuccess, toastError } = useToast()
   const { chainID, library } = useActiveWeb3React()
@@ -153,7 +155,7 @@ function IDO(props) {
       const startUnixStamp = Date.parse(startDate)
       const endUnixStamp = Date.parse(endDate)
       const currentSeconds = Math.floor(now / 1000)
-      let secondsRemainingCalc
+      let secondsRemainingCalc = 1
       if (now < startUnixStamp) {
         secondsRemainingCalc = startUnixStamp - now
       } else if (startUnixStamp < now && now < endUnixStamp) {
@@ -250,29 +252,26 @@ function IDO(props) {
 
       setStartTime(desktopTimer)
       setStartTimeMobile(mobileTimer)
-
-      if (web3Account) {
-        updatePool();
-      }
     }
+    updatePool()
   }, [secondsRemaining, web3Account])
 
   const updatePool = useCallback(async () => {
-
-    var allowance = await usdt.allowance(web3Account, featured.address);
-    setApproved(BigNumber.from(allowance) >= uint256MAX / 2);
-
-    var balance = await ido.getIDOBalance(web3Account);
-    setBalance(balance);
-
-    var pmlsBalance = await ido.balances(web3Account)
-    setPMLSBalance(pmlsBalance);
-
     var total = await ido.IDOTotal();
     featured.raised = total;
     setNumber1(((featured.raised * featured.up_pool_raise) / 10 ** 18 / (featured.total_supply * featured.idoPercent)) * 100);
     setNumber2(featured.raised / 10 ** 18);
 
+    if (web3Account) {
+      var allowance = await usdt.allowance(web3Account, featured.address);
+      setApproved(BigNumber.from(allowance) >= uint256MAX / 2);
+
+      var balance = await ido.getIDOBalance(web3Account);
+      setBalance(balance);
+
+      var pmlsBalance = await ido.balances(web3Account)
+      setPMLSBalance(pmlsBalance);
+    }
   }, [secondsRemaining, web3Account]);
 
   async function buyToken() {
@@ -299,7 +298,7 @@ function IDO(props) {
   }
   return (
     <Page>
-      <div className='ido-view' style={isSmallerScreen ? { margin: "unset" } : {}}>
+      <div className='ido-view' style={isMobile ? { margin: "unset" } : {}}>
         <Zoom in={true}>
           <div className="ido-card">
             <div className="home">
@@ -505,7 +504,7 @@ function IDO(props) {
                               </div>
                             </div>
                             <div>
-                              {isSmallerScreen ? (
+                              {isMobile ? (
                                 <>
                                   <p>PMLS: {trim(formatUnits(PMLSBalance, 18), 9)}</p>
                                 </>
