@@ -3,6 +3,66 @@
     max-width: 833px;
     margin: auto;
     color: white;
+    .MuiTableCell-head{
+      color:white;
+    }
+    .MuiTableCell-body{
+      color:white;
+
+    }
+    .ido-view-card-container{
+      margin-top: 16px;
+
+      .bond-data-card {
+        margin: auto !important;
+        background: rgba(36, 39, 41, 0.1);
+        backdrop-filter: blur(40px);
+        border-radius: 10px;
+        padding: 20px;
+        width: 100%;
+  
+        .bond-pair {
+          display: flex !important;
+          align-items: center;
+          justify-content: left;
+          margin-bottom: 15px;
+          .MuiBox-root {
+            margin-right: 10px;
+          }
+          .bond-name {
+            svg {
+              margin-left: 5px;
+              vertical-align: middle;
+              font-size: 15px;
+            }
+          }
+        }
+        .data-row {
+          margin-bottom: 13px;
+          display: flex;
+          justify-content: space-between;
+          flex-direction: row;
+          margin: 12px 0;
+    
+          .bond-price {
+            display: flex;
+            align-items: center;
+    
+            svg {
+              margin-right: 5px;
+            }
+          }
+
+        }
+        .bond-link {
+          margin-top: 10px;
+          text-align: center;
+          a {
+            width: 96%;
+          }
+        }
+      }
+    }
     .ido-card {
         position: relative;
         z-index: 2;
@@ -82,7 +142,24 @@
                 }
             }
         }
+        .ido-view-card-table {
+          color: #fff !important;
 
+          .MuiTableCell-root {
+              padding: 0;
+          }
+
+          .MuiTableCell-root {
+              color: #fff;
+          }
+          .ido-view-card-table-title {
+              font-family: Montserrat SemiBold;
+              font-weight: 600;
+              font-size: 14px;
+              line-height: 17px;
+              color: #ffffff;
+          }
+      }
         .ido-card-area {
             .ido-card-wallet-notification {
                 text-align: center;
@@ -340,6 +417,7 @@
   }
 @media screen and (max-width: 600px) {
     .ido-view {
+
         .ido-card {
             .ido-card-metrics {
 
@@ -371,5 +449,6 @@
 @media screen and (max-width: 1240px) {
     .ido-view {
         width: 100%;
+        
     }
 }
