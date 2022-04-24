@@ -53,6 +53,7 @@ import ConfirmAddLiquidityModal from '../Swap/components/ConfirmAddLiquidityModa
 import { AutoRow } from '../../components/Layout/Row'
 import { ONE_BIPS } from '../../config/constants'
 import styled from 'styled-components'
+import { Field as SwapField} from '../../state/swap/actions'
 
 const SwitchIconButton = styled(IconButton)`
   box-shadow: inset 0px -2px 0px rgba(0, 0, 0, 0.1);
@@ -382,23 +383,19 @@ export default function AddLiquidity() {
               >
                 <ArrowDownIcon
                   className="icon-down"
-                  color={currencies[Field.INPUT] && currencies[Field.OUTPUT] ? 'primary' : 'text'}
+                  color={currencies[SwapField.INPUT] && currencies[SwapField.OUTPUT] ? 'primary' : 'text'}
                 />
-                {/* <ArrowUpDownIcon
-                  className="icon-up-down"
-                  color={currencies[Field.INPUT] && currencies[Field.OUTPUT] ? 'primary' : 'text'}
-                /> */}
               </SwitchIconButton>
             </AutoRow>
           </AutoColumn>
           <CurrencyInputPanel
-            value={formattedAmounts[Field.OUTPUT]}
+            value={formattedAmounts[SwapField.OUTPUT]}
             onUserInput={null}
-            label={independentField === Field.INPUT && t('To')}
+            label={ t('To')}
             showMaxButton={false}
-            currency={currencies[Field.OUTPUT]}
+            currency={currencies[SwapField.OUTPUT]}
             onCurrencySelect={null}
-            otherCurrency={currencies[Field.INPUT]}
+            otherCurrency={currencies[SwapField.INPUT]}
             id="swap-currency-output"
           />
 

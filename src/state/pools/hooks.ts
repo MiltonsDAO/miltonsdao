@@ -17,7 +17,7 @@ import {
   fetchCakePoolUserDataAsync,
 } from '.'
 import { DeserializedPool, VaultKey } from '../types'
-import { fetchFarmsPublicDataAsync, nonArchivedFarms } from '../farms'
+import { nonArchivedFarms } from '../farms'
 import { useCurrentBlock } from '../block/hooks'
 import {
   poolsWithUserDataLoadingSelector,
@@ -36,7 +36,7 @@ export const useFetchPublicPoolsData = () => {
     (currentBlock) => {
       const fetchPoolsDataWithFarms = async () => {
         const activeFarms = nonArchivedFarms.filter((farm) => farm.pid !== 0)
-        await dispatch(fetchFarmsPublicDataAsync(activeFarms.map((farm) => farm.pid)))
+        // await dispatch(fetchFarmsPublicDataAsync(activeFarms.map((farm) => farm.pid)))
         batch(() => {
           dispatch(fetchPoolsPublicDataAsync(currentBlock))
           dispatch(fetchPoolsStakingLimitsAsync())

@@ -21,6 +21,7 @@ import poolsReducer from './pools'
 import swap from './swap/reducer'
 import transactions from './transactions/reducer'
 import user from './user/reducer'
+import burn from './burn/reducer'
 
 import accountReducer from "store/slices/account-slice"
 import bondingReducer from 'store/slices/bond-slice'
@@ -63,13 +64,14 @@ const persistedReducer = persistReducer(
     messages: messagesReducer,
     wrapping: wrappingReducer,
     
-    pools: poolsReducer,
+    // pools: poolsReducer,
 
     // Exchange
     user,
     transactions,
     swap,
     mint,
+    burn,
     multicall,
     lists,
   }),

@@ -144,8 +144,8 @@ export default function Stake({ account }) {
 
   const hasAllowance = useCallback(
     (token) => {
-      if (token === 'mls') return stakeAllowance > 0
-      if (token === 'smls') return unstakeAllowance > 0
+      if (token === 'mls') return stakeAllowance.toString() != "0"
+      if (token === 'smls') return unstakeAllowance.toString() != "0"
       return 0
     },
     [stakeAllowance],

@@ -8,7 +8,7 @@ import { Rate } from 'state/limitOrders/types'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { GENERIC_GAS_LIMIT_ORDER_EXECUTION } from 'config/constants'
 import getGasPrice from 'utils/getGasPrice'
-import getPriceForOneToken from 'views/LimitOrders/utils/getPriceForOneToken'
+// import getPriceForOneToken from 'views/LimitOrders/utils/getPriceForOneToken'
 
 export default function useGasOverhead(
   inputAmount: CurrencyAmount | undefined,
@@ -58,7 +58,7 @@ export default function useGasOverhead(
 
     if (inputIsBNB && requiredGasAsCurrencyAmount.greaterThan(inputAmount.asFraction)) return undefined
     if (gasCostInInputTokens && gasCostInInputTokens.outputAmount.greaterThan(inputAmount.asFraction)) return undefined
-    return getPriceForOneToken(realInputAmount, outputAmount)
+    // return getPriceForOneToken(realInputAmount, outputAmount)
   }, [realInputAmount, outputAmount, inputAmount, gasCostInInputTokens, inputIsBNB, requiredGasAsCurrencyAmount])
 
   const realExecutionPriceAsString = useMemo(() => {

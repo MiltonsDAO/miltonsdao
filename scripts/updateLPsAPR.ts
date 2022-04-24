@@ -96,29 +96,29 @@ const getAprsForFarmGroup = async (addresses: string[], blockWeekAgo: number): P
   }
 }
 
-const fetchAndUpdateLPsAPR = async () => {
-  // pids before 250 are inactive farms from v1 and failed v2 migration
-  const lowerCaseAddresses = farmsConfig
-    .filter((farm) => farm.pid > 250)
-    .map((farm) => farm.lpAddresses[ChainId.MAINNET].toLowerCase())
-  console.info(`Fetching farm data for ${lowerCaseAddresses.length} addresses`)
-  // Split it into chunks of 30 addresses to avoid gateway timeout
-  const addressesInGroups = chunk(lowerCaseAddresses, 30)
-  const weekAgoTimestamp = getWeekAgoTimestamp()
-  const blockWeekAgo = await getBlockAtTimestamp(weekAgoTimestamp)
+// const fetchAndUpdateLPsAPR = async () => {
+//   // pids before 250 are inactive farms from v1 and failed v2 migration
+//   const lowerCaseAddresses = farmsConfig
+//     .filter((farm) => farm.pid > 250)
+//     .map((farm) => farm.lpAddresses[ChainId.MAINNET].toLowerCase())
+//   console.info(`Fetching farm data for ${lowerCaseAddresses.length} addresses`)
+//   // Split it into chunks of 30 addresses to avoid gateway timeout
+//   const addressesInGroups = chunk(lowerCaseAddresses, 30)
+//   const weekAgoTimestamp = getWeekAgoTimestamp()
+//   const blockWeekAgo = await getBlockAtTimestamp(weekAgoTimestamp)
 
-  let allAprs: AprMap = {}
-  // eslint-disable-next-line no-restricted-syntax
-  for (const groupOfAddresses of addressesInGroups) {
-    // eslint-disable-next-line no-await-in-loop
-    const aprs = await getAprsForFarmGroup(groupOfAddresses, blockWeekAgo)
-    allAprs = { ...allAprs, ...aprs }
-  }
+//   let allAprs: AprMap = {}
+//   // eslint-disable-next-line no-restricted-syntax
+//   for (const groupOfAddresses of addressesInGroups) {
+//     // eslint-disable-next-line no-await-in-loop
+//     const aprs = await getAprsForFarmGroup(groupOfAddresses, blockWeekAgo)
+//     allAprs = { ...allAprs, ...aprs }
+//   }
 
-  fs.writeFile(`src/config/constants/lpAprs.json`, JSON.stringify(allAprs, null, 2) + os.EOL, (err) => {
-    if (err) throw err
-    console.info(` ✅ - lpAprs.json has been updated!`)
-  })
-}
+//   fs.writeFile(`src/config/constants/lpAprs.json`, JSON.stringify(allAprs, null, 2) + os.EOL, (err) => {
+//     if (err) throw err
+//     console.info(` ✅ - lpAprs.json has been updated!`)
+//   })
+// }
 
-fetchAndUpdateLPsAPR()
+// fetchAndUpdateLPsAPR()
