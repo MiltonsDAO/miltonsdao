@@ -16,7 +16,7 @@ const getNodeUrl = () => {
   // if (process.env.NEXT_PUBLIC_NODE_PRODUCTION) {
   //   return process.env.NEXT_PUBLIC_NODE_PRODUCTION
   // }
-  return ""
+  return "https://data-seed-prebsc-1-s1.binance.org:8545/"
   return sample(nodes)
 }
 

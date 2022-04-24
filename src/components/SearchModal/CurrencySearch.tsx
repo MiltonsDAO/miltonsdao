@@ -6,7 +6,7 @@ import { FixedSizeList } from 'react-window'
 import { useAudioModeManager } from 'state/user/hooks'
 import useDebounce from 'hooks/useDebounce'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { useAllTokens, useToken, useIsUserAddedToken, useFoundOnInactiveList } from '../../hooks/TokensPancake'
+import { useDefaultTokens, useToken, useIsUserAddedToken, useFoundOnInactiveList } from '../../hooks/TokensPancake'
 import { isAddress } from '../../utils'
 import Column, { AutoColumn } from '../Layout/Column'
 import Row from '../Layout/Row'
@@ -46,7 +46,7 @@ function CurrencySearch({
 
   const [invertSearchOrder] = useState<boolean>(false)
 
-  const allTokens = useAllTokens()
+  const allTokens = useDefaultTokens()
 
   // if they input an address, use it
   const searchToken = useToken(debouncedQuery)

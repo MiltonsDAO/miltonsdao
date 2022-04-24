@@ -13,21 +13,14 @@ import {
   createMigrate,
 } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
-import burn from './burn/reducer'
-import farmsReducer from './farms'
 import { updateVersion } from './global/actions'
-import infoReducer from './info'
 import lists from './lists/reducer'
-import lotteryReducer from './lottery'
 import mint from './mint/reducer'
 import multicall from './multicall/reducer'
-import nftMarketReducer from './nftMarket/reducer'
 import poolsReducer from './pools'
-import predictionsReducer from './predictions'
 import swap from './swap/reducer'
 import transactions from './transactions/reducer'
 import user from './user/reducer'
-import limitOrders from './limitOrders/reducer'
 
 import accountReducer from "store/slices/account-slice"
 import bondingReducer from 'store/slices/bond-slice'
@@ -70,21 +63,13 @@ const persistedReducer = persistReducer(
     messages: messagesReducer,
     wrapping: wrappingReducer,
     
-    farms: farmsReducer,
     pools: poolsReducer,
-    predictions: predictionsReducer,
-    lottery: lotteryReducer,
-    info: infoReducer,
-    nftMarket: nftMarketReducer,
-
-    limitOrders,
 
     // Exchange
     user,
     transactions,
     swap,
     mint,
-    burn,
     multicall,
     lists,
   }),
@@ -99,9 +84,10 @@ export function makeStore(preloadedState = undefined) {
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
         thunk: true,
-        serializableCheck: {
-          ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-        },
+        serializableCheck: false
+        // serializableCheck: {
+        //   ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+        // },
       }),
     devTools: process.env.NODE_ENV === 'development',
     preloadedState,

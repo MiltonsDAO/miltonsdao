@@ -15,7 +15,6 @@ import { useEffect, useState, useCallback, Fragment } from 'react'
 import { PersistGate } from 'redux-persist/integration/react'
 import { useStore, persistor, AppState } from 'state'
 import { usePollBlockNumber } from 'state/block/hooks'
-import { usePollCoreFarmData } from 'state/farms/hooks'
 import { NextPage } from 'next'
 import { Blocklist, Updaters } from '..'
 import ErrorBoundary from '../components/ErrorBoundary'
@@ -38,10 +37,10 @@ BigNumber.config({
 })
 
 function GlobalHooks() {
-  // usePollBlockNumber()
+  usePollBlockNumber()
   useEagerConnect()
   // usePollCoreFarmData()
-  // useUserAgent()
+  useUserAgent()
   useInactiveListener()
   useSentryUser()
 

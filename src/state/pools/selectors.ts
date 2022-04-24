@@ -1,6 +1,5 @@
 import BigNumber from 'bignumber.js'
 import { BIG_ZERO } from 'utils/bigNumber'
-import { getAprData } from 'views/Pools/helpers'
 import { createSelector } from '@reduxjs/toolkit'
 import { State, VaultKey, SerializedIfoCakeVault } from '../types'
 import { transformPool, transformVault, transformIfoVault } from './helpers'
@@ -51,17 +50,8 @@ export const poolsWithVaultSelector = createSelector(
       vaultKey: VaultKey.IfoPool,
       userData: { ...cakePool.userData, ...ifoPool.userData },
     }
-    const cakeAutoVaultWithApr = {
-      ...cakeAutoVault,
-      apr: getAprData(cakeAutoVault, cakeVault.fees.performanceFeeAsDecimal).apr,
-      rawApr: cakePool.apr,
-    }
-    const ifoPoolWithApr = {
-      ...ifoPoolVault,
-      apr: getAprData(ifoPoolVault, ifoPool.fees.performanceFeeAsDecimal).apr,
-      rawApr: cakePool.apr,
-    }
-    return { pools: [ifoPoolWithApr, cakeAutoVaultWithApr, ...pools], userDataLoaded }
+
+    return { pools: [...pools], userDataLoaded }
   },
 )
 
@@ -74,17 +64,16 @@ export const ifoPoolCreditSelector = createSelector([selectIfoPoolUserCredit], (
   return new BigNumber(serializedIfoPoolUserCredit)
 })
 
-export const ifoWithAprSelector = createSelector(
-  [makeVaultPoolByKey(VaultKey.IfoPool), makePoolWithUserDataLoadingSelector(0)],
-  (deserializedIfoPool, poolWithUserData) => {
-    const { pool } = poolWithUserData
-    const {
-      fees: { performanceFeeAsDecimal },
-    } = deserializedIfoPool
-    const ifoPool = { ...pool }
-    ifoPool.vaultKey = VaultKey.IfoPool
-    ifoPool.apr = getAprData(ifoPool, performanceFeeAsDecimal).apr
-    ifoPool.rawApr = pool.apr
-    return { pool: ifoPool }
-  },
-)
+// export const ifoWithAprSelector = createSelector(
+//   [makeVaultPoolByKey(VaultKey.IfoPool), makePoolWithUserDataLoadingSelector(0)],
+//   (deserializedIfoPool, poolWithUserData) => {
+//     const { pool } = poolWithUserData
+//     const {
+//       fees: { performanceFeeAsDecimal },
+//     } = deserializedIfoPool
+//     const ifoPool = { ...pool }
+//     ifoPool.vaultKey = VaultKey.IfoPool
+//     ifoPool.rawApr = pool.apr
+//     return { pool: ifoPool }
+//   },
+// )

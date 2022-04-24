@@ -48,10 +48,10 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
     async function onBond() {
         console.log("onBond:", bond)
         if (quantity === "") {
-            dispatch(toastWarning("warning", messages.before_minting));
+            toastWarning("warning", messages.before_minting);
             //@ts-ignore
         } else if (isNaN(quantity)) {
-            dispatch(toastWarning("warning", messages.before_minting));
+            toastWarning("warning", messages.before_minting);
         } else if (bond.interestDue > 0 || bond.pendingPayout > 0) {
             const shouldProceed = window.confirm(messages.existing_mint);
             if (shouldProceed) {
@@ -94,7 +94,6 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
 
     const clearInput = () => {
         setQuantity("");
-        setReferral("");
     };
 
     const hasAllowance = useCallback(() => {

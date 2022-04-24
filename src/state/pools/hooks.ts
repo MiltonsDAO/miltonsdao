@@ -26,7 +26,7 @@ import {
   poolsWithVaultSelector,
   ifoPoolCreditBlockSelector,
   ifoPoolCreditSelector,
-  ifoWithAprSelector,
+  // ifoWithAprSelector,
 } from './selectors'
 
 export const useFetchPublicPoolsData = () => {
@@ -157,6 +157,6 @@ export const useIfoPoolCredit = () => {
   return useSelector(ifoPoolCreditSelector)
 }
 
-export const useIfoWithApr = () => {
-  return useSelector(ifoWithAprSelector)
-}
+// export const useIfoWithApr = () => {
+//   return useSelector(ifoWithAprSelector)
+// }

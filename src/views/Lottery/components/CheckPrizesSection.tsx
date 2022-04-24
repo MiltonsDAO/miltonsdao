@@ -4,9 +4,7 @@ import { Button, Heading, Flex, useModal, AutoRenewIcon } from '@pancakeswap/uik
 import { useWeb3React } from '@web3-react/core'
 import { FetchStatus, LotteryStatus } from 'config/constants/types'
 import { useTranslation } from 'contexts/Localization'
-import { useGetUserLotteriesGraphData, useLottery } from 'state/lottery/hooks'
 import ConnectWalletButton from 'components/ConnectWalletButton'
-import ClaimPrizesModal from './ClaimPrizesModal'
 import useGetUnclaimedRewards from '../hooks/useGetUnclaimedRewards'
 
 const TicketImage = styled.img`
@@ -26,18 +24,12 @@ const TornTicketImage = styled.img`
 const CheckPrizesSection = () => {
   const { t } = useTranslation()
   const { account } = useWeb3React()
-  const {
-    isTransitioning,
-    currentRound: { status },
-  } = useLottery()
+
   const { fetchAllRewards, unclaimedRewards, fetchStatus } = useGetUnclaimedRewards()
-  const userLotteryData = useGetUserLotteriesGraphData()
   const [hasCheckedForRewards, setHasCheckedForRewards] = useState(false)
   const [hasRewardsToClaim, setHasRewardsToClaim] = useState(false)
-  const [onPresentClaimModal] = useModal(<ClaimPrizesModal roundsToClaim={unclaimedRewards} />, false)
   const isFetchingRewards = fetchStatus === FetchStatus.Fetching
   const lotteryIsNotClaimable = status === LotteryStatus.CLOSE
-  const isCheckNowDisabled = !userLotteryData.account || lotteryIsNotClaimable
 
   useEffect(() => {
     if (fetchStatus === FetchStatus.Fetched) {
@@ -45,7 +37,6 @@ const CheckPrizesSection = () => {
       if (unclaimedRewards.length > 0 && !hasCheckedForRewards) {
         setHasRewardsToClaim(true)
         setHasCheckedForRewards(true)
-        onPresentClaimModal()
       }
 
       if (unclaimedRewards.length === 0 && !hasCheckedForRewards) {
@@ -53,13 +44,13 @@ const CheckPrizesSection = () => {
         setHasCheckedForRewards(true)
       }
     }
-  }, [unclaimedRewards, hasCheckedForRewards, fetchStatus, onPresentClaimModal])
+  }, [unclaimedRewards, hasCheckedForRewards, fetchStatus])
 
   useEffect(() => {
     // Clear local state on account change, or when lottery isTransitioning state changes
     setHasRewardsToClaim(false)
     setHasCheckedForRewards(false)
-  }, [account, isTransitioning])
+  }, [account])
 
   const getBody = () => {
     if (!account) {
@@ -128,7 +119,6 @@ const CheckPrizesSection = () => {
             {t('Are you a winner?')}
           </Heading>
           <Button
-            disabled={isCheckNowDisabled}
             onClick={fetchAllRewards}
             isLoading={isFetchingRewards}
             endIcon={isFetchingRewards ? <AutoRenewIcon color="currentColor" spin /> : null}

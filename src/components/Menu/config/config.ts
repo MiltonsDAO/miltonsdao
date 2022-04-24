@@ -13,7 +13,6 @@ import {
   menuStatus,
 } from '@pancakeswap/uikit'
 import { ContextApi } from 'contexts/Localization/types'
-import { nftsBaseUrl } from 'views/Nft/market/constants'
 
 export type ConfigMenuItemsType = MenuItemsType & { hideSubNav?: boolean }
 
@@ -50,7 +49,7 @@ const config: (t: ContextApi['t']) => ConfigMenuItemsType[] = (t) => [
   },
   {
     label: 'Honor',
-    href: '/liquidity',
+    href: '/add/0x89e0ca90Fd8a3CAeF18c915A8E9b3afa591Ea075/0xc362B3ed5039447dB7a06F0a3d0bd9238E74d57c',
     icon: SwapIcon,
     fillIcon: SwapFillIcon,
     showItemsOnMobile: false,

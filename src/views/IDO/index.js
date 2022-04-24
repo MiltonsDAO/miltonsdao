@@ -31,7 +31,6 @@ import useActiveWeb3React from '../../hooks/useActiveWeb3React'
 import { AppDispatch, AppState } from '../../state'
 import Page from '../Page'
 import styled from 'styled-components'
-import Timer from 'views/Lottery/components/Countdown/Timer'
 import useNextEventCountdown from 'views/Lottery/hooks/useNextEventCountdown'
 import { useAppDispatch } from 'state'
 import useToast from 'hooks/useToast'
@@ -61,8 +60,8 @@ var featured = {
   min_swap_level: '',
   symbol: 'PMLS',
   decimal: 18,
-  address: '0xdaBeF048B7DaB6f10638f59Debde38B1c35bB1B0',
-  // address: "0xCB84B99463e1703bF4038d9164F93EA1911CeA7f",
+  // address: '0xdaBeF048B7DaB6f10638f59Debde38B1c35bB1B0', //mainnet
+  address: "0x76C8F34C5f33f6e8115BDc7AaE69bb2e7eC525dE", //testnet
   token_address: 'TBA',
   abi_name: '',
   raised: 0,
@@ -143,8 +142,8 @@ function IDO(props) {
 
   const signer = library.getSigner()
   ido = new ethers.Contract(featured.address, JSON.stringify(poolabi), signer)
-  // usdt = new ethers.Contract("0xc362B3ed5039447dB7a06F0a3d0bd9238E74d57c", JSON.stringify(usdtabi), signer)
-  usdt = new ethers.Contract('0x55d398326f99059fF775485246999027B3197955', JSON.stringify(usdtabi), signer)
+  usdt = new ethers.Contract("0xc362B3ed5039447dB7a06F0a3d0bd9238E74d57c", JSON.stringify(usdtabi), signer)
+  // usdt = new ethers.Contract('0x55d398326f99059fF775485246999027B3197955', JSON.stringify(usdtabi), signer)
 
   const useNextEventCountdown = (startDate, endDate) => {
     const [secondsRemaining, setSecondsRemaining] = useState(null)

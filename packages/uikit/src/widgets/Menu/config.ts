@@ -40,7 +40,7 @@ export const links: MenuItemsType[] = [
       },
       {
         label: "Honor",
-        href: "/liquidity",
+        href: "/add",
       },
       {
         label: "Charts",

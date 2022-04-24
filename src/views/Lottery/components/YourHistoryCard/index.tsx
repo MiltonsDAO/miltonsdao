@@ -23,7 +23,7 @@ import FinishedRoundTable from './FinishedRoundTable'
 import { WhiteBunny } from '../../svgs'
 import BuyTicketsButton from '../BuyTicketsButton'
 import PreviousRoundCardBody from '../PreviousRoundCard/Body'
-import { processLotteryResponse, getDrawnDate } from 'views/Lottery/helpers'
+import { processLotteryResponse, getDrawnDate } from '../../helpers'
 import PreviousRoundCardFooter from '../PreviousRoundCard/Footer'
 
 interface YourHistoryCardProps {

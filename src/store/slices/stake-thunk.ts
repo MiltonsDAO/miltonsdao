@@ -89,7 +89,6 @@ interface IChangeStake {
 export const changeStake = createAsyncThunk(
   'stake/changeStake',
   async ({ action, value, provider, address, networkID }: IChangeStake, { dispatch }) => {
-    console.log("dispatch:",dispatch)
     // const { toastError, toastWarning } = useToast()
     if (!provider) {
       dispatch(warning({ text: messages.please_connect_wallet }));
@@ -107,7 +106,6 @@ export const changeStake = createAsyncThunk(
       const gasPrice = await getGasPrice(provider)
       if (action === 'stake') {
         var parsedValue = ethers.utils.parseUnits(value, 'ether')
-        console.log('parsedValue:', parsedValue)
         stakeTx = await stakingHelper.stake(parsedValue, { gasPrice })
       } else {
         stakeTx = await staking.unstake(ethers.utils.parseUnits(value, 'ether'), true, { gasPrice })

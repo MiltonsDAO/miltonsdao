@@ -4,6 +4,8 @@ import { Currency, ETHER, Token, currencyEquals } from '@pancakeswap/sdk'
 import { useMemo } from 'react'
 import { arrayify } from '@ethersproject/bytes'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
+import { useWeb3React } from '@web3-react/core'
+
 import { GELATO_NATIVE } from 'config/constants'
 import {
   TokenAddressMap,
@@ -70,7 +72,7 @@ export function useAllInactiveTokens(): { [address: string]: Token } {
   const inactiveTokens = useTokensFromMap(inactiveTokensMap, false)
 
   // filter out any token that are on active list
-  const activeTokensAddresses = Object.keys(useAllTokens())
+  const activeTokensAddresses = Object.keys(useDefaultTokens())
   const filteredInactive = activeTokensAddresses
     ? Object.keys(inactiveTokens).reduce<{ [address: string]: Token }>((newMap, address) => {
         if (!activeTokensAddresses.includes(address)) {
@@ -89,7 +91,7 @@ export function useUnsupportedTokens(): { [address: string]: Token } {
 }
 
 export function useIsTokenActive(token: Token | undefined | null): boolean {
-  const activeTokens = useAllTokens()
+  const activeTokens = useDefaultTokens()
 
   if (!activeTokens || !token) {
     return false
@@ -140,7 +142,7 @@ function parseStringOrBytes32(str: string | undefined, bytes32: string | undefin
 // otherwise returns the token
 export function useToken(tokenAddress?: string): Token | undefined | null {
   const { chainId } = useActiveWeb3React()
-  const tokens = useAllTokens()
+  const tokens = useDefaultTokens()
 
   const address = isAddress(tokenAddress)
 
@@ -156,6 +158,7 @@ export function useToken(tokenAddress?: string): Token | undefined | null {
     NEVER_RELOAD,
   )
   const symbol = useSingleCallResult(token ? undefined : tokenContract, 'symbol', undefined, NEVER_RELOAD)
+
   const symbolBytes32 = useSingleCallResult(token ? undefined : tokenContractBytes32, 'symbol', undefined, NEVER_RELOAD)
   const decimals = useSingleCallResult(token ? undefined : tokenContract, 'decimals', undefined, NEVER_RELOAD)
 

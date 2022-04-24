@@ -463,10 +463,10 @@ export function useTrackedTokenPairs(): [Token, Token][] {
     () => userPairs.concat(generatedPairs).concat(pinnedPairs),
     [generatedPairs, pinnedPairs, userPairs],
   )
-
+    return [pinnedPairs]
   return useMemo(() => {
     // dedupes pairs of tokens in the combined list
-    const keyed = combinedList.reduce<{ [key: string]: [Token, Token] }>((memo, [tokenA, tokenB]) => {
+    const keyed = [pinnedPairs].reduce<{ [key: string]: [Token, Token] }>((memo, [tokenA, tokenB]) => {
       const sorted = tokenA.sortsBefore(tokenB)
       const key = sorted ? `${tokenA.address}:${tokenB.address}` : `${tokenB.address}:${tokenA.address}`
       if (memo[key]) return memo
@@ -475,7 +475,7 @@ export function useTrackedTokenPairs(): [Token, Token][] {
     }, {})
 
     return Object.keys(keyed).map((key) => keyed[key])
-  }, [combinedList])
+  }, [pinnedPairs])
 }
 
 export const useWatchlistTokens = (): [string[], (address: string) => void] => {

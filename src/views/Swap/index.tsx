@@ -38,7 +38,7 @@ import { AppBody } from '../../components/App'
 import ConnectWalletButton from '../../components/ConnectWalletButton'
 
 import useActiveWeb3React from '../../hooks/useActiveWeb3React'
-import { useCurrency, useAllTokens } from '../../hooks/TokensPancake'
+import { useCurrency, useDefaultTokens } from '../../hooks/TokensPancake'
 import { ApprovalState, useApproveCallbackFromTrade } from '../../hooks/useApproveCallback'
 import { useSwapCallback } from '../../hooks/useSwapCallback'
 import useWrapCallback, { WrapType } from '../../hooks/useWrapCallback'
@@ -114,7 +114,7 @@ export default function Swap() {
   )
 
   // dismiss warning if all imported tokens are in active lists
-  const defaultTokens = useAllTokens()
+  const defaultTokens = useDefaultTokens()
   const importTokensNotInDefault =
     urlLoadedTokens &&
     urlLoadedTokens.filter((token: Token) => {

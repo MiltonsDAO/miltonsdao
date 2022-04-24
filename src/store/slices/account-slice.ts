@@ -103,7 +103,7 @@ export const loadAccountDetails = createAsyncThunk(
     if (addresses.sOHM_ADDRESS) {
       const memoContract = new ethers.Contract(addresses.sOHM_ADDRESS, MemoTokenContract, provider)
       memoBalance = await memoContract.balanceOf(address)
-      console.log("memoBalance:", memoBalance)
+      console.log('memoBalance:', memoBalance)
       unstakeAllowance = await memoContract.allowance(address, addresses.STAKING_ADDRESS)
 
       // if (addresses.WMEMO_ADDRESS) {
@@ -123,7 +123,6 @@ export const loadAccountDetails = createAsyncThunk(
     //   }
     //   console.log('totalProfit:', totalProfit.toNumber())
     // }
-
 
     // if (addresses.WMEMO_ADDRESS) {
     //     const wmemoContract = new ethers.Contract(addresses.WMEMO_ADDRESS, wMemoTokenContract, provider);
@@ -200,9 +199,9 @@ export const calculateUserBondDetails = createAsyncThunk(
       balance = '0'
 
     allowance = await reserveContract.allowance(address, bond.getAddressForBond(networkID))
-    console.log("address:",address)
+    console.log('address:', address)
     balance = await reserveContract.balanceOf(address)
-    console.log("balance:",balance)
+    console.log('reserveContract balance:', balance)
 
     const balanceVal = ethers.utils.formatEther(balance)
 
@@ -294,9 +293,9 @@ export interface ISonSlice {
 export interface IAccountSlice {
   bonds: { [key: string]: IUserBondDetails }
   balances: {
-    smls: string
-    mls: string
-    wmemo: string
+    smls: BigNumber
+    mls: BigNumber
+    wmemo: BigNumber
   }
   loading: boolean
   partners: ISonSlice[]
@@ -304,11 +303,11 @@ export interface IAccountSlice {
   registered: boolean
   totalProfit: number
   staking: {
-    mls: number
-    smls: number
+    mls: BigNumber
+    smls: BigNumber
   }
   wrapping: {
-    smls: number
+    smls: BigNumber
   }
   tokens: { [key: string]: IUserTokenDetails }
 }
@@ -320,9 +319,9 @@ const initialState: IAccountSlice = {
   registered: false,
   totalProfit: 0,
   bonds: {},
-  balances: { smls: '', mls: '', wmemo: '' },
-  staking: { mls: 0, smls: 0 },
-  wrapping: { smls: 0 },
+  balances: { smls: BigNumber.from(0), mls: BigNumber.from(0), wmemo: BigNumber.from(0) },
+  staking: { mls: BigNumber.from(0), smls: BigNumber.from(0) },
+  wrapping: { smls: BigNumber.from(0) },
   tokens: {},
 }
 

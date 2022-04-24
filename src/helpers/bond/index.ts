@@ -30,7 +30,7 @@ export const dai = new StableBond({
       reserveAddress: '0x4aEeB8D61FEABC8695Db1831c03914DD94067120',
     },
     [Networks.BSC_TESTNET]: {
-      bondAddress: '0x663193C3a7b2c4F4fcF4f616FA4c384882fa8f93',
+      bondAddress: '0xCe23A6aEA3F54BeB2EA445df6fCE7B04656f35Cc',
       reserveAddress: '0xc362B3ed5039447dB7a06F0a3d0bd9238E74d57c',
     },
   },
@@ -67,8 +67,8 @@ export const daiOHM = new LPBond({
       reserveAddress: '0x4aEeB8D61FEABC8695Db1831c03914DD94067120',
     },
     [Networks.BSC_TESTNET]: {
-      bondAddress: '0x35B6A9Eca64bc225C163d37Ee6CEc391364E3350',
-      reserveAddress: '0x23Eae6E281c71854E731C156296c5cab4F47698D',
+      bondAddress: '0xFfC34E3Df624a8E2bFf445B173bf6fc45512Ac3D',
+      reserveAddress: '0x5B53f0114a22D8cb2DfDbD0ffFa460dC7F96A940',
     },
   },
   lpUrl:

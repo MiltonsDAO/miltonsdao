@@ -5,9 +5,10 @@ import { Contract } from '@ethersproject/contracts'
 import { TransactionResponse } from '@ethersproject/providers'
 import { useRouter } from 'next/router'
 import useToast from 'hooks/useToast'
+import { ethers, BigNumber } from 'ethers'
 import { Currency, currencyEquals, ETHER, Percent, WETH } from '@pancakeswap/sdk'
 import { Button, Text, AddIcon, ArrowDownIcon, CardBody, Slider, Box, Flex, useModal } from '@pancakeswap/uikit'
-import { BigNumber } from '@ethersproject/bignumber'
+// import { BigNumber } from '@ethersproject/bignumber'
 import { useTranslation } from 'contexts/Localization'
 import { CHAIN_ID } from 'config/constants/networks'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
@@ -48,8 +49,8 @@ import { useMatchBreakpoints } from '../../../packages/uikit/src/hooks'
 import useBonds from '../../hooks/bonds'
 import useTokens from '../../hooks/Tokens'
 import { useApp } from "../../hooks/useApp";
-import {changeApproval} from "../../store/slices/wrap-slice";
-import {changeStake} from "../../store/slices/stake-thunk";
+import { changeApproval } from "../../store/slices/wrap-slice";
+import { changeStake } from "../../store/slices/stake-thunk";
 import { messages } from "../../constants/messages";
 import { warning, success, info, error } from "../../store/slices/messages-slice";
 
@@ -104,14 +105,14 @@ export default function Stake({ account }) {
   const accountSlice = useSelector<AppState, IAccountSlice>(state => {
     return state.account;
   });
+  console.log("accountSlice:", accountSlice)
+  const timeBalance = accountSlice.balances && accountSlice.balances.mls.toString();
 
-  const timeBalance = accountSlice.balances && accountSlice.balances.mls;
+  const memoBalance = accountSlice.balances && accountSlice.balances.smls.toString();
 
-  const memoBalance = accountSlice.balances && accountSlice.balances.smls;
+  const stakeAllowance: BigNumber = accountSlice.staking && accountSlice.staking.mls;
 
-  const stakeAllowance = accountSlice.staking && accountSlice.staking.mls;
-
-  const unstakeAllowance = accountSlice.staking && accountSlice.staking.smls;
+  const unstakeAllowance: BigNumber = accountSlice.staking && accountSlice.staking.smls;
   const stakingRebase = app.stakingRebase;
   const stakingAPY = app.stakingAPY;
   const stakingTVL = app.stakingTVL;
@@ -129,14 +130,14 @@ export default function Stake({ account }) {
   }
 
   const onSeekApproval = async (token: string) => {
-    await dispatch(changeApproval({ address: account, token, provider:library, networkID: chainId }))
+    await dispatch(changeApproval({ address: account, token, provider: library, networkID: chainId }))
   }
 
   const onChangeStake = async (action: string) => {
     if (quantity === '' || parseFloat(quantity) === 0) {
-      toastError("error", action === 'stake' ? messages.before_stake : messages.before_unstake )
+      toastError("error", action === 'stake' ? messages.before_stake : messages.before_unstake)
     } else {
-      await dispatch(changeStake({ address: account, action, value: String(quantity), provider:library, networkID: chainId }))
+      await dispatch(changeStake({ address: account, action, value: String(quantity), provider: library, networkID: chainId }))
       setQuantity('')
     }
   }
@@ -262,7 +263,7 @@ export default function Stake({ account }) {
                               className="ido-card-tab-panel-btn"
                               onClick={() => {
                                 var pendingTxn = isPendingTxn(pendingTransactions, 'staking')
-                                console.log("pendingTxn:",pendingTxn)
+                                console.log("pendingTxn:", pendingTxn)
                                 if (pendingTxn) return
                                 onChangeStake('stake')
                               }}
