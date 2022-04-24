@@ -32,14 +32,6 @@ export const whitelistedBidders: FarmAuctionBidderConfig[] =
           projectSite: 'https://swirge.com/',
         },
         {
-          account: '0x58092273a044D6e1d23B5095AE873F6E24E906ed',
-          farmName: 'rUSD-BUSD',
-          tokenAddress: '0x07663837218A003e66310a01596af4bf4e44623D',
-          quoteToken: tokens.busd,
-          tokenName: 'RAMP DEFI',
-          projectSite: 'https://www.rampdefi.com/',
-        },
-        {
           account: '0xfAd3B5FeAC1aAF86B3f66D105F2fa9607164D86b',
           farmName: 'FEED-BNB',
           tokenAddress: '0x67d66e8Ec1Fd25d98B3Ccd3B19B7dc4b4b7fC493',
@@ -54,14 +46,6 @@ export const whitelistedBidders: FarmAuctionBidderConfig[] =
           quoteToken: tokens.wbnb,
           tokenName: 'BitBook',
           projectSite: 'https://www.bitbook.network/',
-        },
-        {
-          account: '0xAe126B90d2835c5A2D720b0687EC59f59b768183',
-          farmName: 'WOW-BUSD',
-          tokenAddress: '0x4DA996C5Fe84755C80e108cf96Fe705174c5e36A',
-          quoteToken: tokens.busd,
-          tokenName: 'WOWswap',
-          projectSite: 'https://wowswap.io/',
         },
         {
           account: '0x88F0A6cb89909838d69E4E6e76eC21e2a7bdcA66',
@@ -119,14 +103,7 @@ export const whitelistedBidders: FarmAuctionBidderConfig[] =
           tokenName: 'Binamon',
           projectSite: 'https://binamon.org/',
         },
-        {
-          account: '0x71eE6DE14c90700eE06C81aaBdBacD684cfe30fe',
-          farmName: 'BMON-BUSD',
-          tokenAddress: '0x08ba0619b1e7A582E0BCe5BBE9843322C954C340',
-          quoteToken: tokens.busd,
-          tokenName: 'Binamon',
-          projectSite: 'https://binamon.org/',
-        },
+       
         {
           account: '0x6cfA3ff4e96abe93a290dc3d7A911A483C194758',
           farmName: 'ANY-BNB',
@@ -167,14 +144,7 @@ export const whitelistedBidders: FarmAuctionBidderConfig[] =
           tokenName: 'MyDefiPet',
           projectSite: 'https://mydefipet.com/',
         },
-        {
-          account: '0x8aC06b55C9812e3E574CF5A5F3b49619dF33099C',
-          farmName: 'NMX-BUSD',
-          tokenAddress: '0xd32d01A43c869EdcD1117C640fBDcfCFD97d9d65',
-          quoteToken: tokens.busd,
-          tokenName: 'Nominex',
-          projectSite: 'https://nominex.io/',
-        },
+       
         {
           account: '0xd27E57Ff5dD3d78B03c85e2A2bB8dc37E67c5140',
           farmName: 'POOLZ-BNB',
@@ -191,22 +161,7 @@ export const whitelistedBidders: FarmAuctionBidderConfig[] =
           tokenName: 'Oddz Finance',
           projectSite: 'https://oddz.fi',
         },
-        {
-          account: '0x2B6b2701d7F7b65BA2E1ec2d2dAa17d46B85A4fe',
-          farmName: 'UBXT-BUSD',
-          tokenAddress: '0xBbEB90cFb6FAFa1F69AA130B7341089AbeEF5811',
-          quoteToken: tokens.busd,
-          tokenName: 'UpBots',
-          projectSite: 'https://upbots.com/',
-        },
-        {
-          account: '0x875831249bA511a6f1E49c84D66E1A6F5601f7C6',
-          farmName: 'DND-BUSD',
-          tokenAddress: '0x14c358b573a4cE45364a3DBD84BBb4Dae87af034',
-          quoteToken: tokens.busd,
-          tokenName: 'DungeonSwap',
-          projectSite: 'https://dungeonswap.app/',
-        },
+        
         {
           account: '0xb7d303BbaE2573513801C5F94aE0B61Fa5b3426F',
           farmName: 'ZOON-BNB',
@@ -215,14 +170,7 @@ export const whitelistedBidders: FarmAuctionBidderConfig[] =
           tokenName: 'CryptoZoon',
           projectSite: 'https://cryptozoon.io/',
         },
-        {
-          account: '0x22d56946c6cc1d4ed09f02858ddb990fcc981c55',
-          farmName: 'HGET-BUSD',
-          tokenAddress: '0xC7d8D35EBA58a0935ff2D5a33Df105DD9f071731',
-          quoteToken: tokens.busd,
-          tokenName: 'Hedget',
-          projectSite: 'https://www.hedget.com/',
-        },
+       
         {
           account: '0x027D50F36fe3b64630170B3ba82FC64BfC9bc088',
           farmName: 'FAN-BNB',
@@ -231,14 +179,7 @@ export const whitelistedBidders: FarmAuctionBidderConfig[] =
           tokenName: 'Fanadise',
           projectSite: 'https://fanadise.com/',
         },
-        {
-          account: '0x73f9eb8eB7109b171396C8cbffcb29839c8b3064',
-          farmName: 'PKMON-BUSD',
-          tokenAddress: '0x609D183Fb91a0fce59550b62ab7d2c931b0Bb1BE',
-          quoteToken: tokens.busd,
-          tokenName: 'PolkaMonster',
-          projectSite: 'https://polkamonster.game/',
-        },
+       
         {
           account: '0x88Dba2cF8911A80cc50A1B392b5fF6b47B930330',
           farmName: 'SFUND-BNB',
@@ -255,14 +196,7 @@ export const whitelistedBidders: FarmAuctionBidderConfig[] =
           tokenName: 'GreenTrust',
           projectSite: 'https://www.greentrusttoken.com/',
         },
-        {
-          account: '0x3992D7D9Ed721257d8bD7501d280b857eD7F9C24',
-          farmName: 'TT-BUSD',
-          tokenAddress: '0x990E7154bB999FAa9b2fa5Ed29E822703311eA85',
-          quoteToken: tokens.busd,
-          tokenName: 'ThunderCore',
-          projectSite: 'https://www.thundercore.com/',
-        },
+       
         {
           account: '0x2Ef317299888DD4a4F57FFf99FF2685D544fEAf1',
           farmName: 'TT-BNB',
@@ -287,14 +221,7 @@ export const whitelistedBidders: FarmAuctionBidderConfig[] =
           tokenName: 'TEN Finance',
           projectSite: 'https://ten.finance/',
         },
-        {
-          account: '0x75015B56dA228A5367d313866f6520495344C65c',
-          farmName: 'BNX-BUSD',
-          tokenAddress: '0x8C851d1a123Ff703BD1f9dabe631b69902Df5f97',
-          quoteToken: tokens.busd,
-          tokenName: 'BinaryX',
-          projectSite: 'https://www.binaryx.pro/#/',
-        },
+       
         {
           account: '0xCbD932aC66f645a3764733aACD30Ce50e522Fac1',
           farmName: 'DVI-BNB',
@@ -375,14 +302,7 @@ export const whitelistedBidders: FarmAuctionBidderConfig[] =
           tokenName: 'Lightning',
           projectSite: 'https://lightningprotocol.finance/',
         },
-        {
-          account: '0x235540Bd639308E51Efa89AbF2A9AF8bC1DEc877',
-          farmName: 'GENS-BUSD',
-          tokenAddress: '0x2CD14cbA3F26254beeD1d78158cd2B6F91809600',
-          quoteToken: tokens.busd,
-          tokenName: 'Genshiro',
-          projectSite: 'https://genshiro.equilibrium.io/en',
-        },
+        
         {
           account: '0xc55A7183F6D060271010A4441c106f6a81D46E34',
           farmName: 'WSPP-BNB',
@@ -423,14 +343,7 @@ export const whitelistedBidders: FarmAuctionBidderConfig[] =
           tokenName: 'ULTI Arena',
           projectSite: 'https://ultiarena.com',
         },
-        {
-          account: '0x1723D77Afde343323b769271a83d5Aecada25e01',
-          farmName: 'ZOO-BUSD',
-          tokenAddress: '0x1D229B958D5DDFca92146585a8711aECbE56F095',
-          quoteToken: tokens.busd,
-          tokenName: 'ZOO Crypto World',
-          projectSite: 'https://zoogame.finance/',
-        },
+       
         {
           account: '0x8b519cD36b6a3179a4C560FcE987203E33df0366',
           farmName: 'HERA-BNB',
@@ -447,22 +360,8 @@ export const whitelistedBidders: FarmAuctionBidderConfig[] =
           tokenName: 'DEEPSPACE',
           projectSite: 'https://deepspace.game',
         },
-        {
-          account: '0x050F559cD756cA09FC46988B6cf19ebF01256268',
-          farmName: 'BCOIN-BUSD',
-          tokenAddress: '0x00e1656e45f18ec6747F5a8496Fd39B50b38396D',
-          quoteToken: tokens.busd,
-          tokenName: 'Bomb Crypto',
-          projectSite: 'https://bombcrypto.io/',
-        },
-        {
-          account: '0x6524b3B11979D5b5c354D5A804be9711d767f38F',
-          farmName: 'XEUS-BUSD',
-          tokenAddress: '0x4E141769366634D9c4e498257Fa7EC204d22b634',
-          quoteToken: tokens.busd,
-          tokenName: 'XEUS',
-          projectSite: 'https://xeus.finance/',
-        },
+       
+        
         {
           account: '0x1Aa800bE7e9829DDF97C54EF750F5E42C2a6a884',
           farmName: 'SHARPEI-BNB',
@@ -471,22 +370,8 @@ export const whitelistedBidders: FarmAuctionBidderConfig[] =
           tokenName: 'Shar Pei',
           projectSite: 'https://sharpeitoken.io/',
         },
-        {
-          account: '0x2c32E56756964aCdB650521c1F10bdb939D5Ff7B',
-          farmName: 'PID-BUSD',
-          tokenAddress: '0x1215Ed20aa507578ca352E195016F289e7A17f3A',
-          quoteToken: tokens.busd,
-          tokenName: 'PIDAO',
-          projectSite: 'https://www.pidao.finance/',
-        },
-        {
-          account: '0x4AD72A0841808b431525de29a7781d948675bAC7',
-          farmName: 'HTD-BUSD',
-          tokenAddress: '0x5E2689412Fae5c29BD575fbe1d5C1CD1e0622A8f',
-          quoteToken: tokens.busd,
-          tokenName: 'HeroesTD',
-          projectSite: 'https://heroestd.io/',
-        },
+       
+       
         {
           account: '0xFfD8457466bAa1f11Bb585c7fD772Ad1A8b82b64',
           farmName: 'GMEE-BNB',
@@ -495,22 +380,8 @@ export const whitelistedBidders: FarmAuctionBidderConfig[] =
           tokenName: 'GAMEE',
           projectSite: 'https://token.gamee.com/',
         },
-        {
-          account: '0x820E53c3198dB5904938Bec31B3Ec3864a754c31',
-          farmName: 'ANTEX-BUSD',
-          tokenAddress: '0xCA1aCAB14e85F30996aC83c64fF93Ded7586977C',
-          quoteToken: tokens.busd,
-          tokenName: 'Antex',
-          projectSite: 'https://antex.org/',
-        },
-        {
-          account: '0x5905A1F7BAf19844874B8B16E5FC4cde639b7a32',
-          farmName: 'SIP-BUSD',
-          tokenAddress: '0x9e5965d28E8D44CAE8F9b809396E0931F9Df71CA',
-          quoteToken: tokens.busd,
-          tokenName: 'Space Sip',
-          projectSite: 'https://sip.space/',
-        },
+       
+        
         {
           account: '0x20C99830967a18563D2D3eD51094aDD9FBE06e2A',
           farmName: 'SDAO-BNB',
@@ -519,22 +390,8 @@ export const whitelistedBidders: FarmAuctionBidderConfig[] =
           tokenName: 'SingularityDAO',
           projectSite: 'https://app.singularitydao.ai/',
         },
-        {
-          account: '0xB8614FABf4bbA416b9dB620e12272AD63b14387E',
-          farmName: '8PAY-BUSD',
-          tokenAddress: '0xfeea0bdd3d07eb6fe305938878c0cadbfa169042',
-          quoteToken: tokens.busd,
-          tokenName: '8PAY',
-          projectSite: 'https://8pay.network/',
-        },
-        {
-          account: '0xb8Ce421729232eCD5DFc7BD0adFe1f4DAd9D9CcE',
-          farmName: 'BATH-BUSD',
-          tokenAddress: '0x0bc89aa98Ad94E6798Ec822d0814d934cCD0c0cE',
-          quoteToken: tokens.busd,
-          tokenName: 'Battle Hero',
-          projectSite: 'https://battlehero.io/',
-        },
+        
+        
         {
           account: '0x3591b656D753226dE239d2b9A48221daf0751Fca',
           farmName: 'HE-BNB',
@@ -543,30 +400,9 @@ export const whitelistedBidders: FarmAuctionBidderConfig[] =
           tokenName: 'Heroes & Empires',
           projectSite: 'https://heroesempires.com/',
         },
-        {
-          account: '0xCbEd1a5c8847de8B284f7cf5cf752b3b2E3b5112',
-          farmName: 'AOG-BUSD',
-          tokenAddress: '0x40C8225329Bd3e28A043B029E0D07a5344d2C27C',
-          quoteToken: tokens.busd,
-          tokenName: 'AgeOfGods',
-          projectSite: 'https://ageofgods.net/',
-        },
-        {
-          account: '0xCb70F0B3791D05D0D2Aec36805fd2411a89f3aa1',
-          farmName: 'PRL-BUSD',
-          tokenAddress: '0xd07e82440A395f3F3551b42dA9210CD1Ef4f8B24',
-          quoteToken: tokens.busd,
-          tokenName: 'The Parallel',
-          projectSite: 'https://theparallel.io/',
-        },
-        {
-          account: '0xe60035673BAFDaD24C5B14E9556F5793dFFb3362',
-          farmName: 'LOA-BUSD',
-          tokenAddress: '0x94b69263fca20119ae817b6f783fc0f13b02ad50',
-          quoteToken: tokens.busd,
-          tokenName: 'League of Ancients',
-          projectSite: 'https://leagueofancients.com/',
-        },
+        
+       
+        
         {
           account: '0x05Adabb0f3bff63F5f7712f05F04F509494A18F3',
           farmName: 'HOTCROSS-BNB',
@@ -575,22 +411,8 @@ export const whitelistedBidders: FarmAuctionBidderConfig[] =
           tokenName: 'Hot Cross',
           projectSite: 'https://hotcross.com/',
         },
-        {
-          account: '0x8e762609CEa5Ddd3234B9d41Cf8D0d8b4f2581a6',
-          farmName: 'TEM-BUSD',
-          tokenAddress: '0x19e6BfC1A6e4B042Fb20531244D47E252445df01',
-          quoteToken: tokens.busd,
-          tokenName: 'TemplarDAO',
-          projectSite: 'https://templar.finance/',
-        },
-        {
-          account: '0xE9ab352015928CBE21771564E97bDAA3F5fbCBAC',
-          farmName: 'GRAV-BUSD',
-          tokenAddress: '0xa6168c7e5eb7c5c379f3a1d7cf1073e09b2f031e',
-          quoteToken: tokens.busd,
-          tokenName: 'Graviton Zero',
-          projectSite: 'https://gravitonzero.com/',
-        },
+        
+        
         {
           account: '0x5Be8ed8EbCF5215A45E84B864526EfdF6F584152',
           farmName: 'BABY-BNB',
@@ -607,22 +429,7 @@ export const whitelistedBidders: FarmAuctionBidderConfig[] =
           tokenName: 'MetaGear',
           projectSite: 'https://metagear.game/',
         },
-        {
-          account: '0xF113b815e24Cc866137c4933b39fe2878ED1F2d2',
-          farmName: 'RDR-BUSD',
-          tokenAddress: '0x92da433da84d58dfe2aade1943349e491cbd6820',
-          quoteToken: tokens.busd,
-          tokenName: 'Rise of Defenders',
-          projectSite: 'https://risedefenders.io/',
-        },
-        {
-          account: '0x38408A0D905930f44fe6C53321684824b22c30c5',
-          farmName: 'FIGHT-BUSD',
-          tokenAddress: '0x4f39c3319188A723003670c3F9B9e7EF991E52F3',
-          quoteToken: tokens.busd,
-          tokenName: 'Crypto Fight Club',
-          projectSite: 'https://www.cryptofightclub.io/',
-        },
+        
         {
           account: '0xadF88A1eDC8F15CeA27F2674ED2BA1382F46A8A5',
           farmName: 'DOME-BNB',

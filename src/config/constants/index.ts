@@ -16,15 +16,10 @@ type ChainTokenList = {
 export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
   [ChainId.MAINNET]: [
     mainnetTokens.pmls,
-    mainnetTokens.cake,
-    mainnetTokens.busd,
     mainnetTokens.usdt,
-    mainnetTokens.btcb,
-    mainnetTokens.ust,
-    mainnetTokens.eth,
-    mainnetTokens.usdc,
+    mainnetTokens.mls,
   ],
-  [ChainId.TESTNET]: [testnetTokens.pmls, testnetTokens.cake, testnetTokens.busd],
+  [ChainId.TESTNET]: [testnetTokens.pmls, testnetTokens.usdt, testnetTokens.mls],
 }
 
 /**

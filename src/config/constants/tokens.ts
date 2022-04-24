@@ -22,6 +22,7 @@ export const mainnetTokens = defineTokens({
   ),
   // bnb here points to the wbnb contract. Wherever the currency BNB is required, conditional checks for the symbol 'BNB' can be used
   pmls: new Token(MAINNET, '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', 18, 'BNB', 'BNB', 'https://www.binance.com/'),
+  mls: new Token(MAINNET, '0x55d398326f99059fF775485246999027B3197955', 18, 'USDT', 'Tether USD', 'https://tether.to/'),
   cake: new Token(
     MAINNET,
     '0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82',
@@ -30,7 +31,7 @@ export const mainnetTokens = defineTokens({
     'PancakeSwap Token',
     'https://pancakeswap.finance/',
   ),
- 
+
   usdt: new Token(
     MAINNET,
     '0x55d398326f99059fF775485246999027B3197955',
@@ -39,16 +40,23 @@ export const mainnetTokens = defineTokens({
     'Tether USD',
     'https://tether.to/',
   ),
-  
 } as const)
 
 export const testnetTokens = defineTokens({
   pmls: new Token(
     TESTNET,
-    '0xa35062141Fa33BCA92Ce69FeD37D0E8908868AAe',
+    '0x89e0ca90Fd8a3CAeF18c915A8E9b3afa591Ea075',
     18,
-    'CAKE',
-    'PancakeSwap Token',
+    'PMLS',
+    'Miltons Token',
+    'https://pancakeswap.finance/',
+  ),
+  mls: new Token(
+    TESTNET,
+    '0x89e0ca90Fd8a3CAeF18c915A8E9b3afa591Ea075',
+    18,
+    'MLS',
+    'Miltons Token',
     'https://pancakeswap.finance/',
   ),
   cake: new Token(
@@ -63,11 +71,10 @@ export const testnetTokens = defineTokens({
     TESTNET,
     '0xa35062141Fa33BCA92Ce69FeD37D0E8908868AAe',
     18,
-    'CAKE',
-    'PancakeSwap Token',
+    'USDT',
+    'USDT Token',
     'https://pancakeswap.finance/',
   ),
-  
 } as const)
 
 const tokens = () => {
