@@ -43,6 +43,14 @@ export const mainnetTokens = defineTokens({
 } as const)
 
 export const testnetTokens = defineTokens({
+  wbnb: new Token(
+    MAINNET,
+    '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
+    18,
+    'WBNB',
+    'Wrapped BNB',
+    'https://www.binance.com/',
+  ),
   pmls: new Token(
     TESTNET,
     '0x89e0ca90Fd8a3CAeF18c915A8E9b3afa591Ea075',
@@ -87,7 +95,7 @@ const tokens = () => {
     }, {} as typeof testnetTokens & typeof mainnetTokens)
   } else if (parseInt(chainId, 10) === ChainId.TESTNET) {
     return Object.keys(testnetTokens).reduce((accum, key) => {
-      return { ...accum, [key]: testnetTokens[key] }
+      return { ...accum, [key]: testnetTokens[key] || mainnetTokens[key]}
     }, {} as typeof testnetTokens)
   }
 
