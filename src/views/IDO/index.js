@@ -60,8 +60,11 @@ var featured = {
   min_swap_level: '',
   symbol: 'PMLS',
   decimal: 18,
+  // usdt:"0x55d398326f99059fF775485246999027B3197955", //mainnet
+  usdt:"0xc362B3ed5039447dB7a06F0a3d0bd9238E74d57c", //testnet
   // address: '0xdaBeF048B7DaB6f10638f59Debde38B1c35bB1B0', //mainnet
   address: "0x76C8F34C5f33f6e8115BDc7AaE69bb2e7eC525dE", //testnet
+
   token_address: 'TBA',
   abi_name: '',
   raised: 0,
@@ -123,7 +126,7 @@ let closes_seconds = ''
 
 
 function IDO(props) {
-  let web3Account = props.account;
+  let account = props.account;
 
   const { isMobile } = useMatchBreakpoints()
 
@@ -140,10 +143,10 @@ function IDO(props) {
   const [startTime, setStartTime] = useState(0)
   const [startTimeMobile, setStartTimeMobile] = useState(0)
 
-  const signer = library.getSigner()
+  const signer = library && library.getSigner()
   ido = new ethers.Contract(featured.address, JSON.stringify(poolabi), signer)
-  usdt = new ethers.Contract("0xc362B3ed5039447dB7a06F0a3d0bd9238E74d57c", JSON.stringify(usdtabi), signer)
-  // usdt = new ethers.Contract('0x55d398326f99059fF775485246999027B3197955', JSON.stringify(usdtabi), signer)
+  usdt = new ethers.Contract(featured.usdt, JSON.stringify(usdtabi), signer)
+  // usdt = new ethers.Contract('', JSON.stringify(usdtabi), signer)
 
   const useNextEventCountdown = (startDate, endDate) => {
     const [secondsRemaining, setSecondsRemaining] = useState(null)
@@ -172,7 +175,7 @@ function IDO(props) {
         })
       }, 1000)
       return () => clearInterval(timer.current)
-    }, [setSecondsRemaining, timer, web3Account])
+    }, [setSecondsRemaining, timer, account])
     return secondsRemaining
 
   }
@@ -211,49 +214,37 @@ function IDO(props) {
     let closes_in_sec = "";
     if (startDate && startIn) {
       closes_in_sec = (startDate - now_utc) / 1000;
-
       closes_in_days = Math.floor(closes_in_sec / (3600 * 24));
-
       closes_in_sec -= closes_in_days * 86400;
-
       closes_in_hours = Math.floor(closes_in_sec / 3600) % 24;
       closes_in_sec -= closes_in_hours * 3600;
-
       closes_in_minutes = Math.floor(closes_in_sec / 60) % 60;
       closes_in_sec -= closes_in_minutes * 60;
-
       closes_seconds = Math.floor(closes_in_sec % 60);
-
       desktopTimer = `${closes_in_days} days: ${closes_in_hours} hours: ${closes_in_minutes} minutes: ${closes_in_sec} seconds`;
       mobileTimer = `${closes_in_days} d: ${closes_in_hours} h: ${closes_in_minutes} m: ${closes_in_sec} s`;
 
-      setStartTime(desktopTimer)
-      setStartTimeMobile(mobileTimer)
+      // setStartTime(desktopTimer)
+      // setStartTimeMobile(mobileTimer)
     }
 
     if (endDate && closesIn) {
       closes_in_sec = (endDate - now_utc) / 1000;
-
       closes_in_days = Math.floor(closes_in_sec / (3600 * 24));
-
       closes_in_sec -= closes_in_days * 86400;
-
       closes_in_hours = Math.floor(closes_in_sec / 3600) % 24;
       closes_in_sec -= closes_in_hours * 3600;
-
       closes_in_minutes = Math.floor(closes_in_sec / 60) % 60;
       closes_in_sec -= closes_in_minutes * 60;
-
       closes_seconds = Math.floor(closes_in_sec % 60);
-
       desktopTimer = `${closes_in_days} days: ${closes_in_hours} hours: ${closes_in_minutes} minutes: ${closes_seconds} seconds`;
       mobileTimer = `${closes_in_days}d: ${closes_in_hours}h: ${closes_in_minutes}m: ${closes_seconds}s`;
 
-      setStartTime(desktopTimer)
-      setStartTimeMobile(mobileTimer)
+      // setStartTime(desktopTimer)
+      // setStartTimeMobile(mobileTimer)
     }
     updatePool()
-  }, [secondsRemaining, web3Account])
+  }, [secondsRemaining, account])
 
 
   const updatePool = useCallback(async () => {
@@ -262,23 +253,23 @@ function IDO(props) {
     setNumber1(((featured.raised * featured.up_pool_raise) / 10 ** 18 / (featured.total_supply * featured.idoPercent)) * 100);
     setNumber2(featured.raised / 10 ** 18);
 
-    if (secondsRemaining && web3Account) {
-      var allowance = await usdt.allowance(web3Account, featured.address);
+    if (secondsRemaining && account) {
+      var allowance = await usdt.allowance(account, featured.address);
       setApproved(BigNumber.from(allowance) >= uint256MAX / 2);
 
-      var balance = await ido.getIDOBalance(web3Account);
+      var balance = await ido.getIDOBalance(account);
       setBalance(balance);
 
-      var pmlsBalance = await ido.balances(web3Account)
+      var pmlsBalance = await ido.balances(account)
       setPMLSBalance(pmlsBalance);
     }
-  }, [secondsRemaining, web3Account]);
+  }, [secondsRemaining, account]);
 
   async function buyToken() {
     const usdPerShare = featured.usd_per_share
     let stake = (BigNumber.from(10).pow(18).mul(amount).mul(usdPerShare)).toString()
     try {
-      var balance = await usdt.balanceOf(web3Account);
+      var balance = await usdt.balanceOf(account);
       if (balance.toString() == "0") {
         toastError(t('Error'), t('No USDT'))
         return
@@ -468,7 +459,7 @@ function IDO(props) {
                                           className="wrap-action-input-btn"
                                           onClick={async () => {
                                             if (endDate && closesIn) {
-                                              if (!web3Account) {
+                                              if (!account) {
                                                 toastError(t('Error'), t('Not connected'))
                                                 return
                                               }
@@ -487,7 +478,7 @@ function IDO(props) {
                                   <button
                                     className="btnn_white"
                                     onClick={async () => {
-                                      if (!web3Account) {
+                                      if (!account) {
                                         toastError(t('Error'), t('Not connected'))
                                         return
                                       }

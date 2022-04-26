@@ -25,7 +25,10 @@ const useAuth = () => {
 
   const login = useCallback(
     async (connectorID: ConnectorNames) => {
+      console.log("connectorID:",connectorID)
       const connectorOrGetConnector = connectorsByName[connectorID]
+      console.log("connectorOrGetConnector:",connectorOrGetConnector)
+
       const connector =
         typeof connectorOrGetConnector !== 'function' ? connectorsByName[connectorID] : await connectorOrGetConnector()
 

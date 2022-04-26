@@ -19,7 +19,10 @@ const WalletInfo: React.FC<WalletInfoProps> = ({ hasLowBnbBalance, onDismiss }) 
   const { t } = useTranslation()
   const { account } = useWeb3React()
   const { balance, fetchStatus } = useGetBnbBalance()
-  // const { balance: cakeBalance, fetchStatus: cakeFetchStatus } = useTokenBalance(tokens.usdt.address)
+  const usdtBalance = useTokenBalance(tokens.usdt.address)
+  const pmlsBalance = useTokenBalance(tokens.pmls.address)
+  console.log("usdtBalance:",usdtBalance.balance.toString())
+  console.log("pmlsBalance:",pmlsBalance.balance.toString())
   const { logout } = useAuth()
 
   const handleLogout = () => {

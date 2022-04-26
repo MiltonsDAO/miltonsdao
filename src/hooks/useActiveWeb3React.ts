@@ -13,11 +13,11 @@ import { CHAIN_ID } from 'config/constants/networks'
 const useActiveWeb3React = (): Web3ReactContextInterface<Web3Provider> => {
   const { library, chainId, ...web3React } = useWeb3React()
   const refEth = useRef(library)
-  const [provider, setProvider] = useState(library || simpleRpcProvider)
+  const [provider, setProvider] = useState(library )
 
   useEffect(() => {
     if (library !== refEth.current) {
-      setProvider(library || simpleRpcProvider)
+      setProvider(library )
       refEth.current = library
     }
   }, [library])

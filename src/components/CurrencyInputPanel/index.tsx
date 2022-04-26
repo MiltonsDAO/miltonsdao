@@ -67,7 +67,7 @@ export default function CurrencyInputPanel({
   label,
   onCurrencySelect,
   currency,
-  disableCurrencySelect = false,
+  disableCurrencySelect = true,
   hideBalance = false,
   pair = null, 
   otherCurrency,

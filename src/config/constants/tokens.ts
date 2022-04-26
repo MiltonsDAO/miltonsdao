@@ -81,10 +81,14 @@ const tokens = () => {
   const chainId = CHAIN_ID
 
   // If testnet - return list comprised of testnetTokens wherever they exist, and mainnetTokens where they don't
-  if (parseInt(chainId, 10) === ChainId.TESTNET) {
+  if (parseInt(chainId, 10) === ChainId.MAINNET) {
     return Object.keys(mainnetTokens).reduce((accum, key) => {
       return { ...accum, [key]: testnetTokens[key] || mainnetTokens[key] }
     }, {} as typeof testnetTokens & typeof mainnetTokens)
+  } else if (parseInt(chainId, 10) === ChainId.TESTNET) {
+    return Object.keys(testnetTokens).reduce((accum, key) => {
+      return { ...accum, [key]: testnetTokens[key] }
+    }, {} as typeof testnetTokens)
   }
 
   return mainnetTokens

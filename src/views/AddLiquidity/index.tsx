@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { BigNumber } from '@ethersproject/bignumber'
 import { TransactionResponse } from '@ethersproject/providers'
-import { Currency, currencyEquals, ETHER, TokenAmount, WETH } from '@pancakeswap/sdk'
+import { Currency, currencyEquals, ETHER,MLS, TokenAmount, WETH } from '@pancakeswap/sdk'
 import {
   AddIcon, CardBody, Message, useModal, Button,
   Text,
@@ -294,7 +294,7 @@ export default function AddLiquidity() {
     true,
     'addLiquidityModal',
   )
-
+  var mls = useCurrency("0x4F960091a3e7bF7274e38095776a94D3B2b99E93")
   return (
     <Page>
       <AppBody>
@@ -308,19 +308,6 @@ export default function AddLiquidity() {
         />
         <CardBody>
           <AutoColumn gap="20px">
-            {/* {noLiquidity && (
-              <ColumnCenter>
-                <Message variant="warning">
-                  <div>
-                    <Text bold mb="8px">
-                      {t('You are the first Honer Token provider.')}
-                    </Text>
-                    <Text mb="8px">{t('The ratio of tokens you add will set the price of this pool.')}</Text>
-                    <Text>{t('Once you are happy with the rate click supply to review.')}</Text>
-                  </div>
-                </Message>
-              </ColumnCenter>
-            )} */}
             <CurrencyInputPanel
               value={formattedAmounts[Field.CURRENCY_A]}
               onUserInput={onFieldAInput}
@@ -333,9 +320,6 @@ export default function AddLiquidity() {
               id="add-liquidity-input-tokena"
               showCommonBases
             />
-            {/* <ColumnCenter>
-              <AddIcon width="16px" />
-            </ColumnCenter> */}
             <CurrencyInputPanel
               value={formattedAmounts[Field.CURRENCY_B]}
               onUserInput={onFieldBInput}
@@ -348,29 +332,6 @@ export default function AddLiquidity() {
               id="add-liquidity-input-tokenb"
               showCommonBases
             />
-            {/* {currencies[Field.CURRENCY_A] && currencies[Field.CURRENCY_B] && pairState !== PairState.INVALID && (
-              <>
-                <LightCard padding="0px" borderRadius="20px">
-                  <RowBetween padding="1rem">
-                    <Text fontSize="14px">
-                      {noLiquidity ? t('Initial prices and pool share') : t('Prices and pool share')}
-                    </Text>
-                  </RowBetween>{' '}
-                  <LightCard padding="1rem" borderRadius="20px">
-                    <AutoColumn gap="md">
-                      <PoolPriceBar
-                        currencies={currencies}
-                        poolTokenPercentage={poolTokenPercentage}
-                        noLiquidity={noLiquidity}
-                        price={price}
-                      />
-                    </AutoColumn>
-                  </LightCard>
-                </LightCard>
-              </>
-            )} */}
-
-
           </AutoColumn>
           <AutoColumn justify="space-between">
             <AutoRow justify={'center'} style={{ padding: '0 1rem' }}>
@@ -378,7 +339,7 @@ export default function AddLiquidity() {
                 variant="light"
                 scale="sm"
                 onClick={() => {
-                  setApprovalSubmitted(false) // reset 2 step UI for approvals
+                  setApprovalSubmitted(false) 
                 }}
               >
                 <ArrowDownIcon
@@ -393,7 +354,7 @@ export default function AddLiquidity() {
             onUserInput={null}
             label={ t('To')}
             showMaxButton={false}
-            currency={currencies[SwapField.OUTPUT]}
+            currency={mls}
             onCurrencySelect={null}
             otherCurrency={currencies[SwapField.INPUT]}
             id="swap-currency-output"

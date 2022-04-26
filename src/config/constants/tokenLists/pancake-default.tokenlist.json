@@ -25,6 +25,14 @@
       "chainId": 97,
       "decimals": 18,
       "logoURI": "https://pancakeswap.finance/images/tokens/0x55d398326f99059fF775485246999027B3197955.png"
+    },
+    {
+      "name": "Miltons",
+      "symbol": "MLS",
+      "address": "0x4F960091a3e7bF7274e38095776a94D3B2b99E93",
+      "chainId": 97,
+      "decimals": 18,
+      "logoURI": "https://pancakeswap.finance/images/tokens/0x55d398326f99059fF775485246999027B3197955.png"
     }
   ]
 }
