@@ -74,7 +74,7 @@ export const changeWrap = createAsyncThunk(
     // }
     // const addresses = getAddresses(networkID);
     // const signer = provider.getSigner();
-    // const amountInWei = isWrap ? ethers.utils.parseUnits(value, "gwei") : ethers.utils.parseEther(value);
+    // const amountInWei = isWrap ? ethers.utils.parseUnits(value, "ether") : ethers.utils.parseEther(value);
     // const wmemoContract = new ethers.Contract(addresses.WMEMO_ADDRESS, wMemoTokenContract, signer);
     // let wrapTx;
     // try {
@@ -112,7 +112,7 @@ export interface IWrapDetails {
 
 const calcWrapValue = async ({ isWrap, value, provider, networkID }: IWrapDetails): Promise<number> => {
   // const addresses = getAddresses(networkID);
-  // const amountInWei = isWrap ? ethers.utils.parseUnits(value, "gwei") : ethers.utils.parseEther(value);
+  // const amountInWei = isWrap ? ethers.utils.parseUnits(value, "ether") : ethers.utils.parseEther(value);
   // let wrapValue = 0;
   // const wmemoContract = new ethers.Contract(addresses.WMEMO_ADDRESS, wMemoTokenContract, provider);
   // if (isWrap) {

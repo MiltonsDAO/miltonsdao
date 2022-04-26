@@ -34,15 +34,15 @@ export const getBalances = createAsyncThunk(
     const memoBalance = await memoContract.balanceOf(address)
     const timeContract = new ethers.Contract(addresses.OHM_ADDRESS, TimeTokenContract, provider)
     const timeBalance = await timeContract.balanceOf(address)
-    console.log('getBalances:', memoBalance, timeBalance)
+    console.log('balanceOf:', memoBalance, timeBalance)
     // const wmemoContract = new ethers.Contract(addresses.WMEMO_ADDRESS, wMemoTokenContract, provider);
     // const wmemoBalance = await wmemoContract.balanceOf(address);
     // console.log("wmemoBalance:", wmemoBalance);
 
     return {
       balances: {
-        smls: ethers.utils.formatUnits(memoBalance, 'gwei'),
-        mls: ethers.utils.formatUnits(timeBalance, 'gwei'),
+        smls: ethers.utils.formatUnits(memoBalance, 'wei'),
+        mls: ethers.utils.formatUnits(timeBalance, 'wei'),
         // wmemo: ethers.utils.formatEther(wmemoBalance),
       },
     }
@@ -134,7 +134,7 @@ export const loadAccountDetails = createAsyncThunk(
       registered: registered,
       balances: {
         smls: ethers.utils.formatUnits(memoBalance, 'gwei'),
-        mls: ethers.utils.formatUnits(timeBalance, 'gwei'),
+        mls: ethers.utils.formatUnits(timeBalance, 'ether'),
         wmemo: ethers.utils.formatEther(wmemoBalance),
       },
       staking: {
@@ -207,7 +207,7 @@ export const calculateUserBondDetails = createAsyncThunk(
     const avaxBalance = await provider.getSigner().getBalance()
     const avaxVal = ethers.utils.formatEther(avaxBalance)
 
-    const pendingPayoutVal = ethers.utils.formatUnits(pendingPayout, 'gwei')
+    const pendingPayoutVal = ethers.utils.formatUnits(pendingPayout, 'ether')
 
     return {
       bond: bond.name,

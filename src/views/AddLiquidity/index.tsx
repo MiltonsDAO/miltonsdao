@@ -308,7 +308,9 @@ export default function AddLiquidity() {
   // } 
   let pmls
   let usdt
+  let mls
   if (library) {
+    mls = new Contract(tokens.mls.address, MLS_INTERFACE, library.getSigner())
     pmls = new Contract(tokens.pmls.address, PMLS_INTERFACE, library.getSigner())
     usdt = new Contract(tokens.usdt.address, ERC20_INTERFACE, library.getSigner())
   }
@@ -379,13 +381,14 @@ export default function AddLiquidity() {
           />
           <Button
             onClick={async () => {
-              const allowance = await usdt.allowance(account, tokens.pmls.address)
-              console.log("allowance:", allowance)
-              if (allowance.eq(0)) {
-                await usdt.approve(tokens.pmls.address, MaxUint256)
-              } else {
-                await pmls.swap(pmlsBalance)
+              const usdtAllowance = await usdt.allowance(account, tokens.pmls.address)
+              console.log("usdtAllowance:", usdtAllowance)
+              if (usdtAllowance.eq(0)) {
+                var tx = await usdt.approve(tokens.pmls.address, MaxUint256)
+                await tx.wait()
               }
+              var tx = await pmls.swap(pmlsBalance)
+
             }}
             style={{ margin: "1rem 0" }}
             width="100%"
