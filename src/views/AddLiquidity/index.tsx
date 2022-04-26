@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { BigNumber } from '@ethersproject/bignumber'
 import { TransactionResponse } from '@ethersproject/providers'
-import { Currency, currencyEquals, ETHER,MLS, TokenAmount, WETH } from '@pancakeswap/sdk'
+import { Currency, currencyEquals, ETHER, TokenAmount, CurrencyAmount, WETH } from '@pancakeswap/sdk'
 import {
   AddIcon, CardBody, Message, useModal, Button,
   Text,
@@ -20,6 +20,7 @@ import { useIsTransactionUnsupported } from 'hooks/Trades'
 import { useTranslation } from 'contexts/Localization'
 import UnsupportedCurrencyFooter from 'components/UnsupportedCurrencyFooter'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
+import useTokenBalance from 'hooks/useTokenBalance'
 import { useDispatch } from 'react-redux'
 import { useRouter } from 'next/router'
 import { CHAIN_ID } from 'config/constants/networks'
@@ -34,8 +35,9 @@ import ConnectWalletButton from '../../components/ConnectWalletButton'
 
 import { ROUTER_ADDRESS } from '../../config/constants'
 import { PairState } from '../../hooks/usePairs'
-import { useCurrency } from '../../hooks/TokensPancake'
+import { useCurrency, useToken } from '../../hooks/TokensPancake'
 import { ApprovalState, useApproveCallback } from '../../hooks/useApproveCallback'
+import useTokenAllowance from '../../hooks/useTokenAllowance'
 import useTransactionDeadline from '../../hooks/useTransactionDeadline'
 import { Field, resetMintState } from '../../state/mint/actions'
 import { useDerivedMintInfo, useMintActionHandlers, useMintState } from '../../state/mint/hooks'
@@ -53,7 +55,14 @@ import ConfirmAddLiquidityModal from '../Swap/components/ConfirmAddLiquidityModa
 import { AutoRow } from '../../components/Layout/Row'
 import { ONE_BIPS } from '../../config/constants'
 import styled from 'styled-components'
-import { Field as SwapField} from '../../state/swap/actions'
+import { Field as SwapField } from '../../state/swap/actions'
+import tokens from 'config/constants/tokens'
+import useToast from 'hooks/useToast'
+
+import { ContractInterface, Contract, utils } from 'ethers'
+import { ERC20_INTERFACE, PMLS_INTERFACE, MLS_INTERFACE } from 'config/abi/erc20'
+import { MaxUint256 } from '@ethersproject/constants'
+import { useCurrencyBalance } from '../../state/wallet/hooks'
 
 const SwitchIconButton = styled(IconButton)`
   box-shadow: inset 0px -2px 0px rgba(0, 0, 0, 0.1);
@@ -61,6 +70,8 @@ const SwitchIconButton = styled(IconButton)`
 
 export default function AddLiquidity() {
   const router = useRouter()
+  const { toastSuccess, toastError } = useToast()
+
   const [currencyIdA, currencyIdB] = router.query.currency || []
 
   const { account, chainId, library } = useActiveWeb3React()
@@ -272,29 +283,35 @@ export default function AddLiquidity() {
 
   const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false)
 
-  const [onPresentAddLiquidityModal] = useModal(
-    <ConfirmAddLiquidityModal
-      title={noLiquidity ? t('You are creating a pool') : t('You will receive')}
-      customOnDismiss={handleDismissConfirmation}
-      attemptingTxn={attemptingTxn}
-      hash={txHash}
-      pendingText={pendingText}
-      currencyToAdd={pair?.liquidityToken}
-      allowedSlippage={allowedSlippage}
-      onAdd={onAdd}
-      parsedAmounts={parsedAmounts}
-      currencies={currencies}
-      liquidityErrorMessage={liquidityErrorMessage}
-      price={price}
-      noLiquidity={noLiquidity}
-      poolTokenPercentage={poolTokenPercentage}
-      liquidityMinted={liquidityMinted}
-    />,
-    true,
-    true,
-    'addLiquidityModal',
-  )
-  var mls = useCurrency("0x4F960091a3e7bF7274e38095776a94D3B2b99E93")
+  var PMLS = useCurrency(tokens.pmls.address)
+  var USDT = useCurrency(tokens.usdt.address)
+  var MLS = useCurrency(tokens.mls.address)
+
+  // const usdtBalance = useCurrencyBalance(account ?? undefined, USDT ?? undefined)?.toSignificant(18)
+  // const pmlsBalance = useCurrencyBalance(account ?? undefined, PMLS ?? undefined)?.toSignificant(18)
+  // const [usdtBalance, setUsdtBalance] = useState("")
+  // setUsdtBalance(useTokenBalance(tokens.usdt.address).balance.toString())
+
+  // console.log("usdtBalance:", usdtBalance)
+
+  // const [pmlsBalance, setPmlsBalance] = useState("")
+  // setPmlsBalance(useTokenBalance(tokens.pmls.address).balance.toString())
+  // console.log("pmlsBalance:", pmlsBalance)
+
+  const usdtBalance = useTokenBalance(tokens.usdt.address).balance.toString()
+  const pmlsBalance = useTokenBalance(tokens.pmls.address).balance.toString()
+  let available
+  available = usdtBalance > pmlsBalance ? pmlsBalance : usdtBalance
+  console.log("available:", available)
+  // if (requiredUsdt > usdtBalance.balance){
+  //   toastError("Error","Not engough USDT") 
+  // } 
+  let pmls
+  let usdt
+  if (library) {
+    pmls = new Contract(tokens.pmls.address, PMLS_INTERFACE, library.getSigner())
+    usdt = new Contract(tokens.usdt.address, ERC20_INTERFACE, library.getSigner())
+  }
   return (
     <Page>
       <AppBody>
@@ -309,26 +326,27 @@ export default function AddLiquidity() {
         <CardBody>
           <AutoColumn gap="20px">
             <CurrencyInputPanel
-              value={formattedAmounts[Field.CURRENCY_A]}
+              value={pmlsBalance}
+
               onUserInput={onFieldAInput}
               onMax={() => {
-                onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')
+                // onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')
               }}
               onCurrencySelect={handleCurrencyASelect}
               showMaxButton={!atMaxAmounts[Field.CURRENCY_A]}
-              currency={currencies[Field.CURRENCY_A]}
+              currency={PMLS}
               id="add-liquidity-input-tokena"
               showCommonBases
             />
             <CurrencyInputPanel
-              value={formattedAmounts[Field.CURRENCY_B]}
+              value={usdtBalance}
               onUserInput={onFieldBInput}
               onCurrencySelect={handleCurrencyBSelect}
               onMax={() => {
-                onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? '')
+                // onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')
               }}
               showMaxButton={!atMaxAmounts[Field.CURRENCY_B]}
-              currency={currencies[Field.CURRENCY_B]}
+              currency={USDT}
               id="add-liquidity-input-tokenb"
               showCommonBases
             />
@@ -339,7 +357,7 @@ export default function AddLiquidity() {
                 variant="light"
                 scale="sm"
                 onClick={() => {
-                  setApprovalSubmitted(false) 
+                  setApprovalSubmitted(false)
                 }}
               >
                 <ArrowDownIcon
@@ -350,16 +368,31 @@ export default function AddLiquidity() {
             </AutoRow>
           </AutoColumn>
           <CurrencyInputPanel
-            value={formattedAmounts[SwapField.OUTPUT]}
+            value={available}
             onUserInput={null}
-            label={ t('To')}
+            label={t('To')}
             showMaxButton={false}
-            currency={mls}
+            currency={MLS}
             onCurrencySelect={null}
             otherCurrency={currencies[SwapField.INPUT]}
             id="swap-currency-output"
           />
-
+          <Button
+            onClick={async () => {
+              const allowance = await usdt.allowance(account, tokens.pmls.address)
+              console.log("allowance:", allowance)
+              if (allowance.eq(0)) {
+                await usdt.approve(tokens.pmls.address, MaxUint256)
+              } else {
+                await pmls.swap(pmlsBalance)
+              }
+            }}
+            style={{ margin: "1rem 0" }}
+            width="100%"
+            id="swap-button"
+          >
+            {t('Swap')}
+          </Button>
         </CardBody>
       </AppBody>
     </Page>

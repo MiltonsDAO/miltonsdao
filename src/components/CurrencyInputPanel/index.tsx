@@ -151,9 +151,10 @@ export default function CurrencyInputPanel({
         </Flex>
         {account && (
           <Text onClick={onMax} color="textSubtle" fontSize="14px" style={{ display: 'inline', cursor: 'pointer' }}>
-            {!hideBalance && !!currency
+            {value}
+            {/* {!hideBalance && !!currency
               ? t('Balance: %balance%', { balance: selectedCurrencyBalance?.toSignificant(6) ?? t('Loading') })
-              : ' -'}
+              : ' -'} */}
           </Text>
         )}
       </Flex>
@@ -163,9 +164,9 @@ export default function CurrencyInputPanel({
             <NumericalInput
               className="token-amount-input"
               value={value}
-              // onUserInput={(val) => {
-              //   onUserInput(val)
-              // }}
+              onUserInput={(val) => {
+                onUserInput(val)
+              }}
             />
           </LabelRow>
           <InputRow selected={disableCurrencySelect}>

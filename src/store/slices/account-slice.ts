@@ -95,7 +95,6 @@ export const loadAccountDetails = createAsyncThunk(
     const addresses = getAddresses(networkID)
 
     if (addresses.OHM_ADDRESS) {
-      console.log(addresses.OHM_ADDRESS)
       const timeContract = new ethers.Contract(addresses.OHM_ADDRESS, TimeTokenContract, provider)
       timeBalance = await timeContract.balanceOf(address)
       stakeAllowance = await timeContract.allowance(address, addresses.STAKING_HELPER_ADDRESS)

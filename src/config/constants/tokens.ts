@@ -22,7 +22,7 @@ export const mainnetTokens = defineTokens({
   ),
   // bnb here points to the wbnb contract. Wherever the currency BNB is required, conditional checks for the symbol 'BNB' can be used
   pmls: new Token(MAINNET, '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', 18, 'BNB', 'BNB', 'https://www.binance.com/'),
-  mls: new Token(MAINNET, '0x55d398326f99059fF775485246999027B3197955', 18, 'USDT', 'Tether USD', 'https://tether.to/'),
+  mls: new Token(MAINNET, '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', 18, 'USDT', 'Tether USD', 'https://tether.to/'),
   cake: new Token(
     MAINNET,
     '0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82',
@@ -53,7 +53,7 @@ export const testnetTokens = defineTokens({
   ),
   pmls: new Token(
     TESTNET,
-    '0x89e0ca90Fd8a3CAeF18c915A8E9b3afa591Ea075',
+    '0x82a2dede93E9b610F43A425Dc8dDe7455B958b8D',
     18,
     'PMLS',
     'Miltons Token',
@@ -61,7 +61,7 @@ export const testnetTokens = defineTokens({
   ),
   mls: new Token(
     TESTNET,
-    '0x89e0ca90Fd8a3CAeF18c915A8E9b3afa591Ea075',
+    '0x8C8d5D030C9F0D508Ed65b40EbEb78E1Aa741647',
     18,
     'MLS',
     'Miltons Token',
@@ -77,7 +77,7 @@ export const testnetTokens = defineTokens({
   ),
   usdt: new Token(
     TESTNET,
-    '0xa35062141Fa33BCA92Ce69FeD37D0E8908868AAe',
+    '0xc362B3ed5039447dB7a06F0a3d0bd9238E74d57c',
     18,
     'USDT',
     'USDT Token',

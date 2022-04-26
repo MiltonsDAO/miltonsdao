@@ -52,28 +52,12 @@ export function useTokenBalancesWithLoadingIndicator(
   address?: string,
   tokens?: (Token | undefined)[],
 ): [{ [tokenAddress: string]: TokenAmount | undefined }, boolean] {
-  // const validatedTokens = tokens
-  // const { library } = useWeb3React()
   const validatedTokens: Token[] = useMemo(
     () => tokens?.filter((t?: Token): t is Token => isAddress(t?.address) !== false) ?? [],
     [tokens],
   )
-  console.log('validatedTokens:', validatedTokens, address)
 
   const validatedTokenAddresses = useMemo(() => validatedTokens.map((vt) => vt.address), [validatedTokens])
-
-  // const balances = useMultipleContractSingleData(validatedTokenAddresses, ERC20_INTERFACE, 'balanceOf', [address])
-  // var contract = new Contract(validatedTokenAddresses[0], PMLS_INTERFACE, library)
-  // balances = useSingleContractMultipleData(contract, 'getIDOBalance', [[address]])
-  console.log('validatedTokenAddresses:', validatedTokenAddresses)
-  // let balances =
-  //   validatedTokenAddresses[0] == '0x76C8F34C5f33f6e8115BDc7AaE69bb2e7eC525dE'
-  //     ? useMultipleContractSingleData([validatedTokenAddresses[0]], PMLS_INTERFACE, 'balances', [address])
-  //     : useMultipleContractSingleData([validatedTokenAddresses[0]], ERC20_INTERFACE, 'balanceOf', [address])
-  // var contract = new Contract(validatedTokenAddresses[1], ERC20_INTERFACE, library)
-  // balances.concat(useSingleContractMultipleData(contract, 'balanceOf', [[address]]))
-  // console.log("validatedTokenAddresses[1]:",validatedTokenAddresses[1])
-  // const balances = useMultipleContractSingleData(validatedTokenAddresses, PMLS_INTERFACE, 'getIDOBalance', [address])
 
   const balances = useMultipleContractSingleData(
     validatedTokenAddresses,

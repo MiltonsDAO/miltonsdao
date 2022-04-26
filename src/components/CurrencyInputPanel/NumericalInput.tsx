@@ -42,19 +42,19 @@ const inputRegex = RegExp(`^\\d*(?:\\\\[.])?\\d*$`) // match escaped "." charact
 
 export const Input = memo(function InnerInput({
   value,
-  // onUserInput,
+  onUserInput,
   placeholder,
   ...rest
 }: {
   value: string | number
-  // onUserInput: (input: string) => void
+  onUserInput: (input: string) => void
   error?: boolean
   fontSize?: string
   align?: 'right' | 'left'
 } & Omit<React.HTMLProps<HTMLInputElement>, 'ref' | 'onChange' | 'as'>) {
   const enforcer = (nextUserInput: string) => {
     if (nextUserInput === '' || inputRegex.test(escapeRegExp(nextUserInput))) {
-      // onUserInput(nextUserInput)
+      onUserInput(nextUserInput)
     }
   }
 
