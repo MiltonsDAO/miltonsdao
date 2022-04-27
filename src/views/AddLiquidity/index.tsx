@@ -317,14 +317,6 @@ export default function AddLiquidity() {
   return (
     <Page>
       <AppBody>
-        <AppHeader
-          title={t('Honer Token Exchange')}
-          subtitle={t('Add Honer Token to receive mainnet tokens')}
-          helper={t(
-            '',
-          )}
-          backTo="/liquidity"
-        />
         <CardBody>
           <AutoColumn gap="20px">
             <CurrencyInputPanel

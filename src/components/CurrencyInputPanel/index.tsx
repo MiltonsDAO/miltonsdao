@@ -149,14 +149,14 @@ export default function CurrencyInputPanel({
             </Flex>
           ) : null}
         </Flex>
-        {account && (
+        {/* {account && (
           <Text onClick={onMax} color="textSubtle" fontSize="14px" style={{ display: 'inline', cursor: 'pointer' }}>
             {value}
-            {/* {!hideBalance && !!currency
+            {!hideBalance && !!currency
               ? t('Balance: %balance%', { balance: selectedCurrencyBalance?.toSignificant(6) ?? t('Loading') })
-              : ' -'} */}
+              : ' -'}
           </Text>
-        )}
+        )} */}
       </Flex>
       <InputPanel>
         <Container as="label">
