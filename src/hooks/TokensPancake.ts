@@ -26,7 +26,7 @@ import { filterTokens } from '../components/SearchModal/filtering'
 function useTokensFromMap(tokenMap: TokenAddressMap, includeUserAdded: boolean): { [address: string]: Token } {
   const { chainId } = useActiveWeb3React()
   const userAddedTokens = useUserAddedTokens()
-
+  console.log(tokenMap, chainId)
   return useMemo(() => {
     if (!chainId) return {}
 

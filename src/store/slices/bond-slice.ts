@@ -130,7 +130,7 @@ export const calcBondDetails = createAsyncThunk(
       // }
 
       bondDiscount = (marketPrice * Math.pow(10, 18) - bondPrice) / bondPrice
-      console.log('bondPriceInUSD:', bondPrice, 'marketPrice:', marketPrice, 'bondDiscount:', bondDiscount)
+      console.log('bondPriceInUSD:', bondPrice.toString(), 'marketPrice:', marketPrice, 'bondDiscount:', bondDiscount)
     } catch (e) {
       console.log('error getting bondPriceInUSD', e)
     }
