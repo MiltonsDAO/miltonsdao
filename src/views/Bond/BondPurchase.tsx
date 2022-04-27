@@ -46,7 +46,6 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
     };
 
     async function onBond() {
-        console.log("onBond:", bond)
         if (quantity === "") {
             toastWarning("warning", messages.before_minting);
             //@ts-ignore
@@ -189,10 +188,6 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
                         <p>{txnButtonText(pendingTransactions, "approve_" + bond.name, "Approve")}</p>
                     </div>
                 )}
-                {/* 
-                <div className="transaction-button bond-approve-btn" onClick={handleZapinOpen}>
-                    <p>Zap</p>
-                </div> */}
 
                 {!hasAllowance() && !useAvax && (
                     <div className="help-text">

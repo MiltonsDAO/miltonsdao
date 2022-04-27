@@ -26,12 +26,12 @@ export const loadAppDetails = createAsyncThunk(
     const memoContract = new ethers.Contract(addresses.sOHM_ADDRESS, MemoTokenContract, provider)
     const timeContract = new ethers.Contract(addresses.OHM_ADDRESS, TimeTokenContract, provider)
 
-    const marketPrice = ((await getMarketPrice(networkID, provider)) / Math.pow(10, 9)) * daiPrice
+    const marketPrice = await getMarketPrice(networkID, provider)
 
-    const totalSupply = (await timeContract.totalSupply()) / Math.pow(10, 9)
-    const circSupply = (await memoContract.circulatingSupply()) / Math.pow(10, 9)
+    const totalSupply = await timeContract.totalSupply()
+    const circSupply = await memoContract.circulatingSupply()
 
-    const stakingTVL = circSupply * marketPrice
+    const stakingTVL = circSupply * marketPrice / Math.pow(10, 9)
     const marketCap = totalSupply * marketPrice
 
     const tokenBalPromises = allBonds.map((bond) => bond.getTreasuryBalance(networkID, provider))
