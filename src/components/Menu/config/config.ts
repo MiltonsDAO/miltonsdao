@@ -45,7 +45,7 @@ const config: (t: ContextApi['t']) => ConfigMenuItemsType[] = (t) => [
   },
   {
     label: 'Honor',
-    href: '/add/'.concat(tokens.pmls.address, '/', tokens.usdt.address),
+    href: '/add/',
     icon: SwapIcon,
     fillIcon: SwapFillIcon,
     showItemsOnMobile: false,

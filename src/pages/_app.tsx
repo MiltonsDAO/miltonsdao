@@ -13,9 +13,12 @@ import type { AppProps } from 'next/app'
 import Head from 'next/head'
 import { useEffect, useState, useCallback, Fragment } from 'react'
 import { PersistGate } from 'redux-persist/integration/react'
-import { useStore, persistor, AppState } from 'state'
+import { useStore, persistor, AppState,AppDispatch } from 'state'
 import { usePollBlockNumber } from 'state/block/hooks'
 import { NextPage } from 'next'
+import { useWeb3React } from '@web3-react/core';
+import { getBalances } from 'store/slices/account-slice'
+import { useDispatch, useSelector } from 'react-redux'
 import { Blocklist, Updaters } from '..'
 import ErrorBoundary from '../components/ErrorBoundary'
 import Menu from '../components/Menu'
@@ -27,6 +30,7 @@ import "./bond.scss";
 import "./bondSettings.scss";
 import "./zapin.scss";
 import "./choose-token.scss";
+
 
 const EasterEgg = dynamic(() => import('components/EasterEgg'), { ssr: false })
 
@@ -43,13 +47,21 @@ function GlobalHooks() {
   useUserAgent()
   useInactiveListener()
   useSentryUser()
+  const { account, chainId, library } = useWeb3React()
+  const dispatch = useDispatch<AppDispatch>()
 
+  useEffect(() => {
+    if (account) {
+      dispatch(getBalances({networkID: chainId, address:account, provider: library}))
+    }
+  }, [account])
   return null
 }
 
 function MyApp(props: AppProps) {
   const { pageProps } = props
   const store = useStore(pageProps.initialReduxState)
+
   return (
     <>
       <Head>

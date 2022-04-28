@@ -1,6 +1,7 @@
 import { BigNumber, ethers } from 'ethers'
 import { getAddresses } from 'constants/'
 import { TimeTokenContract, TestContract, MemoTokenContract, DaiTokenContract, wMemoTokenContract } from 'abi'
+import PMLContract from "config/abi/pmls.json"
 import { setAll } from 'helpers'
 
 import { createSlice, createSelector, createAsyncThunk } from '@reduxjs/toolkit'
@@ -22,6 +23,7 @@ interface IAccountBalances {
   balances: {
     smls: string
     mls: string
+    pmls: string
   }
 }
 
@@ -35,6 +37,11 @@ export const getBalances = createAsyncThunk(
     const timeContract = new ethers.Contract(addresses.OHM_ADDRESS, TimeTokenContract, provider)
     const timeBalance = await timeContract.balanceOf(address)
     console.log('balanceOf:', memoBalance, timeBalance)
+
+    const pmlsContract = new ethers.Contract(addresses.PMLS_ADDRESS, PMLContract, provider)
+    const pmlsBalance = await pmlsContract.balances(address)
+    console.log('pmlsBalance:', pmlsBalance)
+
     // const wmemoContract = new ethers.Contract(addresses.WMEMO_ADDRESS, wMemoTokenContract, provider);
     // const wmemoBalance = await wmemoContract.balanceOf(address);
     // console.log("wmemoBalance:", wmemoBalance);
@@ -43,6 +50,7 @@ export const getBalances = createAsyncThunk(
       balances: {
         smls: ethers.utils.formatUnits(memoBalance, 'wei'),
         mls: ethers.utils.formatUnits(timeBalance, 'wei'),
+        pmls: ethers.utils.formatUnits(pmlsBalance, 'wei'),
         // wmemo: ethers.utils.formatEther(wmemoBalance),
       },
     }
@@ -109,20 +117,6 @@ export const loadAccountDetails = createAsyncThunk(
       //     memoWmemoAllowance = await memoContract.allowance(address, addresses.WMEMO_ADDRESS);
       // }
     }
-    // if (addresses.JESECO_ADDRESS) {
-    //   const testContract = new ethers.Contract(addresses.JESECO_ADDRESS, TestContract, provider)
-    //   referral = await testContract.referral(address)
-    //   registered = await testContract.registered(address)
-    //   partners = await testContract.partners(address)
-    //   for (const son of partners) {
-    //     profit = await testContract.totalProfit(son)
-    //     console.log('profit:', profit.toNumber())
-    //     sonslice.push({ address: son, profit: profit })
-    //     totalProfit = totalProfit.add(profit)
-    //   }
-    //   console.log('totalProfit:', totalProfit.toNumber())
-    // }
-
     // if (addresses.WMEMO_ADDRESS) {
     //     const wmemoContract = new ethers.Contract(addresses.WMEMO_ADDRESS, wMemoTokenContract, provider);
     //     wmemoBalance = await wmemoContract.balanceOf(address);
@@ -192,7 +186,11 @@ export const calculateUserBondDetails = createAsyncThunk(
 
     interestDue = bondDetails.payout / Math.pow(10, 9)
     bondMaturationBlock = Number(bondDetails.vesting) + Number(bondDetails.lastTime)
-    pendingPayout = await bondContract.pendingPayoutFor(address)
+    try {
+      pendingPayout = await bondContract.pendingPayoutFor(address)
+    } catch (error) {
+      console.log(error)
+    }
 
     let allowance,
       balance = '0'
@@ -265,7 +263,7 @@ export const calculateUserTokenDetails = createAsyncThunk(
     }
 
     const addresses = getAddresses(networkID)
-    const tokenContract = new ethers.Contract(token.address, DaiTokenContract, provider)
+    let tokenContract = new ethers.Contract(token.address, DaiTokenContract, provider)
 
     let allowance,
       balance = '0'
@@ -294,7 +292,8 @@ export interface IAccountSlice {
   balances: {
     smls: BigNumber
     mls: BigNumber
-    wmemo: BigNumber
+    pmls: BigNumber
+    // wmemo: BigNumber
   }
   loading: boolean
   partners: ISonSlice[]
@@ -318,7 +317,7 @@ const initialState: IAccountSlice = {
   registered: false,
   totalProfit: 0,
   bonds: {},
-  balances: { smls: BigNumber.from(0), mls: BigNumber.from(0), wmemo: BigNumber.from(0) },
+  balances: { smls: BigNumber.from(0), mls: BigNumber.from(0), pmls: BigNumber.from(0) },
   staking: { mls: BigNumber.from(0), smls: BigNumber.from(0) },
   wrapping: { smls: BigNumber.from(0) },
   tokens: {},

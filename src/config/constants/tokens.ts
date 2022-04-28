@@ -53,7 +53,7 @@ export const testnetTokens = defineTokens({
   ),
   pmls: new Token(
     TESTNET,
-    '0x1d8fCc49f033b1ead007c2d4BEcb737132ADc7AB',
+    '0xEfF46346a988b1D80010702eb232Fc077EEfF452',
     18,
     'PMLS',
     'Miltons Token',
@@ -61,7 +61,7 @@ export const testnetTokens = defineTokens({
   ),
   mls: new Token(
     TESTNET,
-    '0x8fE7bCA2ED58a7C5038c6FB5C75df9A003cB3693',
+    '0x1Ed57ecF983bC2b62153A0D7133F5438a7Ff76D4',
     18,
     'MLS',
     'Miltons Token',

@@ -128,7 +128,7 @@ export const changeStake = createAsyncThunk(
     console.log('warning', messages.your_balance_update_soon)
 
     // await sleep(10)
-    await dispatch(getBalances({ address, networkID, provider }))
+    // await dispatch(getBalances({ address, networkID, provider }))
     console.log('warning', messages.your_balance_updated)
     // toastInfo('Info', messages.your_balance_updated)
     return

@@ -207,7 +207,7 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
                                 <Skeleton width="100px" />
                             ) : (
                                 <>
-                                    {trim(useAvax ? bond.avaxBalance : bond.balance, 4)} {displayUnits}
+                                    {trim(useAvax ? bond.avaxBalance : bond.balance, 18)} {displayUnits}
                                 </>
                             )}
                         </p>

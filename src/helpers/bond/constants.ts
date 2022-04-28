@@ -14,4 +14,5 @@ export interface NetworkAddresses {
   [Networks.BSC]: BondAddresses
   [Networks.BSC_TESTNET]: BondAddresses
   [Networks.AVAX_TESTNET]: BondAddresses
+  [Networks.HARDHAT]: BondAddresses
 }

@@ -7,7 +7,7 @@ import { Box, Modal, Paper, SvgIcon, IconButton, OutlinedInput, InputAdornment }
 import ChooseToken from "./ChooseToken";
 import { IAllBondData } from "../../../hooks/bonds";
 import useTokens, { IAllTokenData } from "../../../hooks/Tokens";
-import { avax } from "../../../helpers/tokens";
+import { mls } from "../../../helpers/tokens";
 import { shorten, trim } from "../../../helpers";
 import { IReduxState } from "../../../store/slices/state.interface";
 import { changeApproval, calcZapinDetails, ITokenZapinResponse, zapinMint } from "../../../store/slices/zapin-thunk";
@@ -36,7 +36,7 @@ function Zapin({ open, handleClose, bond }: IZapinProps) {
         return state.pendingTransactions;
     });
 
-    let defaultToken = tokens.find(token => token.name === avax.name);
+    let defaultToken = tokens.find(token => token.name === mls.name);
 
     // if (bond.name === wavax.name) {
     //     defaultToken = tokens.find(token => token.name === dai.name);

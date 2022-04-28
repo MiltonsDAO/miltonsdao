@@ -326,7 +326,7 @@ export default function Stake({ account }) {
                     <div className="data-row">
                       <p className="data-row-name">{t("Your Balance")}</p>
                       <p className="data-row-value">
-                        {isAppLoading ? <Skeleton width="80px" /> : <>{trim(Number(timeBalance), 4)} MLS</>}
+                        {isAppLoading ? <Skeleton width="80px" /> : <>{trim(Number(timeBalance), 18)} MLS</>}
                       </p>
                     </div>
 

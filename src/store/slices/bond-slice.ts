@@ -139,13 +139,20 @@ export const calcBondDetails = createAsyncThunk(
     const maxBodValue = ethers.utils.parseEther('1')
 
     if (bond.isLP) {
+      console.log("amountInWei:",amountInWei)
+
       valuation = await bondCalcContract.valuation(bond.getAddressForReserve(networkID), amountInWei)
+      console.log("valuation:",valuation)
       bondQuote = await bondContract.payoutFor(valuation)
+      console.log("bondQuote:",bondQuote)
+
       bondQuote = bondQuote / Math.pow(10, 9)
 
       const maxValuation = await bondCalcContract.valuation(bond.getAddressForReserve(networkID), maxBodValue)
       const maxBondQuote = await bondContract.payoutFor(maxValuation)
       maxBondPriceToken = maxBondPrice / (maxBondQuote * Math.pow(10, -9))
+      console.log("maxBondPriceToken:",maxBondPriceToken)
+
     } else {
       bondQuote = await bondContract.payoutFor(amountInWei)
       bondQuote = bondQuote / Math.pow(10, 18)
@@ -227,7 +234,7 @@ export const bondAsset = createAsyncThunk(
       if (useAvax) {
         bondTx = await bondContract.deposit(valueInWei, maxPremium, depositorAddress, { value: valueInWei, gasPrice })
       } else {
-        console.log('valueInWei:', valueInWei)
+        console.log('valueInWei:', valueInWei, maxPremium, depositorAddress, referral, gasPrice)
         bondTx = await bondContract.deposit(valueInWei, maxPremium, depositorAddress, referral, { gasPrice })
       }
       dispatch(
@@ -293,7 +300,7 @@ export const redeemBond = createAsyncThunk(
       dispatch(info({ text: messages.your_balance_update_soon }))
       await sleep(10)
       await dispatch(calculateUserBondDetails({ address, bond, networkID, provider }))
-      await dispatch(getBalances({ address, networkID, provider }))
+      // await dispatch(getBalances({ address, networkID, provider }))
       dispatch(info({ text: messages.your_balance_updated }))
       return
     } catch (err: any) {

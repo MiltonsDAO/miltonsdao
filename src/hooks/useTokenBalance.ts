@@ -34,6 +34,30 @@ const useTokenBalance = (tokenAddress: string) => {
   }
 }
 
+const useTokenBalances = (tokenAddress: string) => {
+  const { account } = useWeb3React()
+
+  const contract = useTokenContract(tokenAddress, false)
+  const { data, status, ...rest } = useSWRContract(
+    account
+      ? {
+          contract,
+          methodName: 'balanceOf',
+          params: [account],
+        }
+      : null,
+    {
+      refreshInterval: FAST_INTERVAL,
+    },
+  )
+
+  return {
+    ...rest,
+    fetchStatus: status,
+    balance: data ? new BigNumber(data.toString()) : BIG_ZERO,
+  }
+}
+
 export const useTotalSupply = () => {
   const { reader: cakeContract } = useCake()
   const { data } = useSWRContract([cakeContract, 'totalSupply'], {

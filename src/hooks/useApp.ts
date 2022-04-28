@@ -5,10 +5,12 @@ import { useWeb3React } from '@web3-react/core'
 import { AppDispatch, AppState } from '../state'
 import { calcBondDetails } from "../store/slices/bond-slice";
 import { loadAppDetails, IAppSlice } from "../store/slices/app-slice";
-import { loadAccountDetails } from "../store/slices/account-slice";
+import { loadAccountDetails , calculateUserTokenDetails, getBalances } from "../store/slices/account-slice";
+import useToken  from "../hooks/Tokens";
 
 export function useApp() {
     const { bonds } = useBonds();
+    const { tokens } = useToken();
     const dispatch = useDispatch<AppDispatch>()
 
     const {account, chainId, library } = useWeb3React()
@@ -25,9 +27,9 @@ export function useApp() {
           bonds.map((bond) => {
             dispatch(calcBondDetails({ bond, value: null, provider: library, networkID: chainId }))
           })
-          // tokens.map((token) => {
-          //   dispatch(calculateUserTokenDetails({ address: '', token, networkID: chainId, provider }))
-          // })
+          tokens.map((token) => {
+            dispatch(calculateUserTokenDetails({ address: '', token, networkID: chainId, provider:library }))
+          })
         },
         [account],
       )

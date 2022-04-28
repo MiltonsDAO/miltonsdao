@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState, useMemo } from 'react'
 import { BigNumber } from '@ethersproject/bignumber'
 import { TransactionResponse } from '@ethersproject/providers'
 import { Currency, currencyEquals, ETHER, TokenAmount, CurrencyAmount, WETH } from '@pancakeswap/sdk'
@@ -21,7 +21,7 @@ import { useTranslation } from 'contexts/Localization'
 import UnsupportedCurrencyFooter from 'components/UnsupportedCurrencyFooter'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import useTokenBalance from 'hooks/useTokenBalance'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useRouter } from 'next/router'
 import { CHAIN_ID } from 'config/constants/networks'
 import { AppDispatch } from '../../state'
@@ -63,6 +63,17 @@ import { ContractInterface, Contract, utils } from 'ethers'
 import { ERC20_INTERFACE, PMLS_INTERFACE, MLS_INTERFACE } from 'config/abi/erc20'
 import { MaxUint256 } from '@ethersproject/constants'
 import { useCurrencyBalance } from '../../state/wallet/hooks'
+import { useCake, useTokenContract } from 'hooks/useContract'
+import { useSWRContract } from 'hooks/useSWRContract'
+import useSWR, {
+  Middleware,
+  SWRConfiguration,
+  KeyedMutator,
+  // eslint-disable-next-line camelcase
+  unstable_serialize,
+} from 'swr'
+import { AppState } from '../../state'
+import { getBalances } from 'store/slices/account-slice'
 
 const SwitchIconButton = styled(IconButton)`
   box-shadow: inset 0px -2px 0px rgba(0, 0, 0, 0.1);
@@ -70,6 +81,8 @@ const SwitchIconButton = styled(IconButton)`
 
 export default function AddLiquidity() {
   const router = useRouter()
+  const pmlsBalance = useSelector((state: AppState) => state.account.balances.pmls)
+  console.log("pmlsBalance:",pmlsBalance);
   const { toastSuccess, toastError } = useToast()
 
   const [currencyIdA, currencyIdB] = router.query.currency || []
@@ -299,10 +312,15 @@ export default function AddLiquidity() {
   // console.log("pmlsBalance:", pmlsBalance)
 
   const usdtBalance = useTokenBalance(tokens.usdt.address).balance.toString()
-  const pmlsBalance = useTokenBalance(tokens.pmls.address).balance.toString()
-  let available
-  available = usdtBalance > pmlsBalance ? pmlsBalance : usdtBalance
-  console.log("available:", available)
+  // const contract = useTokenContract(tokens.pmls.address, false)
+  // const { data, status, ...rest } = useSWR(
+  //   "balances",
+  //   async () => {
+  //     return contract["balances"](account)
+  //   },
+  // )
+  // const pmlsBalance = data && data.toString()
+  // console.log("pmlsBalance:", pmlsBalance)
   // if (requiredUsdt > usdtBalance.balance){
   //   toastError("Error","Not engough USDT") 
   // } 
@@ -320,7 +338,7 @@ export default function AddLiquidity() {
         <CardBody>
           <AutoColumn gap="20px">
             <CurrencyInputPanel
-              value={pmlsBalance}
+              value={utils.formatUnits(pmlsBalance,"ether")}
 
               onUserInput={onFieldAInput}
               onMax={() => {
@@ -333,7 +351,7 @@ export default function AddLiquidity() {
               showCommonBases
             />
             <CurrencyInputPanel
-              value={usdtBalance}
+              value={utils.formatUnits(usdtBalance,"ether")}
               onUserInput={onFieldBInput}
               onCurrencySelect={handleCurrencyBSelect}
               onMax={() => {
@@ -362,7 +380,7 @@ export default function AddLiquidity() {
             </AutoRow>
           </AutoColumn>
           <CurrencyInputPanel
-            value={available}
+            value={utils.formatUnits(pmlsBalance,"ether")}
             onUserInput={null}
             label={t('To')}
             showMaxButton={false}
@@ -374,7 +392,6 @@ export default function AddLiquidity() {
           <Button
             onClick={async () => {
               const usdtAllowance = await usdt.allowance(account, tokens.pmls.address)
-              console.log("usdtAllowance:", usdtAllowance)
               if (usdtAllowance.eq(0)) {
                 var tx = await usdt.approve(tokens.pmls.address, MaxUint256)
                 await tx.wait()
