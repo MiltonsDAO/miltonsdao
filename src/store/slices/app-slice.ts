@@ -31,7 +31,7 @@ export const loadAppDetails = createAsyncThunk(
     const totalSupply = await timeContract.totalSupply()
     const circSupply = await memoContract.circulatingSupply()
 
-    const stakingTVL = circSupply * marketPrice / Math.pow(10, 9)
+    const stakingTVL = circSupply * marketPrice / Math.pow(10, 18)
     const marketCap = totalSupply * marketPrice
 
     const tokenBalPromises = allBonds.map((bond) => bond.getTreasuryBalance(networkID, provider))

@@ -722,7 +722,7 @@ contract OlympusCVXBondDepository is Ownable {
      *  @return uint
      */
     function maxPayout() public view returns ( uint ) {
-        return IERC20( OHM ).totalSupply().mul( terms.maxPayout ).div( 100000 );
+        return IERC20( OHM ).totalSupply().mul( terms.maxPayout ).div( 1e5 );
     }
 
     /**
@@ -766,7 +766,7 @@ contract OlympusCVXBondDepository is Ownable {
     function debtRatio() public view returns ( uint debtRatio_ ) {   
         uint supply = IERC20( OHM ).totalSupply();
         debtRatio_ = FixedPoint.fraction( 
-            currentDebt().mul( 1e9 ), 
+            currentDebt().mul( 1e18 ), 
             supply
         ).decode112with18().div( 1e18 );
     }

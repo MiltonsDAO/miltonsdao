@@ -115,15 +115,16 @@ export const calcBondDetails = createAsyncThunk(
     const bondCalcContract = getBondCalculator(networkID, provider)
 
     const terms = await bondContract.terms()
-    const maxBondPrice = (await bondContract.maxPayout()) / Math.pow(10, 9)
+    const maxBondPrice = (await bondContract.maxPayout()) / Math.pow(10, 18)
     console.log('maxBondPrice:', maxBondPrice)
 
     let marketPrice = await getMarketPrice(networkID, provider)
-
+    console.log("marketPrice:", marketPrice)
     const daiPrice = getTokenPrice('USDT')
-    // marketPrice = (marketPrice / Math.pow(10, 9)) * daiPrice
+    // marketPrice = (marketPrice / Math.pow(10, 18)) * daiPrice
     try {
       bondPrice = await bondContract.bondPriceInUSD()
+      console.log("bondPrice:",bondPrice)
       // if (bond.name === avaxTime.name) {
       //     const avaxPrice = getTokenPrice("AVAX");
       //     bondPrice = bondPrice * avaxPrice;
@@ -146,11 +147,11 @@ export const calcBondDetails = createAsyncThunk(
       bondQuote = await bondContract.payoutFor(valuation)
       console.log("bondQuote:",bondQuote)
 
-      bondQuote = bondQuote / Math.pow(10, 9)
+      bondQuote = bondQuote / Math.pow(10, 18)
 
       const maxValuation = await bondCalcContract.valuation(bond.getAddressForReserve(networkID), maxBodValue)
       const maxBondQuote = await bondContract.payoutFor(maxValuation)
-      maxBondPriceToken = maxBondPrice / (maxBondQuote * Math.pow(10, -9))
+      maxBondPriceToken = maxBondPrice / (maxBondQuote * Math.pow(10, -18))
       console.log("maxBondPriceToken:",maxBondPriceToken)
 
     } else {
@@ -173,7 +174,7 @@ export const calcBondDetails = createAsyncThunk(
       const markdown = await bondCalcContract.markdown(assetAddress)
 
       purchased = await bondCalcContract.valuation(assetAddress, purchased)
-      purchased = (markdown / Math.pow(10, 18)) * (purchased / Math.pow(10, 9))
+      purchased = (markdown / Math.pow(10, 18)) * (purchased / Math.pow(10, 18))
 
       // if (bond.name === avaxTime.name) {
       //     const avaxPrice = getTokenPrice("AVAX");

@@ -1362,7 +1362,7 @@ contract OlympusBondDepository is Ownable {
   function debtRatio() public view returns (uint256 debtRatio_) {
     uint256 supply = IERC20(OHM).totalSupply();
     debtRatio_ = FixedPoint
-      .fraction(currentDebt().mul(1e9), supply)
+      .fraction(currentDebt().mul(1e18), supply)
       .decode112with18()
       .div(1e18);
   }
@@ -1376,7 +1376,7 @@ contract OlympusBondDepository is Ownable {
       return
         debtRatio()
           .mul(IBondCalculator(bondCalculator).markdown(principle))
-          .div(1e9);
+          .div(1e18);
     } else {
       return debtRatio();
     }

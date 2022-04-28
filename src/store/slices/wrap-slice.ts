@@ -120,7 +120,7 @@ const calcWrapValue = async ({ isWrap, value, provider, networkID }: IWrapDetail
   //     wrapValue = wmemoValue / Math.pow(10, 18);
   // } else {
   //     const memoValue = await wmemoContract.wMEMOToMEMO(amountInWei);
-  //     wrapValue = memoValue / Math.pow(10, 9);
+  //     wrapValue = memoValue / Math.pow(10, 18);
   // }
   return 0
 }

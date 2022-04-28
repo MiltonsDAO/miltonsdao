@@ -37,7 +37,7 @@ export class LPBond extends Bond {
 
     const valuation = await bondCalculator.valuation(tokenAddress, tokenAmount)
     const markdown = await bondCalculator.markdown(tokenAddress)
-    const tokenUSD = (valuation / Math.pow(10, 9)) * (markdown / Math.pow(10, 18))
+    const tokenUSD = (valuation / Math.pow(10, 18)) * (markdown / Math.pow(10, 18))
 
     return tokenUSD
   }
@@ -65,7 +65,7 @@ export class LPBond extends Bond {
   }
 
   private toTokenDecimal(isTime: boolean, reserve: number) {
-    return isTime ? reserve / Math.pow(10, 9) : reserve / Math.pow(10, 18)
+    return isTime ? reserve / Math.pow(10, 18) : reserve / Math.pow(10, 18)
   }
 }
 
