@@ -39,7 +39,7 @@ function Zapin({ open, handleClose, bond }: IZapinProps) {
     let defaultToken = tokens.find(token => token.name === mls.name);
 
     // if (bond.name === wavax.name) {
-    //     defaultToken = tokens.find(token => token.name === dai.name);
+    //     defaultToken = tokens.find(token => token.name === usdt.name);
     // }
 
     const [quantity, setQuantity] = useState<string>("");

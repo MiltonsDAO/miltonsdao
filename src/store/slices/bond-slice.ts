@@ -125,10 +125,6 @@ export const calcBondDetails = createAsyncThunk(
     try {
       bondPrice = await bondContract.bondPriceInUSD()
       console.log("bondPrice:",bondPrice)
-      // if (bond.name === avaxTime.name) {
-      //     const avaxPrice = getTokenPrice("AVAX");
-      //     bondPrice = bondPrice * avaxPrice;
-      // }
 
       bondDiscount = (marketPrice * Math.pow(10, 18) - bondPrice) / bondPrice
       console.log('bondPriceInUSD:', bondPrice.toString(), 'marketPrice:', marketPrice, 'bondDiscount:', bondDiscount)
@@ -228,14 +224,13 @@ export const bondAsset = createAsyncThunk(
 
     const calculatePremium = await bondContract.bondPrice()
     const maxPremium = Math.round(calculatePremium * (1 + acceptedSlippage))
-    console.log('maxPremium:', maxPremium)
     let bondTx
     try {
       const gasPrice = await getGasPrice(provider)
       if (useAvax) {
         bondTx = await bondContract.deposit(valueInWei, maxPremium, depositorAddress, { value: valueInWei, gasPrice })
       } else {
-        console.log('valueInWei:', valueInWei, maxPremium, depositorAddress, referral, gasPrice)
+        console.log('valueInWei:', valueInWei.toString(), "maxPremium:", maxPremium, depositorAddress, referral, gasPrice)
         bondTx = await bondContract.deposit(valueInWei, maxPremium, depositorAddress, referral, { gasPrice })
       }
       dispatch(

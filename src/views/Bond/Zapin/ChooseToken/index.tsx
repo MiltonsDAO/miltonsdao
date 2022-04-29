@@ -6,8 +6,8 @@ import IconsSearch from "../../../../assets/icons/akar-icons_search.svg";
 import useTokens, { IAllTokenData } from "../../../../hooks/Tokens";
 import { trim } from "../../../../helpers";
 import { IAllBondData } from "../../../../hooks/bonds";
-// import { dai } from "../../../../helpers/bond";
-// import { dai as mimToken } from "../../../../helpers/tokens";
+// import { usdt } from "../../../../helpers/bond";
+// import { usdt as mimToken } from "../../../../helpers/tokens";
 
 interface IChooseTokenProps {
     open: boolean;
@@ -36,7 +36,7 @@ function ChooseToken({ open, handleClose, handleSelect, bond }: IChooseTokenProp
 
         let lpFilter = true;
 
-        // if (bond.name === dai.name) {
+        // if (bond.name === usdt.name) {
         //     lpFilter = mimToken.address !== address;
         // }
 
