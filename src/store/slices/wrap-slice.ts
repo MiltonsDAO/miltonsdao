@@ -45,7 +45,7 @@ export const changeApproval = createAsyncThunk(
             dispatch(clearPendingTxn(approveTx.hash));
         }
     }
-    await sleep(2);
+    // await sleep(2);
     const wmemoAllowance = await memoContract.allowance(address, addresses.WMEMO_ADDRESS);
     return dispatch(
         fetchAccountSuccess({

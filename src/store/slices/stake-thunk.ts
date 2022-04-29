@@ -61,7 +61,7 @@ export const changeApproval = createAsyncThunk(
       }
     }
 
-    await sleep(2)
+    // await sleep(2)
 
     const stakeAllowance = await timeContract.allowance(address, addresses.STAKING_HELPER_ADDRESS)
     const unstakeAllowance = await memoContract.allowance(address, addresses.STAKING_ADDRESS)
@@ -69,7 +69,7 @@ export const changeApproval = createAsyncThunk(
     return dispatch(
       fetchAccountSuccess({
         staking: {
-          // mls: Number(stakeAllowance),
+          mls: Number(stakeAllowance),
           timeStake: Number(stakeAllowance),
           memoUnstake: Number(unstakeAllowance),
         },

@@ -42,8 +42,19 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
     });
 
     const vestingPeriod = () => {
-        return prettifySeconds(bond.vestingTerm, "day");
+        var result = prettifySeconds(bond.vestingTerm, "day");
+        console.log("result:",result, bond.vestingTerm)
+        return result;
     };
+
+
+    const bondDetailsDebounce = useDebounce(quantity, 1000);
+
+    useEffect(() => {
+        console.log("quantity:",quantity)
+        dispatch(calcBondDetails({ bond, value: quantity, provider, networkID: chainId }));
+    }, [bondDetailsDebounce]);
+
 
     async function onBond() {
         if (quantity === "") {
@@ -107,11 +118,6 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
         setQuantity((amount || "").toString());
     };
 
-    const bondDetailsDebounce = useDebounce(quantity, 1000);
-
-    useEffect(() => {
-        dispatch(calcBondDetails({ bond, value: quantity, provider, networkID: chainId }));
-    }, [bondDetailsDebounce]);
 
     const onSeekApproval = async () => {
         dispatch(changeApproval({ address, bond, provider, networkID: chainId }));
@@ -167,7 +173,7 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
                     />
                 </FormControl>
 
-                {hasAllowance() || useAvax ? (
+                {hasAllowance() ? (
                     <div
                         className="transaction-button bond-approve-btn"
                         onClick={async () => {
@@ -230,7 +236,7 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
 
                     <div className="data-row">
                         <p className="bond-balance-title">Vesting Term</p>
-                        <p className="bond-balance-title">{isBondLoading ? <Skeleton width="100px" /> : vestingPeriod()}</p>
+                        <p className="bond-balance-title">{ vestingPeriod()}</p>
                     </div>
 
                     <div className="data-row">

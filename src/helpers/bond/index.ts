@@ -30,7 +30,7 @@ export const usdt = new StableBond({
       reserveAddress: '0x4aEeB8D61FEABC8695Db1831c03914DD94067120',
     },
     [Networks.BSC_TESTNET]: {
-      bondAddress: '0x3DF1c45b230D784a8248ea7E32cfb09bD6166542',
+      bondAddress: '0x9188c35c4E6F859C8f4408dC64f5E11F1d81c2DA',
       reserveAddress: '0xc362B3ed5039447dB7a06F0a3d0bd9238E74d57c',
     },
     [Networks.AVAX_TESTNET]: {
@@ -75,8 +75,8 @@ export const usdtMLS = new LPBond({
       reserveAddress: '0x4aEeB8D61FEABC8695Db1831c03914DD94067120',
     },
     [Networks.BSC_TESTNET]: {
-      bondAddress: '0xA6031754f75CC8c7712ba43fFE6A13414c4C248B',
-      reserveAddress: '0xCF336e33979698A7Cc8A5dfFaec1D077cC337348',
+      bondAddress: '0x1b8435d3fdFFd2A2bd5d261d57a8882C178E6028',
+      reserveAddress: '0xFbb0382Ae21a184324cd1B919844973E132c13b9',
     },
     [Networks.AVAX_TESTNET]: {
       bondAddress: '0x82985685C9fD9a4f40Ae6B3e755075372262CEb3',
@@ -88,7 +88,7 @@ export const usdtMLS = new LPBond({
     },
   },
   lpUrl:
-    'https://testnet.bscscan.com/address/0xCF336e33979698A7Cc8A5dfFaec1D077cC337348#code',
+    'https://testnet.bscscan.com/address/0x8D98Fc5AbAb4BDFaF0Ce94082d9d89eC6eDE3e83#code',
 })
 
 

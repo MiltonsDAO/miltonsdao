@@ -338,7 +338,7 @@ export default function AddLiquidity() {
         <CardBody>
           <AutoColumn gap="20px">
             <CurrencyInputPanel
-              value={utils.formatUnits(pmlsBalance,"ether")}
+              value={pmlsBalance && utils.formatUnits(pmlsBalance,"ether")}
 
               onUserInput={onFieldAInput}
               onMax={() => {
@@ -380,7 +380,7 @@ export default function AddLiquidity() {
             </AutoRow>
           </AutoColumn>
           <CurrencyInputPanel
-            value={utils.formatUnits(pmlsBalance,"ether")}
+            value={pmlsBalance && utils.formatUnits(pmlsBalance,"ether")}
             onUserInput={null}
             label={t('To')}
             showMaxButton={false}

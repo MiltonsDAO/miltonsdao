@@ -58,7 +58,7 @@ export const changeApproval = createAsyncThunk(
       }
     }
 
-    await sleep(2)
+    // await sleep(2)
 
     let allowance = '0'
 
@@ -115,6 +115,8 @@ export const calcBondDetails = createAsyncThunk(
     const bondCalcContract = getBondCalculator(networkID, provider)
 
     const terms = await bondContract.terms()
+    console.log("terms:",terms)
+    console.log("terms:",terms.vestingTerm.toString())
     const maxBondPrice = (await bondContract.maxPayout()) / Math.pow(10, 18)
     console.log('maxBondPrice:', maxBondPrice)
 
@@ -133,17 +135,16 @@ export const calcBondDetails = createAsyncThunk(
     }
 
     let maxBondPriceToken = 0
-    const maxBodValue = ethers.utils.parseEther('1')
+    const maxBodValue = ethers.utils.parseEther('3.8')
 
     if (bond.isLP) {
-      console.log("amountInWei:",amountInWei)
+      console.log("amountInWei:",amountInWei.toString())
 
       valuation = await bondCalcContract.valuation(bond.getAddressForReserve(networkID), amountInWei)
-      console.log("valuation:",valuation)
       bondQuote = await bondContract.payoutFor(valuation)
-      console.log("bondQuote:",bondQuote)
+      console.log("bondQuote:",bondQuote.toString())
 
-      bondQuote = bondQuote / Math.pow(10, 18)
+      bondQuote = bondQuote / Math.pow(10, 9)
 
       const maxValuation = await bondCalcContract.valuation(bond.getAddressForReserve(networkID), maxBodValue)
       const maxBondQuote = await bondContract.payoutFor(maxValuation)
@@ -243,7 +244,7 @@ export const bondAsset = createAsyncThunk(
       await bondTx.wait()
       dispatch(success({ text: messages.tx_successfully_send }))
       dispatch(info({ text: messages.your_balance_update_soon }))
-      await sleep(10)
+      // await sleep(10)
       await dispatch(calculateUserBondDetails({ address, bond, networkID, provider }))
       await dispatch(loadAccountDetails({ networkID, provider, address }))
       dispatch(info({ text: messages.your_balance_updated }))
@@ -292,9 +293,9 @@ export const redeemBond = createAsyncThunk(
       )
       await redeemTx.wait()
       dispatch(success({ text: messages.tx_successfully_send }))
-      await sleep(0.01)
+      // await sleep(0.01)
       dispatch(info({ text: messages.your_balance_update_soon }))
-      await sleep(10)
+      // await sleep(10)
       await dispatch(calculateUserBondDetails({ address, bond, networkID, provider }))
       // await dispatch(getBalances({ address, networkID, provider }))
       dispatch(info({ text: messages.your_balance_updated }))

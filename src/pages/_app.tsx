@@ -9,6 +9,8 @@ import useEagerConnect from 'hooks/useEagerConnect'
 import { useInactiveListener } from 'hooks/useInactiveListener'
 import useUserAgent from 'hooks/useUserAgent'
 import useSentryUser from 'hooks/useSentryUser'
+import { useApp } from "hooks/useApp"
+
 import type { AppProps } from 'next/app'
 import Head from 'next/head'
 import { useEffect, useState, useCallback, Fragment } from 'react'
@@ -49,9 +51,12 @@ function GlobalHooks() {
   useSentryUser()
   const { account, chainId, library } = useWeb3React()
   const dispatch = useDispatch<AppDispatch>()
+  const { loadApp, loadAccount } = useApp()
 
   useEffect(() => {
     if (account) {
+      loadApp()
+      loadAccount()
       dispatch(getBalances({networkID: chainId, address:account, provider: library}))
     }
   }, [account])

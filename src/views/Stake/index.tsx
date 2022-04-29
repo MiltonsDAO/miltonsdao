@@ -49,7 +49,7 @@ import { useMatchBreakpoints } from '../../../packages/uikit/src/hooks'
 import useBonds from '../../hooks/bonds'
 import useTokens from '../../hooks/Tokens'
 import { useApp } from "../../hooks/useApp";
-import { changeApproval } from "../../store/slices/wrap-slice";
+import { changeApproval } from "../../store/slices/stake-thunk";
 import { changeStake } from "../../store/slices/stake-thunk";
 import { messages } from "../../constants/messages";
 import { warning, success, info, error } from "../../store/slices/messages-slice";
@@ -88,12 +88,12 @@ export default function Stake({ account }) {
 
   const isAppLoading = useSelector<AppState, boolean>(state => state.app.loading);
 
-  useEffect(() => {
-    if (account) {
-      loadApp()
-      loadAccount()
-    }
-  }, [account])
+  // useEffect(() => {
+  //   if (account) {
+  //     loadApp()
+  //     loadAccount()
+  //   }
+  // }, [account])
 
   const app = useSelector<AppState, IAppSlice>(state => {
     return state.app;
@@ -105,14 +105,13 @@ export default function Stake({ account }) {
   const accountSlice = useSelector<AppState, IAccountSlice>(state => {
     return state.account;
   });
-  console.log("accountSlice:", accountSlice)
-  const timeBalance = accountSlice.balances && accountSlice.balances.mls.toString();
+  const timeBalance = accountSlice?.balances?.mls?.toString();
 
-  const memoBalance = accountSlice.balances && accountSlice.balances.smls.toString();
+  const memoBalance = accountSlice?.balances?.smls?.toString();
 
-  const stakeAllowance: BigNumber = accountSlice.staking && accountSlice.staking.mls;
+  const stakeAllowance: BigNumber = accountSlice?.staking?.mls;
 
-  const unstakeAllowance: BigNumber = accountSlice.staking && accountSlice.staking.smls;
+  const unstakeAllowance: BigNumber = accountSlice?.staking?.smls;
   const stakingRebase = app.stakingRebase;
   const stakingAPY = app.stakingAPY;
   const stakingTVL = app.stakingTVL;
@@ -144,8 +143,9 @@ export default function Stake({ account }) {
 
   const hasAllowance = useCallback(
     (token) => {
-      if (token === 'mls') return stakeAllowance.toString() != "0"
-      if (token === 'smls') return unstakeAllowance.toString() != "0"
+      console.log("hasAllowance:", token, stakeAllowance?.toString() != "0", unstakeAllowance?.toString() != "0")
+      if (token === 'mls') return stakeAllowance?.toString() != "0"
+      if (token === 'smls') return unstakeAllowance?.toString() != "0"
       return 0
     },
     [stakeAllowance],
@@ -340,7 +340,7 @@ export default function Stake({ account }) {
                     <div className="data-row">
                       <p className="data-row-name">{t("Next Reward Amount")}</p>
                       <p className="data-row-value">
-                        {isAppLoading ? <Skeleton width="80px" /> : <>{nextRewardValue} sMLS</>}
+                        {isAppLoading ? <Skeleton width="80px" /> : <>{nextRewardValue} MLS</>}
                       </p>
                     </div>
 
