@@ -155,11 +155,11 @@ export default function Stake({ account }) {
     setQuantity('')
   }
 
-  const trimmedMemoBalance = trim(Number(memoBalance), 6)
+  const trimmedMemoBalance = memoBalance
   let trimmedStakingAPY = trim(stakingAPY * 100, 1)
 
-  const stakingRebasePercentage = trim(stakingRebase * 100, 4)
-  const nextRewardValue = trim((Number(stakingRebasePercentage) / 100) * Number(trimmedMemoBalance), 6)
+  const stakingRebasePercentage = trim(stakingRebase * 100, 4);
+  const nextRewardValue = trim((Number(stakingRebasePercentage) / 100) * Number(trimmedMemoBalance), 6);
 
 
   return (
@@ -325,21 +325,21 @@ export default function Stake({ account }) {
                     <div className="data-row">
                       <p className="data-row-name">{t("Your Balance")}</p>
                       <p className="data-row-value">
-                        {isAppLoading ? <Skeleton width="80px" /> : <>{ethers.utils.formatUnits(timeBalance,"9")} MLS</>}
+                        {isAppLoading ? <Skeleton width="80px" /> : <>{ethers.utils.formatUnits(timeBalance, 9)} MLS</>}
                       </p>
                     </div>
 
                     <div className="data-row">
                       <p className="data-row-name">{t("Your Staked Balance")}</p>
                       <p className="data-row-value">
-                        {isAppLoading ? <Skeleton width="80px" /> : <>{trimmedMemoBalance} sMLS</>}
+                        {isAppLoading ? <Skeleton width="80px" /> : <>{ethers.utils.formatUnits(trimmedMemoBalance,9)} sMLS</>}
                       </p>
                     </div>
 
                     <div className="data-row">
                       <p className="data-row-name">{t("Next Reward Amount")}</p>
                       <p className="data-row-value">
-                        {isAppLoading ? <Skeleton width="80px" /> : <>{nextRewardValue} MLS</>}
+                        {isAppLoading ? <Skeleton width="80px" /> : <>{ethers.utils.formatUnits(nextRewardValue,9)} MLS</>}
                       </p>
                     </div>
 
