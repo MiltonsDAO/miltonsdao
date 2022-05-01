@@ -105,9 +105,9 @@ export default function Stake({ account }) {
   const accountSlice = useSelector<AppState, IAccountSlice>(state => {
     return state.account;
   });
-  const timeBalance = ethers.utils.formatUnits(accountSlice?.balances?.mls,"9")
+  const timeBalance = accountSlice?.balances?.mls
 
-  const memoBalance = ethers.utils.formatUnits(accountSlice?.balances?.smls,"9")
+  const memoBalance = accountSlice?.balances?.smls
 
   const stakeAllowance: BigNumber = accountSlice?.staking?.mls;
 
@@ -122,9 +122,9 @@ export default function Stake({ account }) {
 
   const setMax = () => {
     if (view === 0) {
-      setQuantity(timeBalance)
+      setQuantity(ethers.utils.formatUnits(timeBalance, 9))
     } else {
-      setQuantity(memoBalance)
+      setQuantity(ethers.utils.formatUnits(memoBalance, 9))
     }
   }
 
@@ -326,7 +326,7 @@ export default function Stake({ account }) {
                     <div className="data-row">
                       <p className="data-row-name">{t("Your Balance")}</p>
                       <p className="data-row-value">
-                        {isAppLoading ? <Skeleton width="80px" /> : <>{trim(Number(timeBalance), 18)} MLS</>}
+                        {isAppLoading ? <Skeleton width="80px" /> : <>{trim(Number(ethers.utils.formatUnits(timeBalance, 9)), 9)} MLS</>}
                       </p>
                     </div>
 
