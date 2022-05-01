@@ -159,7 +159,7 @@ export default function Stake({ account }) {
   let trimmedStakingAPY = trim(stakingAPY * 100, 1)
 
   const stakingRebasePercentage = trim(stakingRebase * 100, 4);
-  const nextRewardValue = trim((Number(stakingRebasePercentage) / 100) * Number(trimmedMemoBalance), 6);
+  const nextRewardValue = (Number(stakingRebasePercentage) / 100) * Number(trimmedMemoBalance) / 1e9;
 
 
   return (
@@ -339,7 +339,7 @@ export default function Stake({ account }) {
                     <div className="data-row">
                       <p className="data-row-name">{t("Next Reward Amount")}</p>
                       <p className="data-row-value">
-                        {isAppLoading ? <Skeleton width="80px" /> : <>{ethers.utils.formatUnits(nextRewardValue,9)} MLS</>}
+                        {isAppLoading ? <Skeleton width="80px" /> : <>{nextRewardValue} MLS</>}
                       </p>
                     </div>
 

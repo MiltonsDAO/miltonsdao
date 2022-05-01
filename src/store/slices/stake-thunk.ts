@@ -99,14 +99,14 @@ export const changeStake = createAsyncThunk(
     const signer = provider.getSigner()
     const staking = new ethers.Contract(addresses.STAKING_ADDRESS, StakingContract, signer)
     const stakingHelper = new ethers.Contract(addresses.STAKING_HELPER_ADDRESS, StakingHelperContract, signer)
-    
+
     let stakeTx
 
     try {
       const gasPrice = await getGasPrice(provider)
       if (action === 'stake') {
         var parsedValue = ethers.utils.parseUnits(value, 'ether')
-        console.log("parsedValue:",parsedValue, address)
+        console.log("parsedValue:",parsedValue, addresses.STAKING_HELPER_ADDRESS,)
         stakeTx = await stakingHelper.stake(parsedValue, address, { gasPrice })
       } else {
         stakeTx = await staking.unstake(ethers.utils.parseUnits(value, 'ether'), true, { gasPrice })
