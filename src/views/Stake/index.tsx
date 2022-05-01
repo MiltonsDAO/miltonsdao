@@ -326,7 +326,7 @@ export default function Stake({ account }) {
                     <div className="data-row">
                       <p className="data-row-name">{t("Your Balance")}</p>
                       <p className="data-row-value">
-                        {isAppLoading ? <Skeleton width="80px" /> : <>{trim(Number(ethers.utils.formatUnits(timeBalance, 9)), 9)} MLS</>}
+                        {isAppLoading ? <Skeleton width="80px" /> : <>{ethers.utils.formatUnits(timeBalance,"9")} MLS</>}
                       </p>
                     </div>
 

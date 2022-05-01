@@ -38,7 +38,6 @@ export const getBalances = createAsyncThunk(
 
     const mlsContract = new ethers.Contract(addresses.OHM_ADDRESS, TimeTokenContract, provider)
     const mlsBalance = await mlsContract.balanceOf(address)
-    console.log("mlsBalance:", mlsBalance)
 
     const pmlsContract = new ethers.Contract(addresses.PMLS_ADDRESS, PMLSContract, provider)
     const pmlsBalance = await pmlsContract.balanceOf(address)
@@ -74,8 +73,8 @@ interface IUserAccountDetails {
   referral: string
   registered: boolean
   balances: {
-    mls: string
-    smls: string
+    mls: number
+    smls: number
     wmemo: string
   }
   staking: {
@@ -132,8 +131,8 @@ export const loadAccountDetails = createAsyncThunk(
       referral: referral,
       registered: registered,
       balances: {
-        smls: ethers.utils.formatUnits(memoBalance, 'gwei'),
-        mls: ethers.utils.formatUnits(timeBalance, 'gwei'),
+        smls: memoBalance,
+        mls: timeBalance,
         wmemo: ethers.utils.formatEther(wmemoBalance),
       },
       staking: {
