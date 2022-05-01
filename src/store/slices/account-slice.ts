@@ -31,13 +31,14 @@ interface IAccountBalances {
 export const getBalances = createAsyncThunk(
   'account/getBalances',
   async ({ address, networkID, provider }: IGetBalances): Promise<IAccountBalances> => {
-    console.log("networkID:", networkID)
     const addresses = getAddresses(networkID)
 
     const memoContract = new ethers.Contract(addresses.sOHM_ADDRESS, MemoTokenContract, provider)
     const memoBalance = await memoContract.balanceOf(address)
-    const timeContract = new ethers.Contract(addresses.OHM_ADDRESS, TimeTokenContract, provider)
-    const timeBalance = await timeContract.balanceOf(address)
+
+    const mlsContract = new ethers.Contract(addresses.OHM_ADDRESS, TimeTokenContract, provider)
+    const mlsBalance = await mlsContract.balanceOf(address)
+    console.log("mlsBalance:", mlsBalance)
 
     const pmlsContract = new ethers.Contract(addresses.PMLS_ADDRESS, PMLSContract, provider)
     const pmlsBalance = await pmlsContract.balanceOf(address)
@@ -52,7 +53,7 @@ export const getBalances = createAsyncThunk(
     return {
       balances: {
         smls: memoBalance,
-        mls: timeBalance,
+        mls: mlsBalance,
         pmls: pmlsBalance,
         usdt: usdtBalance,
         // wmemo: ethers.utils.formatEther(wmemoBalance),
@@ -107,9 +108,9 @@ export const loadAccountDetails = createAsyncThunk(
     const addresses = getAddresses(networkID)
 
     if (addresses.OHM_ADDRESS) {
-      const timeContract = new ethers.Contract(addresses.OHM_ADDRESS, TimeTokenContract, provider)
-      timeBalance = await timeContract.balanceOf(address)
-      stakeAllowance = await timeContract.allowance(address, addresses.STAKING_HELPER_ADDRESS)
+      const mlsContract = new ethers.Contract(addresses.OHM_ADDRESS, TimeTokenContract, provider)
+      timeBalance = await mlsContract.balanceOf(address)
+      stakeAllowance = await mlsContract.allowance(address, addresses.STAKING_HELPER_ADDRESS)
     }
     if (addresses.sOHM_ADDRESS) {
       const memoContract = new ethers.Contract(addresses.sOHM_ADDRESS, MemoTokenContract, provider)
@@ -201,6 +202,7 @@ export const calculateUserBondDetails = createAsyncThunk(
       balance = '0'
 
     allowance = await reserveContract.allowance(address, bond.getAddressForBond(networkID))
+    console.log("reserveContract.allowance for bond:", bond.getAddressForBond(networkID), allowance)
     balance = await reserveContract.balanceOf(address)
     const balanceVal = balance && ethers.utils.formatEther(balance);
     const avaxBalance = await provider.getSigner().getBalance()

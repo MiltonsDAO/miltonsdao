@@ -522,7 +522,6 @@ contract OlympusTreasury is Ownable {
      */
   function mintRewards(address _recipient, uint256 _amount) external {
     require(isRewardManager[msg.sender], "Not approved");
-    console.log("mintRewards:", _amount, excessReserves());
     require(_amount <= excessReserves(), "Insufficient reserves");
     IERC20Mintable(OHM).mint(_recipient, _amount);
     emit RewardsMinted(msg.sender, _recipient, _amount);

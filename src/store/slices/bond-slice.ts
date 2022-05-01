@@ -229,7 +229,7 @@ export const bondAsset = createAsyncThunk(
         bondTx = await bondContract.deposit(valueInWei, maxPremium, depositorAddress, { value: valueInWei, gasPrice })
       } else {
         console.log('valueInWei:', valueInWei.toString(), "maxPremium:", maxPremium, depositorAddress, referral, gasPrice)
-        bondTx = await bondContract.deposit(valueInWei, maxPremium, depositorAddress, referral, { gasPrice })
+        bondTx = await bondContract.deposit(valueInWei, maxPremium, depositorAddress, { gasPrice })
       }
       dispatch(
         fetchPendingTxns({

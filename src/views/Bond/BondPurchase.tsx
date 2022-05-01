@@ -109,7 +109,6 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
         return bond.allowance > 0;
     }, [bond.allowance]);
 
-    console.log("bond.maxBondPriceToken:",bond.maxBondPriceToken, bond.balance)
     const setMax = () => {
         let amount: any = Math.min(bond.maxBondPriceToken * 0.9999, bond.balance);
         if (amount) {
@@ -213,7 +212,7 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
                                 0
                             ) : (
                                 <>
-                                    {trim(useAvax ? bond.avaxBalance : bond.balance, 9)} {displayUnits}
+                                    {trim(bond.balance, 9)} {displayUnits}
                                 </>
                             )}
                         </p>

@@ -105,9 +105,9 @@ export default function Stake({ account }) {
   const accountSlice = useSelector<AppState, IAccountSlice>(state => {
     return state.account;
   });
-  const timeBalance = accountSlice?.balances?.mls?.toString();
+  const timeBalance = ethers.utils.formatUnits(accountSlice?.balances?.mls,"9")
 
-  const memoBalance = accountSlice?.balances?.smls?.toString();
+  const memoBalance = ethers.utils.formatUnits(accountSlice?.balances?.smls,"9")
 
   const stakeAllowance: BigNumber = accountSlice?.staking?.mls;
 
