@@ -105,11 +105,9 @@ export const changeStake = createAsyncThunk(
     try {
       const gasPrice = await getGasPrice(provider)
       if (action === 'stake') {
-        var parsedValue = ethers.utils.parseUnits(value, 'ether')
-        console.log("parsedValue:",parsedValue, addresses.STAKING_HELPER_ADDRESS,)
-        stakeTx = await stakingHelper.stake(parsedValue, address, { gasPrice })
+        stakeTx = await stakingHelper.stake(ethers.utils.parseUnits(value, 'gwei'), address)
       } else {
-        stakeTx = await staking.unstake(ethers.utils.parseUnits(value, 'ether'), true, { gasPrice })
+        stakeTx = await staking.unstake(ethers.utils.parseUnits(value, 'gwei'), true)
       }
       const pendingTxnType = action === 'stake' ? 'staking' : 'unstaking'
       dispatch(fetchPendingTxns({ txnHash: stakeTx.hash, text: getStakingTypeText(action), type: pendingTxnType }))
@@ -129,7 +127,7 @@ export const changeStake = createAsyncThunk(
     console.log('warning', messages.your_balance_update_soon)
 
     // await sleep(10)
-    // await dispatch(getBalances({ address, networkID, provider }))
+    await dispatch(getBalances({ address, networkID, provider }))
     console.log('warning', messages.your_balance_updated)
     // toastInfo('Info', messages.your_balance_updated)
     return
