@@ -352,7 +352,7 @@ export default function Stake({ account }) {
                     </div>
 
                     <div className="data-row">
-                      <p className="data-row-name">{t("ROI (5-Day Rate)")}</p>
+                      <p className="data-row-name">{t("ROI")}</p>
                       <p className="data-row-value">
                         {isAppLoading ? <Skeleton width="80px" /> : <>{trim(Number(fiveDayRate) * 100, 4)}%</>}
                       </p>
