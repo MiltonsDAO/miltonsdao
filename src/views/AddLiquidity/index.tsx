@@ -404,7 +404,7 @@ export default function AddLiquidity() {
                     setMin(minBalance)
                   }
                   let bondTx = await bondContract.deposit(min, maxPremium, account)
-                } catch (error) {
+                } catch (error: any) {
                   console.log(error)
                   toastError("Error", error.data.message)
                 }
