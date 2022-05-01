@@ -45,21 +45,6 @@ export const usdt = new StableBond({
   tokensInStrategy: '60500000000000000000000000',
 })
 
-// export const wavax = new CustomBond({
-//     name: "wavax",
-//     displayName: "wAVAX",
-//     bondToken: "AVAX",
-//     bondIconSvg: AvaxIcon,
-//     bondContractABI: WavaxBondContract,
-//     reserveContractAbi: StableReserveContract,
-//     networkAddrs: {
-//         [Networks.BSC]: {
-//             bondAddress: "0xE02B1AA2c4BE73093BE79d763fdFFC0E3cf67318",
-//             reserveAddress: "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
-//         },
-//     },
-//     tokensInStrategy: "756916000000000000000000",
-// });
 
 export const usdtMLS = new LPBond({
   name: 'usdt_mls_lp',

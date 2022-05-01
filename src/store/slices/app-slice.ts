@@ -51,10 +51,10 @@ export const loadAppDetails = createAsyncThunk(
 
     const epoch = await stakingContract.epoch()
     const stakingReward = epoch.distribute
-    const circ = await memoContract.circulatingSupply()
-    console.log("circ:",circ)
+    const circulatingSupply = await memoContract.circulatingSupply()
+    console.log("circulatingSupply:",circulatingSupply.toString())
 
-    const stakingRebase = stakingReward / circ
+    const stakingRebase = stakingReward / circulatingSupply
     console.log("stakingRebase:",stakingRebase)
     const fiveDayRate = Math.pow(1 + stakingRebase, 5 * 3) - 1
     const stakingAPY = Math.pow(1 + stakingRebase, 365 * 3) - 1
