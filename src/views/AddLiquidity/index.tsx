@@ -75,24 +75,31 @@ import useSWR, {
 import { AppState } from '../../state'
 import { getBalances } from 'store/slices/account-slice'
 
+import { StableBondContract } from 'abi'
+import { usdt as usdtBond } from 'helpers/bond'
+
 const SwitchIconButton = styled(IconButton)`
   box-shadow: inset 0px -2px 0px rgba(0, 0, 0, 0.1);
 `
 
 export default function AddLiquidity() {
   const router = useRouter()
-  const {toastError} = useToast()
+  const { toastError, toastWarning } = useToast()
   const pmlsBalance = useSelector((state: AppState) => state.account.balances.pmls)
   const mlsBalance = useSelector((state: AppState) => state.account.balances.mls)
   const usdtBalance = useSelector((state: AppState) => state.account.balances.usdt)
-  if (usdtBalance && usdtBalance.lt(pmlsBalance)) {
-    console.log("Not engough USDT")
-    // window.alert("Not engough USDT")
-  }
 
+
+  const [min, setMin] = useState(BigNumber.from(0))
   const [currencyIdA, currencyIdB] = router.query.currency || []
 
   const { account, chainId, library } = useActiveWeb3React()
+
+  const acceptedSlippage = 0.005
+  const signer = library?.getSigner()
+  var bondAddress = usdtBond.networkAddrs[chainId].bondAddress
+  const bondContract = new Contract(bondAddress, usdtBond.bondContractABI, signer)
+
   const dispatch = useDispatch<AppDispatch>()
   const { t } = useTranslation()
   const gasPrice = useGasPrice()
@@ -320,29 +327,29 @@ export default function AddLiquidity() {
         <CardBody>
           <AutoColumn gap="20px">
             <CurrencyInputPanel
-              value={pmlsBalance && utils.formatUnits(pmlsBalance,"ether") }
+              value={min && utils.formatUnits(min, "ether")}
 
               onUserInput={onFieldAInput}
               onMax={() => {
-                onFieldAInput(utils.formatUnits(pmlsBalance,"ether") ?? '')
+                onFieldAInput(utils.formatUnits(min, "ether") ?? '')
               }}
               onCurrencySelect={handleCurrencyASelect}
               showMaxButton={true}
               currency={PMLS}
               id="add-liquidity-input-tokena"
-              // showCommonBases
+            // showCommonBases
             />
             <CurrencyInputPanel
-              value={pmlsBalance && utils.formatUnits(pmlsBalance,"ether")  }
+              value={min && utils.formatUnits(min, "ether")}
               onUserInput={onFieldBInput}
               onCurrencySelect={handleCurrencyBSelect}
               onMax={() => {
-                onFieldAInput(utils.formatUnits(usdtBalance,"ether") ?? '')
+                onFieldAInput(utils.formatUnits(usdtBalance, "ether") ?? '')
               }}
               showMaxButton={false}
               currency={currencies[Field.CURRENCY_B]}
               id="add-liquidity-input-tokenb"
-              // showCommonBases
+            // showCommonBases
             />
           </AutoColumn>
           <AutoColumn justify="space-between">
@@ -362,7 +369,7 @@ export default function AddLiquidity() {
             </AutoRow>
           </AutoColumn>
           <CurrencyInputPanel
-            value={ pmlsBalance && utils.formatUnits(pmlsBalance,"ether")}
+            value={min && utils.formatUnits(min, "ether")}
             onUserInput={null}
             label={t('To')}
             showMaxButton={false}
@@ -373,13 +380,35 @@ export default function AddLiquidity() {
           />
           <Button
             onClick={async () => {
-              const usdtAllowance = await usdt.allowance(account, tokens.pmls.address)
-              if (usdtAllowance.eq(0)) {
-                var tx = await usdt.approve(tokens.pmls.address, MaxUint256)
-                await tx.wait()
-              }
-              var tx = await pmls.swap(pmlsBalance)
+              if (usdtBalance && pmlsBalance) {
+                if (usdtBalance.eq(0) || pmlsBalance.eq(0)) {
+                  toastError("Error", "No USDT")
+                  return
+                }
 
+                const usdtAllowance = await usdt.allowance(account, bondAddress)
+                if (usdtAllowance.eq(0)) {
+                  var tx = await usdt.approve(bondAddress, MaxUint256)
+                  await tx.wait()
+                }
+
+                const maxBondPrice = await bondContract.maxPayout()
+                console.log("maxBondPrice:", utils.formatUnits(maxBondPrice, "gwei"))
+                const calculatePremium = await bondContract.bondPrice()
+                const maxPremium = Math.round(calculatePremium * (1 + acceptedSlippage))
+                try {
+                  const minBalance = pmlsBalance?.lt(usdtBalance) ? pmlsBalance : usdtBalance
+                  if (maxBondPrice.lt(minBalance)) {
+                    setMin(maxBondPrice.mul(1e9))
+                  } else {
+                    setMin(minBalance)
+                  }
+                  let bondTx = await bondContract.deposit(min, maxPremium, account)
+                } catch (error) {
+                  console.log(error)
+                  toastError("Error", error.data.message)
+                }
+              }
             }}
             style={{ margin: "1rem 0" }}
             width="100%"
