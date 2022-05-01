@@ -203,7 +203,7 @@ export default function Stake({ account }) {
                               minimumFractionDigits: 0,
                             }).format(stakingTVL)
                           ) : (
-                            <Skeleton width="150px" />
+                            0
                           )}
                         </p>
                       </div>

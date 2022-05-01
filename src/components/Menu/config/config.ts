@@ -28,7 +28,7 @@ const config: (t: ContextApi['t']) => ConfigMenuItemsType[] = (t) => [
   },
 
   {
-    label: 'Stake',
+    label: t('Stake'),
     href: '/stake',
     icon: NftIcon,
     fillIcon: NftFillIcon,
@@ -44,8 +44,8 @@ const config: (t: ContextApi['t']) => ConfigMenuItemsType[] = (t) => [
     items: [],
   },
   {
-    label: 'Honor',
-    href: '/add/',
+    label: t('Honor'),
+    href: '/add/'.concat(tokens.pmls.address, "/", tokens.usdt.address),
     icon: SwapIcon,
     fillIcon: SwapFillIcon,
     showItemsOnMobile: false,

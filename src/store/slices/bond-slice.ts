@@ -115,15 +115,10 @@ export const calcBondDetails = createAsyncThunk(
     const bondCalcContract = getBondCalculator(networkID, provider)
 
     const terms = await bondContract.terms()
-    console.log("terms:",terms)
-    console.log("terms:",terms.vestingTerm.toString())
-    const maxBondPrice = (await bondContract.maxPayout()) / Math.pow(10, 18)
-    console.log('maxBondPrice:', maxBondPrice)
+    const maxBondPrice = (await bondContract.maxPayout()) / Math.pow(10, 9)
 
-    let marketPrice = await getMarketPrice(networkID, provider)
-    console.log("marketPrice:", marketPrice)
-    const daiPrice = getTokenPrice('USDT')
-    // marketPrice = (marketPrice / Math.pow(10, 18)) * daiPrice
+    const marketPrice = (await getMarketPrice(networkID, provider)) / Math.pow(10, 9);;
+
     try {
       bondPrice = await bondContract.bondPriceInUSD()
       console.log("bondPrice:",bondPrice)
@@ -148,7 +143,7 @@ export const calcBondDetails = createAsyncThunk(
 
       const maxValuation = await bondCalcContract.valuation(bond.getAddressForReserve(networkID), maxBodValue)
       const maxBondQuote = await bondContract.payoutFor(maxValuation)
-      maxBondPriceToken = maxBondPrice / (maxBondQuote * Math.pow(10, -18))
+      maxBondPriceToken = maxBondPrice / (maxBondQuote * Math.pow(10, -9))
       console.log("maxBondPriceToken:",maxBondPriceToken)
 
     } else {
@@ -171,7 +166,7 @@ export const calcBondDetails = createAsyncThunk(
       const markdown = await bondCalcContract.markdown(assetAddress)
 
       purchased = await bondCalcContract.valuation(assetAddress, purchased)
-      purchased = (markdown / Math.pow(10, 18)) * (purchased / Math.pow(10, 18))
+      purchased = (markdown / Math.pow(10, 18)) * (purchased / Math.pow(10, 9))
 
       // if (bond.name === avaxTime.name) {
       //     const avaxPrice = getTokenPrice("AVAX");

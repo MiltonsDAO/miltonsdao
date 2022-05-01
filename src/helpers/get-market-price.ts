@@ -10,7 +10,6 @@ export async function getMarketPrice(
   const daiOHMAddress = usdtMLS.getAddressForReserve(networkID)
   const pairContract = new ethers.Contract(daiOHMAddress, LpReserveContract, provider)
   const reserves = await pairContract.getReserves()
-  console.log("reserve0:",reserves[0].toString(),reserves[1].toString())
 
   let marketPrice = reserves[1] / reserves[0]
   if (marketPrice < 1) {

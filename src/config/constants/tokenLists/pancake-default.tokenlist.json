@@ -13,24 +13,24 @@
     {
       "name": "Miltons",
       "symbol": "PMLS",
-      "address": "0xEfF46346a988b1D80010702eb232Fc077EEfF452",
-      "chainId": 97,
-      "decimals": 18,
+      "address": "0xf6Bc9b5C53600191578389502d7153136D3fdeF3",
+      "chainId": 56,
+      "decimals": 9,
       "logoURI": "mls.png"
     },
     {
       "name": "Tether USD",
       "symbol": "USDT",
-      "address": "0xc362B3ed5039447dB7a06F0a3d0bd9238E74d57c",
-      "chainId": 97,
+      "address": "0x55d398326f99059fF775485246999027B3197955",
+      "chainId": 56,
       "decimals": 18,
       "logoURI": "https://pancakeswap.finance/images/tokens/0x55d398326f99059fF775485246999027B3197955.png"
     },
     {
       "name": "Miltons",
       "symbol": "MLS",
-      "address": "0x1Ed57ecF983bC2b62153A0D7133F5438a7Ff76D4",
-      "chainId": 97,
+      "address": "0x7027Be050ad3c6Bd0f8c77374aF102D7f2947903",
+      "chainId": 56,
       "decimals": 18,
       "logoURI": "mls.png"
     }

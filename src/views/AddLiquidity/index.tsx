@@ -81,9 +81,14 @@ const SwitchIconButton = styled(IconButton)`
 
 export default function AddLiquidity() {
   const router = useRouter()
+  const {toastError} = useToast()
   const pmlsBalance = useSelector((state: AppState) => state.account.balances.pmls)
-  console.log("pmlsBalance:",pmlsBalance);
-  const { toastSuccess, toastError } = useToast()
+  const mlsBalance = useSelector((state: AppState) => state.account.balances.mls)
+  const usdtBalance = useSelector((state: AppState) => state.account.balances.usdt)
+  if (usdtBalance && usdtBalance.lt(pmlsBalance)) {
+    console.log("Not engough USDT")
+    // window.alert("Not engough USDT")
+  }
 
   const [currencyIdA, currencyIdB] = router.query.currency || []
 
@@ -300,30 +305,7 @@ export default function AddLiquidity() {
   var USDT = useCurrency(tokens.usdt.address)
   var MLS = useCurrency(tokens.mls.address)
 
-  // const usdtBalance = useCurrencyBalance(account ?? undefined, USDT ?? undefined)?.toSignificant(18)
-  // const pmlsBalance = useCurrencyBalance(account ?? undefined, PMLS ?? undefined)?.toSignificant(18)
-  // const [usdtBalance, setUsdtBalance] = useState("")
-  // setUsdtBalance(useTokenBalance(tokens.usdt.address).balance.toString())
 
-  // console.log("usdtBalance:", usdtBalance)
-
-  // const [pmlsBalance, setPmlsBalance] = useState("")
-  // setPmlsBalance(useTokenBalance(tokens.pmls.address).balance.toString())
-  // console.log("pmlsBalance:", pmlsBalance)
-
-  const usdtBalance = useTokenBalance(tokens.usdt.address).balance.toString()
-  // const contract = useTokenContract(tokens.pmls.address, false)
-  // const { data, status, ...rest } = useSWR(
-  //   "balances",
-  //   async () => {
-  //     return contract["balances"](account)
-  //   },
-  // )
-  // const pmlsBalance = data && data.toString()
-  // console.log("pmlsBalance:", pmlsBalance)
-  // if (requiredUsdt > usdtBalance.balance){
-  //   toastError("Error","Not engough USDT") 
-  // } 
   let pmls
   let usdt
   let mls
@@ -338,29 +320,29 @@ export default function AddLiquidity() {
         <CardBody>
           <AutoColumn gap="20px">
             <CurrencyInputPanel
-              value={pmlsBalance && utils.formatUnits(pmlsBalance,"ether")}
+              value={pmlsBalance && utils.formatUnits(pmlsBalance,"ether") }
 
               onUserInput={onFieldAInput}
               onMax={() => {
-                // onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')
+                onFieldAInput(utils.formatUnits(pmlsBalance,"ether") ?? '')
               }}
               onCurrencySelect={handleCurrencyASelect}
-              showMaxButton={!atMaxAmounts[Field.CURRENCY_A]}
+              showMaxButton={true}
               currency={PMLS}
               id="add-liquidity-input-tokena"
-              showCommonBases
+              // showCommonBases
             />
             <CurrencyInputPanel
-              value={utils.formatUnits(usdtBalance,"ether")}
+              value={pmlsBalance && utils.formatUnits(pmlsBalance,"ether")  }
               onUserInput={onFieldBInput}
               onCurrencySelect={handleCurrencyBSelect}
               onMax={() => {
-                // onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')
+                onFieldAInput(utils.formatUnits(usdtBalance,"ether") ?? '')
               }}
-              showMaxButton={!atMaxAmounts[Field.CURRENCY_B]}
-              currency={USDT}
+              showMaxButton={false}
+              currency={currencies[Field.CURRENCY_B]}
               id="add-liquidity-input-tokenb"
-              showCommonBases
+              // showCommonBases
             />
           </AutoColumn>
           <AutoColumn justify="space-between">
@@ -380,7 +362,7 @@ export default function AddLiquidity() {
             </AutoRow>
           </AutoColumn>
           <CurrencyInputPanel
-            value={pmlsBalance && utils.formatUnits(pmlsBalance,"ether")}
+            value={ pmlsBalance && utils.formatUnits(pmlsBalance,"ether")}
             onUserInput={null}
             label={t('To')}
             showMaxButton={false}

@@ -26,11 +26,11 @@ export const usdt = new StableBond({
   reserveContractAbi: StableReserveContract,
   networkAddrs: {
     [Networks.BSC]: {
-      bondAddress: '0x0a5572622800fDF2F06B63BD8F4108F14902a38e',
-      reserveAddress: '0x4aEeB8D61FEABC8695Db1831c03914DD94067120',
+      bondAddress: '0x29CEa51B5a6d7aDF16b375f31Cb56958cd19Eb95',
+      reserveAddress: '0x55d398326f99059fF775485246999027B3197955',
     },
     [Networks.BSC_TESTNET]: {
-      bondAddress: '0x9188c35c4E6F859C8f4408dC64f5E11F1d81c2DA',
+      bondAddress: '0xce284f850a2A5393C5DBC9091D35c57a4Ef31038',
       reserveAddress: '0xc362B3ed5039447dB7a06F0a3d0bd9238E74d57c',
     },
     [Networks.AVAX_TESTNET]: {
@@ -71,12 +71,12 @@ export const usdtMLS = new LPBond({
   reserveContractAbi: LpReserveContract,
   networkAddrs: {
     [Networks.BSC]: {
-      bondAddress: '0x0a5572622800fDF2F06B63BD8F4108F14902a38e',
-      reserveAddress: '0x4aEeB8D61FEABC8695Db1831c03914DD94067120',
+      bondAddress: '0x46fF83f877153a554734199c0a4453BDC14316bE',
+      reserveAddress: '0x9EBe39eC93D28b83298fCa61a6Ce0DD260A1314D',
     },
     [Networks.BSC_TESTNET]: {
-      bondAddress: '0x1b8435d3fdFFd2A2bd5d261d57a8882C178E6028',
-      reserveAddress: '0xFbb0382Ae21a184324cd1B919844973E132c13b9',
+      bondAddress: '0xa0621192e912c599A553c53A60b1c48f78D36f06',
+      reserveAddress: '0xBC24d3D48991a61d4C93c8c6883da1CAf5259D64',
     },
     [Networks.AVAX_TESTNET]: {
       bondAddress: '0x82985685C9fD9a4f40Ae6B3e755075372262CEb3',

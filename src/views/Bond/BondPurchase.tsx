@@ -15,6 +15,7 @@ import { warning } from "../../store/slices/messages-slice";
 import Zapin from "./Zapin";
 import useToast from '../../hooks/useToast'
 import { AppDispatch, AppState } from 'state'
+import { useTranslation } from "contexts/Localization";
 
 interface IBondPurchaseProps {
     bond: IAllBondData;
@@ -26,6 +27,7 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
     const dispatch = useDispatch();
     const { toastSuccess, toastError, toastWarning, toastInfo } = useToast()
 
+    const {t} = useTranslation()
     const { account, chainId, library } = useWeb3React()
     const address = account
     const provider = library
@@ -43,7 +45,6 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
 
     const vestingPeriod = () => {
         var result = prettifySeconds(bond.vestingTerm, "day");
-        console.log("result:",result, bond.vestingTerm)
         return result;
     };
 
@@ -51,7 +52,6 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
     const bondDetailsDebounce = useDebounce(quantity, 1000);
 
     useEffect(() => {
-        console.log("quantity:",quantity)
         dispatch(calcBondDetails({ bond, value: quantity, provider, networkID: chainId }));
     }, [bondDetailsDebounce]);
 
@@ -83,7 +83,6 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
             }
         } else {
             const trimBalance = trim(Number(quantity), 10);
-            console.log("trimBalance:", trimBalance)
 
             await dispatch(
                 //@ts-ignore
@@ -166,7 +165,7 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
                         endAdornment={
                             <InputAdornment position="end">
                                 <div className="stake-input-btn" onClick={setMax}>
-                                    <p>Max</p>
+                                    <p>{t("Max")}</p>
                                 </div>
                             </InputAdornment>
                         }
@@ -207,40 +206,40 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
             <Slide direction="left" in={true} mountOnEnter unmountOnExit {...{ timeout: 533 }}>
                 <Box className="bond-data">
                     <div className="data-row">
-                        <p className="bond-balance-title">Your Balance</p>
+                        <p className="bond-balance-title">{t("Your Balance")}</p>
                         <p className="bond-balance-title">
                             {isBondLoading ? (
-                                <Skeleton width="100px" />
+                                0
                             ) : (
                                 <>
-                                    {trim(useAvax ? bond.avaxBalance : bond.balance, 18)} {displayUnits}
+                                    {trim(useAvax ? bond.avaxBalance : bond.balance, 9)} {displayUnits}
                                 </>
                             )}
                         </p>
                     </div>
 
                     <div className="data-row">
-                        <p className="bond-balance-title">You Will Get</p>
-                        <p className="price-data bond-balance-title">{isBondLoading ? <Skeleton width="100px" /> : `${trim(bond.bondQuote, 4)} MLS`}</p>
+                        <p className="bond-balance-title">{t("You Will Get")}</p>
+                        <p className="price-data bond-balance-title">{isBondLoading ? 0 : `${trim(bond.bondQuote, 4)} MLS`}</p>
                     </div>
 
                     <div className={`data-row`}>
-                        <p className="bond-balance-title">Max You Can Buy</p>
-                        <p className="price-data bond-balance-title">{isBondLoading ? <Skeleton width="100px" /> : `${trim(bond.maxBondPrice, 4)} MLS`}</p>
+                        <p className="bond-balance-title">{t("Max You Can Buy")}</p>
+                        <p className="price-data bond-balance-title">{isBondLoading ? 0 : `${trim(bond.maxBondPrice, 4)} USDT`}</p>
                     </div>
 
                     <div className="data-row">
-                        <p className="bond-balance-title">ROI</p>
-                        <p className="bond-balance-title">{isBondLoading ? <Skeleton width="100px" /> : `${trim(bond.bondDiscount * 100, 2)}%`}</p>
+                        <p className="bond-balance-title">{t("ROI")}</p>
+                        <p className="bond-balance-title">{isBondLoading ? 0 : `${trim(bond.bondDiscount * 100, 2)}%`}</p>
                     </div>
 
                     <div className="data-row">
-                        <p className="bond-balance-title">Vesting Term</p>
+                        <p className="bond-balance-title">{t("Vesting Term")}</p>
                         <p className="bond-balance-title">{ vestingPeriod()}</p>
                     </div>
 
                     <div className="data-row">
-                        <p className="bond-balance-title">Minimum purchase</p>
+                        <p className="bond-balance-title">{t("Minimum purchase")}</p>
                         <p className="bond-balance-title">0.01 MLS</p>
                     </div>
                 </Box>

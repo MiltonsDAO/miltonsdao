@@ -13,20 +13,20 @@ export const mls: IToken = {
   name: 'MLS',
   isAvax: true,
   img: AvaxIcon,
-  address: '0x8fE7bCA2ED58a7C5038c6FB5C75df9A003cB3693',
-  decimals: 18,
+  address: '0x7027Be050ad3c6Bd0f8c77374aF102D7f2947903',
+  decimals: 9,
 }
 
 const usdt: IToken = {
   name: 'USDT',
-  address: '0x329f06E35fFC02aBe8Af1fae78D2D1a821dC07FB',
+  address: '0x55d398326f99059fF775485246999027B3197955',
   img: '',
   decimals: 18,
 }
 
 const pmls: IToken = {
   name: 'PMLS',
-  address: '0xEfF46346a988b1D80010702eb232Fc077EEfF452',
+  address: '0xf6Bc9b5C53600191578389502d7153136D3fdeF3',
   img: '',
   decimals: 18,
 }

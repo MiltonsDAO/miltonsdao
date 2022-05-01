@@ -14,6 +14,7 @@ import { IAllBondData } from "../../hooks/bonds";
 import Page from '../Page'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import { AppState } from 'state'
+import { useTranslation } from "contexts/Localization";
 
 function TabPanel(props: any) {
     const { children, value, index, ...other } = props;
@@ -33,7 +34,7 @@ export function Bond({ bond }: IBondProps) {
     const [slippage, setSlippage] = useState(0.5);
 
     const [view, setView] = useState(0);
-
+    const {t} = useTranslation()
     const isBondLoading = useSelector<AppState, boolean>(state => state.bonding.loading ?? true);
 
     const onSlippageChange = (value: any) => {
@@ -55,23 +56,23 @@ export function Bond({ bond }: IBondProps) {
                                 {/* @ts-ignore */}
                                 <Box direction="row" className="bond-price-data-row">
                                     <div className="bond-price-data">
-                                        <p className="bond-price-data-title">Mint Price</p>
+                                        <p className="bond-price-data-title">{t("Mint Price")}</p>
                                         <p className="bond-price-data-value">
                                             {isBondLoading ? <Skeleton /> : bond.isLP || bond.name === "wavax" ? `$${trim(bond.bondPrice, 2)}` : `${trim(bond.bondPrice, 2)} USDT`}
                                         </p>
                                     </div>
                                     <div className="bond-price-data">
-                                        <p className="bond-price-data-title">MLS Price</p>
+                                        <p className="bond-price-data-title">{t("MLS Price")}</p>
                                         <p className="bond-price-data-value">{isBondLoading ? <Skeleton /> : `$${trim(bond.marketPrice, 2)}`}</p>
                                     </div>
                                 </Box>
 
                                 <div className="bond-one-table">
                                     <div className={classnames("bond-one-table-btn", { active: !view })} onClick={changeView(0)}>
-                                        <p>Mint</p>
+                                        <p>{t("Mint")}</p>
                                     </div>
                                     <div className={classnames("bond-one-table-btn", { active: view })} onClick={changeView(1)}>
-                                        <p>Redeem</p>
+                                        <p>{t("Redeem")}</p>
                                     </div>
                                 </div>
 

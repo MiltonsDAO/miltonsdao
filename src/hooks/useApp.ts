@@ -15,6 +15,8 @@ export function useApp() {
 
     const {account, chainId, library } = useWeb3React()
 
+
+
     const loadAccount = useCallback(
         () => {
           dispatch(loadAccountDetails({ networkID: chainId, address:account, provider: library }))
@@ -24,8 +26,10 @@ export function useApp() {
     const loadApp = useCallback(
         () => {
           dispatch(loadAppDetails({ networkID: chainId, provider: library }))
-          bonds.map((bond) => {
-            dispatch(calcBondDetails({ bond, value: null, provider: library, networkID: chainId }))
+          bonds.map(async(bond) => {
+            const bondContract = bond.getContractForBond(chainId, library)
+            const maxBondPrice = (await bondContract.maxPayout()) / Math.pow(10, 9)
+            dispatch(calcBondDetails({ bond, value: maxBondPrice.toString(), provider: library, networkID: chainId }))
           })
           tokens.map((token) => {
             dispatch(calculateUserTokenDetails({ address: '', token, networkID: chainId, provider:library }))
