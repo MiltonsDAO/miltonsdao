@@ -144,7 +144,7 @@ export const calcBondDetails = createAsyncThunk(
       const maxValuation = await bondCalcContract.valuation(bond.getAddressForReserve(networkID), maxBodValue)
       const maxBondQuote = await bondContract.payoutFor(maxValuation)
       maxBondPriceToken = maxBondPrice / (maxBondQuote * Math.pow(10, -9))
-      console.log("maxBondPriceToken:",maxBondPriceToken)
+      console.log("LP maxBondPriceToken:",maxBondPriceToken)
 
     } else {
       bondQuote = await bondContract.payoutFor(amountInWei)
@@ -152,6 +152,8 @@ export const calcBondDetails = createAsyncThunk(
 
       const maxBondQuote = await bondContract.payoutFor(maxBodValue)
       maxBondPriceToken = maxBondPrice / (maxBondQuote * Math.pow(10, -18))
+      console.log("maxBondPriceToken:",maxBondPriceToken)
+
     }
 
     if (!!value && bondQuote > maxBondPrice) {

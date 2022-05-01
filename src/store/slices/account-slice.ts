@@ -189,10 +189,6 @@ export const calculateUserBondDetails = createAsyncThunk(
     const bondDetails = await bondContract.bondInfo(address)
     interestDue = ethers.utils.formatUnits(bondDetails.payout, "gwei")
 
-    console.log("bondDetails:", bondDetails)
-    console.log("bondDetails.vesting:", bondDetails.vesting)
-    console.log("bondDetails.lastTime:", bondDetails.lastTime)
-
     bondMaturationBlock = Number(bondDetails.vesting) + Number(bondDetails.lastTime);
 
     try {
@@ -206,8 +202,7 @@ export const calculateUserBondDetails = createAsyncThunk(
 
     allowance = await reserveContract.allowance(address, bond.getAddressForBond(networkID))
     balance = await reserveContract.balanceOf(address)
-
-    const balanceVal = ethers.utils.formatEther(balance);
+    const balanceVal = balance && ethers.utils.formatEther(balance);
     const avaxBalance = await provider.getSigner().getBalance()
     const avaxVal = ethers.utils.formatEther(avaxBalance)
 
