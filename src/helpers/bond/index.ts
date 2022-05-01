@@ -88,7 +88,7 @@ export const usdtMLS = new LPBond({
     },
   },
   lpUrl:
-    'https://testnet.bscscan.com/address/0x8D98Fc5AbAb4BDFaF0Ce94082d9d89eC6eDE3e83#code',
+    'https://bscscan.com/address/0x46fF83f877153a554734199c0a4453BDC14316bE#code',
 })
 
 
