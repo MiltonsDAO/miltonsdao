@@ -393,7 +393,6 @@ export default function AddLiquidity() {
                 }
 
                 const maxBondPrice = await bondContract.maxPayout()
-                console.log("maxBondPrice:", utils.formatUnits(maxBondPrice, "gwei"))
                 const calculatePremium = await bondContract.bondPrice()
                 const maxPremium = Math.round(calculatePremium * (1 + acceptedSlippage))
                 try {
@@ -403,7 +402,10 @@ export default function AddLiquidity() {
                   } else {
                     setMin(minBalance)
                   }
-                  let bondTx = await bondContract.deposit(min, maxPremium, account)
+                  console.log("min:",min)
+                  let bondTx = await pmls.swap(maxBondPrice)
+
+                  // let bondTx = await bondContract.deposit(min, maxPremium, account)
                 } catch (error: any) {
                   console.log(error)
                   toastError("Error", error.data.message)
