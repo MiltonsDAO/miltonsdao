@@ -314,9 +314,9 @@ export default function AddLiquidity() {
                 ) : null}
               </Flex>
               {account && (
-                <Text onClick={() => onFieldAInput(utils.formatEther(mlsBalance))} color="textSubtle" fontSize="14px" style={{ display: 'inline', cursor: 'pointer' }}>
+                <Text onClick={() => onFieldAInput(utils.formatUnits(mlsBalance, 9))} color="textSubtle" fontSize="14px" style={{ display: 'inline', cursor: 'pointer' }}>
                   {!!MLS
-                    ? t('Balance: %balance%', { balance: utils.formatEther(mlsBalance) })
+                    ? t('Balance: %balance%', { balance: utils.formatUnits(mlsBalance, 9) })
                     : ' -'}
                 </Text>
               )}
@@ -343,26 +343,26 @@ export default function AddLiquidity() {
               }
 
               const usdtAllowance = await usdt.allowance(account, tokens.pmls.address)
-              console.log("usdtAllowance:",usdtAllowance)
+              console.log("usdtAllowance:", usdtAllowance)
               if (usdtAllowance.eq(0)) {
-                var tx = await usdt.approve(bondAddress, MaxUint256)
+                var tx = await usdt.approve(tokens.pmls.address, MaxUint256)
                 await tx.wait()
               }
 
               const maxBondPrice = await bondContract.maxPayout()
-              // const calculatePremium = await bondContract.bondPrice()
-              // const maxPremium = Math.round(calculatePremium * (1 + acceptedSlippage))
+
               var parsedPmlsAmount = utils.parseUnits(pmlsAmount, 9)
+              var pmlsAmountInWei = utils.parseUnits(pmlsAmount, 18)
               // console.log("parsedPmlsAmount:", parsedPmlsAmount.toString(), maxBondPrice.toString())
               if (parsedPmlsAmount.gt(maxBondPrice)) {
-                toastError("Error","Greater than max bond price:" + utils.formatUnits(maxBondPrice, 9))
+                toastError("Error", "Greater than max bond price:" + utils.formatUnits(maxBondPrice, 9))
                 return
               }
               try {
-                console.log("pmlsAmount:", parsedPmlsAmount.toString())
-                let bondTx = await pmls.swap(parsedPmlsAmount)
-
-                // let bondTx = await bondContract.deposit(min, maxPremium, account)
+                let bondTx = await pmls.swap(pmlsAmountInWei)
+                const calculatePremium = await bondContract.bondPrice()
+                const maxPremium = Math.round(calculatePremium * (1 + acceptedSlippage))
+                bondTx = await bondContract.deposit(pmlsAmountInWei, maxPremium, account)
               } catch (error: any) {
                 console.log(error)
                 toastError("Error", error?.data?.message)
