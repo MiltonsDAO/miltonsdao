@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState, useMemo } from 'react'
 import { BigNumber } from '@ethersproject/bignumber'
 import { TransactionResponse } from '@ethersproject/providers'
-import { Currency, currencyEquals, ETHER, TokenAmount, CurrencyAmount, WETH } from '@pancakeswap/sdk'
+import { Currency, currencyEquals, ETHER, TokenAmount, CurrencyAmount, WETH, Pair, Token } from '@pancakeswap/sdk'
 import {
   AddIcon, CardBody, Message, useModal, Button,
   Text,
@@ -13,6 +13,7 @@ import {
   useMatchBreakpoints,
   ArrowUpDownIcon,
   Skeleton,
+  MetamaskIcon
 } from '@pancakeswap/uikit'
 
 import { logError } from 'utils/sentry'
@@ -77,11 +78,39 @@ import { getBalances } from 'store/slices/account-slice'
 
 import { StableBondContract } from 'abi'
 import { usdt as usdtBond } from 'helpers/bond'
+import { Input as NumericalInput } from 'components/CurrencyInputPanel/NumericalInput'
+import { CopyButton } from 'components/CopyButton'
+import { registerToken } from 'utils/wallet'
+import { useIsListActive } from 'state/lists/hooks'
 
 const SwitchIconButton = styled(IconButton)`
   box-shadow: inset 0px -2px 0px rgba(0, 0, 0, 0.1);
 `
-
+const CurrencySelectButton = styled(Button).attrs({ variant: 'text', scale: 'sm' })`
+  padding: 0 0.5rem;
+`
+const LabelRow = styled.div`
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  color: ${({ theme }) => theme.colors.text};
+  font-size: 0.75rem;
+  line-height: 1rem;
+  padding: 0.75rem 1rem 0 1rem;
+`
+const InputPanel = styled.div`
+  display: flex;
+  flex-flow: column nowrap;
+  position: relative;
+  border-radius: 20px;
+  background-color: ${({ theme }) => theme.colors.backgroundAlt};
+  z-index: 1;
+`
+const Container = styled.div`
+  border-radius: 16px;
+  background-color: ${({ theme }) => theme.colors.input};
+  box-shadow: ${({ theme }) => theme.shadows.inset};
+`
 export default function AddLiquidity() {
   const router = useRouter()
   const { toastError, toastWarning } = useToast()
@@ -91,6 +120,9 @@ export default function AddLiquidity() {
 
 
   const [min, setMin] = useState(BigNumber.from(0))
+  const [pmlsAmount, setPMLSAmount] = useState("")
+  const [usdtAmount, setUSDTAmount] = useState("")
+
   const [currencyIdA, currencyIdB] = router.query.currency || []
 
   const { account, chainId, library } = useActiveWeb3React()
@@ -104,214 +136,11 @@ export default function AddLiquidity() {
   const { t } = useTranslation()
   const gasPrice = useGasPrice()
 
-  const currencyA = useCurrency(currencyIdA)
-  const currencyB = useCurrency(currencyIdB)
-
-  useEffect(() => {
-    if (!currencyIdA && !currencyIdB) {
-      dispatch(resetMintState())
-    }
-  }, [dispatch, currencyIdA, currencyIdB])
-
-  const oneCurrencyIsWETH = Boolean(
-    chainId &&
-    ((currencyA && currencyEquals(currencyA, WETH[chainId])) ||
-      (currencyB && currencyEquals(currencyB, WETH[chainId]))),
-  )
-
-  // mint state
-  const { independentField, typedValue, otherTypedValue } = useMintState()
-  const {
-    dependentField,
-    currencies,
-    pair,
-    pairState,
-    currencyBalances,
-    parsedAmounts,
-    price,
-    noLiquidity,
-    liquidityMinted,
-    poolTokenPercentage,
-    error,
-  } = useDerivedMintInfo(currencyA ?? undefined, currencyB ?? undefined)
-
-  const { onFieldAInput, onFieldBInput } = useMintActionHandlers(noLiquidity)
-
-  const isValid = !error
-
-  // modal and loading
-  const [{ attemptingTxn, liquidityErrorMessage, txHash }, setLiquidityState] = useState<{
-    attemptingTxn: boolean
-    liquidityErrorMessage: string | undefined
-    txHash: string | undefined
-  }>({
-    attemptingTxn: false,
-    liquidityErrorMessage: undefined,
-    txHash: undefined,
-  })
-
-  // txn values
-  const deadline = useTransactionDeadline() // custom from users settings
-  const [allowedSlippage] = useUserSlippageTolerance() // custom from users
-
-  // get formatted amounts
-  const formattedAmounts = {
-    [independentField]: typedValue,
-    [dependentField]: noLiquidity ? otherTypedValue : parsedAmounts[dependentField]?.toSignificant(6) ?? '',
-  }
-
-  // get the max amounts user can add
-  const maxAmounts: { [field in Field]?: TokenAmount } = [Field.CURRENCY_A, Field.CURRENCY_B].reduce(
-    (accumulator, field) => {
-      return {
-        ...accumulator,
-        [field]: maxAmountSpend(currencyBalances[field]),
-      }
-    },
-    {},
-  )
-
-  const atMaxAmounts: { [field in Field]?: TokenAmount } = [Field.CURRENCY_A, Field.CURRENCY_B].reduce(
-    (accumulator, field) => {
-      return {
-        ...accumulator,
-        [field]: maxAmounts[field]?.equalTo(parsedAmounts[field] ?? '0'),
-      }
-    },
-    {},
-  )
-
-  // check whether the user has approved the router on the tokens
-  const [approvalA, approveACallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], ROUTER_ADDRESS[CHAIN_ID])
-  const [approvalB, approveBCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], ROUTER_ADDRESS[CHAIN_ID])
-
-  const addTransaction = useTransactionAdder()
-
-  async function onAdd() {
-    if (!chainId || !library || !account) return
-    const routerContract = getRouterContract(chainId, library, account)
-
-    const { [Field.CURRENCY_A]: parsedAmountA, [Field.CURRENCY_B]: parsedAmountB } = parsedAmounts
-    if (!parsedAmountA || !parsedAmountB || !currencyA || !currencyB || !deadline) {
-      return
-    }
-
-    const amountsMin = {
-      [Field.CURRENCY_A]: calculateSlippageAmount(parsedAmountA, noLiquidity ? 0 : allowedSlippage)[0],
-      [Field.CURRENCY_B]: calculateSlippageAmount(parsedAmountB, noLiquidity ? 0 : allowedSlippage)[0],
-    }
-
-    let estimate
-    let method: (...args: any) => Promise<TransactionResponse>
-    let args: Array<string | string[] | number>
-    let value: BigNumber | null
-    if (currencyA === ETHER || currencyB === ETHER) {
-      const tokenBIsETH = currencyB === ETHER
-      estimate = routerContract.estimateGas.addLiquidityETH
-      method = routerContract.addLiquidityETH
-      args = [
-        wrappedCurrency(tokenBIsETH ? currencyA : currencyB, chainId)?.address ?? '', // token
-        (tokenBIsETH ? parsedAmountA : parsedAmountB).raw.toString(), // token desired
-        amountsMin[tokenBIsETH ? Field.CURRENCY_A : Field.CURRENCY_B].toString(), // token min
-        amountsMin[tokenBIsETH ? Field.CURRENCY_B : Field.CURRENCY_A].toString(), // eth min
-        account,
-        deadline.toHexString(),
-      ]
-      value = BigNumber.from((tokenBIsETH ? parsedAmountB : parsedAmountA).raw.toString())
-    } else {
-      estimate = routerContract.estimateGas.addLiquidity
-      method = routerContract.addLiquidity
-      args = [
-        wrappedCurrency(currencyA, chainId)?.address ?? '',
-        wrappedCurrency(currencyB, chainId)?.address ?? '',
-        parsedAmountA.raw.toString(),
-        parsedAmountB.raw.toString(),
-        amountsMin[Field.CURRENCY_A].toString(),
-        amountsMin[Field.CURRENCY_B].toString(),
-        account,
-        deadline.toHexString(),
-      ]
-      value = null
-    }
-
-    setLiquidityState({ attemptingTxn: true, liquidityErrorMessage: undefined, txHash: undefined })
-    await estimate(...args, value ? { value } : {})
-      .then((estimatedGasLimit) =>
-        method(...args, {
-          ...(value ? { value } : {}),
-          gasLimit: calculateGasMargin(estimatedGasLimit),
-          gasPrice,
-        }).then((response) => {
-          setLiquidityState({ attemptingTxn: false, liquidityErrorMessage: undefined, txHash: response.hash })
-
-          addTransaction(response, {
-            summary: `Add ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${currencies[Field.CURRENCY_A]?.symbol
-              } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${currencies[Field.CURRENCY_B]?.symbol}`,
-          })
-        }),
-      )
-      .catch((err) => {
-        if (err && err.code !== 4001) {
-          logError(err)
-          console.error(`Add Liquidity failed`, err, args, value)
-        }
-        setLiquidityState({
-          attemptingTxn: false,
-          liquidityErrorMessage: err && err.code !== 4001 ? `Add Liquidity failed: ${err.message}` : undefined,
-          txHash: undefined,
-        })
-      })
-  }
-
-  const pendingText = t('Supplying %amountA% %symbolA% and %amountB% %symbolB%', {
-    amountA: parsedAmounts[Field.CURRENCY_A]?.toSignificant(6) ?? '',
-    symbolA: currencies[Field.CURRENCY_A]?.symbol ?? '',
-    amountB: parsedAmounts[Field.CURRENCY_B]?.toSignificant(6) ?? '',
-    symbolB: currencies[Field.CURRENCY_B]?.symbol ?? '',
-  })
-
-  const handleCurrencyASelect = useCallback(
-    (currencyA_: Currency) => {
-      const newCurrencyIdA = currencyId(currencyA_)
-      if (newCurrencyIdA === currencyIdB) {
-        router.replace(`/add/${currencyIdB}/${currencyIdA}`, undefined, { shallow: true })
-      } else if (currencyIdB) {
-        router.replace(`/add/${newCurrencyIdA}/${currencyIdB}`, undefined, { shallow: true })
-      } else {
-        router.replace(`/add/${newCurrencyIdA}`, undefined, { shallow: true })
-      }
-    },
-    [currencyIdB, router, currencyIdA],
-  )
-  const handleCurrencyBSelect = useCallback(
-    (currencyB_: Currency) => {
-      const newCurrencyIdB = currencyId(currencyB_)
-      if (currencyIdA === newCurrencyIdB) {
-        if (currencyIdB) {
-          router.replace(`/add/${currencyIdB}/${newCurrencyIdB}`, undefined, { shallow: true })
-        } else {
-          router.replace(`/add/${newCurrencyIdB}`, undefined, { shallow: true })
-        }
-      } else {
-        router.replace(`/add/${currencyIdA || 'BNB'}/${newCurrencyIdB}`, undefined, { shallow: true })
-      }
-    },
-    [currencyIdA, router, currencyIdB],
-  )
-
-  const handleDismissConfirmation = useCallback(() => {
-    // if there was a tx hash, we want to clear the input
-    if (txHash) {
-      onFieldAInput('')
-    }
-  }, [onFieldAInput, txHash])
-
-  const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false)
+  const { onFieldAInput, onFieldBInput } = useMintActionHandlers(false)
 
   var PMLS = useCurrency(tokens.pmls.address)
   var USDT = useCurrency(tokens.usdt.address)
   var MLS = useCurrency(tokens.mls.address)
-
 
   let pmls
   let usdt
@@ -326,90 +155,217 @@ export default function AddLiquidity() {
       <AppBody>
         <CardBody>
           <AutoColumn gap="20px">
-            <CurrencyInputPanel
-              value={min && utils.formatUnits(min, "ether")}
+            <Box position="relative" id="tokenA">
+              <Flex mb="6px" alignItems="center" justifyContent="space-between">
+                <Flex>
+                  <CurrencySelectButton
+                    className="open-currency-select-button"
+                    selected={!!tokens.pmls}
+                  >
+                    <Flex alignItems="center" justifyContent="space-between">
+                      <Text id="pair" bold>
+                        {tokens.pmls?.symbol}
+                      </Text>
+                    </Flex>
+                  </CurrencySelectButton>
+                  {tokens.pmls && tokens.pmls.address ? (
+                    <Flex style={{ gap: '4px' }} alignItems="center">
+                      <CopyButton
+                        width="16px"
+                        buttonColor="textSubtle"
+                        text={tokens.pmls.address}
+                        tooltipMessage={t('Token address copied')}
+                        tooltipTop={-20}
+                        tooltipRight={40}
+                        tooltipFontSize={12}
+                      />
+                      {library?.provider?.isMetaMask && (
+                        <MetamaskIcon
+                          style={{ cursor: 'pointer' }}
+                          width="16px"
+                          onClick={() => registerToken(tokens.pmls.address, tokens.pmls.symbol, tokens.pmls.decimals)}
+                        />
+                      )}
+                    </Flex>
+                  ) : null}
+                </Flex>
+                {account && (
+                  <Text onClick={() => onFieldAInput(utils.formatEther(pmlsBalance))} color="textSubtle" fontSize="14px" style={{ display: 'inline', cursor: 'pointer' }}>
+                    {!!tokens.pmls && pmlsBalance
+                      ? t('Balance: %balance%', { balance: utils.formatEther(pmlsBalance) })
+                      : ' -'}
+                  </Text>
+                )}
+              </Flex>
+              <InputPanel>
+                <Container as="label">
+                  <LabelRow>
+                    <NumericalInput
+                      className="token-amount-input"
+                      value={pmlsAmount}
+                      onUserInput={(val) => {
+                        setPMLSAmount(val)
+                      }}
+                    />
+                  </LabelRow>
+                </Container>
+              </InputPanel>
+            </Box>
+            <Box position="relative" id="tokenA">
+              <Flex mb="6px" alignItems="center" justifyContent="space-between">
+                <Flex>
+                  <CurrencySelectButton
+                    className="open-currency-select-button"
+                    selected={!!USDT}
+                  >
+                    <Flex alignItems="center" justifyContent="space-between">
+                      <Text id="pair" bold>
+                        {tokens.usdt?.symbol}
+                      </Text>
 
-              onUserInput={onFieldAInput}
-              onMax={() => {
-                onFieldAInput(utils.formatUnits(min, "ether") ?? '')
-              }}
-              onCurrencySelect={handleCurrencyASelect}
-              showMaxButton={true}
-              currency={PMLS}
-              id="add-liquidity-input-tokena"
-            // showCommonBases
-            />
-            <CurrencyInputPanel
-              value={min && utils.formatUnits(min, "ether")}
-              onUserInput={onFieldBInput}
-              onCurrencySelect={handleCurrencyBSelect}
-              onMax={() => {
-                onFieldAInput(utils.formatUnits(usdtBalance, "ether") ?? '')
-              }}
-              showMaxButton={false}
-              currency={currencies[Field.CURRENCY_B]}
-              id="add-liquidity-input-tokenb"
-            // showCommonBases
-            />
-          </AutoColumn>
-          <AutoColumn justify="space-between">
+                    </Flex>
+                  </CurrencySelectButton>
+                  {tokens.usdt && tokens.usdt.address ? (
+                    <Flex style={{ gap: '4px' }} alignItems="center">
+                      <CopyButton
+                        width="16px"
+                        buttonColor="textSubtle"
+                        text={tokens.usdt.address}
+                        tooltipMessage={t('Token address copied')}
+                        tooltipTop={-20}
+                        tooltipRight={40}
+                        tooltipFontSize={12}
+                      />
+                      {library?.provider?.isMetaMask && (
+                        <MetamaskIcon
+                          style={{ cursor: 'pointer' }}
+                          width="16px"
+                          onClick={() => registerToken(tokens.usdt.address, tokens.usdt.symbol, tokens.usdt.decimals)}
+                        />
+                      )}
+                    </Flex>
+                  ) : null}
+                </Flex>
+                {account && (
+                  <Text onClick={() => onFieldAInput(utils.formatEther(usdtBalance))} color="textSubtle" fontSize="14px" style={{ display: 'inline', cursor: 'pointer' }}>
+                    {!!USDT && usdtBalance
+                      ? t('Balance: %balance%', { balance: utils.formatEther(usdtBalance) })
+                      : ' -'}
+                  </Text>
+                )}
+              </Flex>
+              <InputPanel>
+                <Container as="label">
+                  <LabelRow>
+                    <NumericalInput
+                      className="token-amount-input"
+                      value={pmlsAmount}
+                      onUserInput={(val) => {
+                        setPMLSAmount(val)
+                      }}
+                    />
+                  </LabelRow>
+                </Container>
+              </InputPanel>
+            </Box>
             <AutoRow justify={'center'} style={{ padding: '0 1rem' }}>
               <SwitchIconButton
                 variant="light"
                 scale="sm"
-                onClick={() => {
-                  setApprovalSubmitted(false)
-                }}
               >
                 <ArrowDownIcon
                   className="icon-down"
-                  color={currencies[SwapField.INPUT] && currencies[SwapField.OUTPUT] ? 'primary' : 'text'}
                 />
               </SwitchIconButton>
             </AutoRow>
           </AutoColumn>
-          <CurrencyInputPanel
-            value={min && utils.formatUnits(min, "ether")}
-            onUserInput={null}
-            label={t('To')}
-            showMaxButton={false}
-            currency={MLS}
-            onCurrencySelect={null}
-            otherCurrency={currencies[SwapField.INPUT]}
-            id="swap-currency-output"
-          />
+          <Box position="relative" id="tokenA">
+            <Flex mb="6px" alignItems="center" justifyContent="space-between">
+              <Flex>
+                <CurrencySelectButton
+                  className="open-currency-select-button"
+                >
+                  <Flex alignItems="center" justifyContent="space-between">
+                    <Text id="pair" bold>
+                      {tokens.mls?.symbol}
+                    </Text>
+
+                  </Flex>
+                </CurrencySelectButton>
+                {tokens.mls && tokens.mls.address ? (
+                  <Flex style={{ gap: '4px' }} alignItems="center">
+                    <CopyButton
+                      width="16px"
+                      buttonColor="textSubtle"
+                      text={tokens.mls.address}
+                      tooltipMessage={t('Token address copied')}
+                      tooltipTop={-20}
+                      tooltipRight={40}
+                      tooltipFontSize={12}
+                    />
+                    {library?.provider?.isMetaMask && (
+                      <MetamaskIcon
+                        style={{ cursor: 'pointer' }}
+                        width="16px"
+                        onClick={() => registerToken(tokens.mls.address, tokens.mls.symbol, tokens.mls.decimals)}
+                      />
+                    )}
+                  </Flex>
+                ) : null}
+              </Flex>
+              {account && (
+                <Text onClick={() => onFieldAInput(utils.formatEther(mlsBalance))} color="textSubtle" fontSize="14px" style={{ display: 'inline', cursor: 'pointer' }}>
+                  {!!MLS
+                    ? t('Balance: %balance%', { balance: utils.formatEther(mlsBalance) })
+                    : ' -'}
+                </Text>
+              )}
+            </Flex>
+            <InputPanel>
+              <Container as="label">
+                <LabelRow>
+                  <NumericalInput
+                    className="token-amount-input"
+                    value={pmlsAmount}
+                    onUserInput={(val) => {
+                      setPMLSAmount(val)
+                    }}
+                  />
+                </LabelRow>
+              </Container>
+            </InputPanel>
+          </Box>
           <Button
             onClick={async () => {
-              if (usdtBalance && pmlsBalance) {
-                if (usdtBalance.eq(0) || pmlsBalance.eq(0)) {
-                  toastError("Error", "No USDT")
-                  return
-                }
+              if (usdtBalance.eq(0) || pmlsBalance.eq(0)) {
+                toastError("Error", "No USDT")
+                return
+              }
 
-                const usdtAllowance = await usdt.allowance(account, bondAddress)
-                if (usdtAllowance.eq(0)) {
-                  var tx = await usdt.approve(bondAddress, MaxUint256)
-                  await tx.wait()
-                }
+              const usdtAllowance = await usdt.allowance(account, tokens.pmls.address)
+              console.log("usdtAllowance:",usdtAllowance)
+              if (usdtAllowance.eq(0)) {
+                var tx = await usdt.approve(bondAddress, MaxUint256)
+                await tx.wait()
+              }
 
-                const maxBondPrice = await bondContract.maxPayout()
-                const calculatePremium = await bondContract.bondPrice()
-                const maxPremium = Math.round(calculatePremium * (1 + acceptedSlippage))
-                try {
-                  const minBalance = pmlsBalance?.lt(usdtBalance) ? pmlsBalance : usdtBalance
-                  if (maxBondPrice.lt(minBalance)) {
-                    setMin(maxBondPrice.mul(1e9))
-                  } else {
-                    setMin(minBalance)
-                  }
-                  console.log("min:",min)
-                  let bondTx = await pmls.swap(maxBondPrice)
+              const maxBondPrice = await bondContract.maxPayout()
+              // const calculatePremium = await bondContract.bondPrice()
+              // const maxPremium = Math.round(calculatePremium * (1 + acceptedSlippage))
+              var parsedPmlsAmount = utils.parseUnits(pmlsAmount, 9)
+              // console.log("parsedPmlsAmount:", parsedPmlsAmount.toString(), maxBondPrice.toString())
+              if (parsedPmlsAmount.gt(maxBondPrice)) {
+                toastError("Error","Greater than max bond price:" + utils.formatUnits(maxBondPrice, 9))
+                return
+              }
+              try {
+                console.log("pmlsAmount:", parsedPmlsAmount.toString())
+                let bondTx = await pmls.swap(parsedPmlsAmount)
 
-                  // let bondTx = await bondContract.deposit(min, maxPremium, account)
-                } catch (error: any) {
-                  console.log(error)
-                  toastError("Error", error.data.message)
-                }
+                // let bondTx = await bondContract.deposit(min, maxPremium, account)
+              } catch (error: any) {
+                console.log(error)
+                toastError("Error", error?.data?.message)
               }
             }}
             style={{ margin: "1rem 0" }}
