@@ -21,7 +21,7 @@ export const mainnetTokens = defineTokens({
     'https://www.binance.com/',
   ),
   // bnb here points to the wbnb contract. Wherever the currency BNB is required, conditional checks for the symbol 'BNB' can be used
-  pmls: new Token(MAINNET, '0x88BA9E740FF0d0Ca12123EE87695aC775bF69361', 18, 'PMLS', 'PMLS', 'https://www.binance.com/'),
+  pmls: new Token(MAINNET, '0xAE8dC37e54c4F4FE9631f04e68778850eC9C92F1', 18, 'PMLS', 'PMLS', 'https://www.binance.com/'),
   mls: new Token(MAINNET, '0x7027Be050ad3c6Bd0f8c77374aF102D7f2947903', 9, 'MLS', 'MLS', 'https://tether.to/'),
   cake: new Token(
     MAINNET,

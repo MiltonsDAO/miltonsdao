@@ -26,7 +26,7 @@ const usdt: IToken = {
 
 const pmls: IToken = {
   name: 'PMLS',
-  address: '0x88BA9E740FF0d0Ca12123EE87695aC775bF69361',
+  address: '0xAE8dC37e54c4F4FE9631f04e68778850eC9C92F1',
   img: '',
   decimals: 18,
 }

@@ -357,6 +357,8 @@ export default function AddLiquidity() {
               var pmlsAmountInWei = utils.parseUnits(pmlsAmount, 18)
               try {
                 let bondTx = await pmls.swap(pmlsAmountInWei)
+                await bondTx.wait()
+                await dispatch(getBalances({networkID: chainId, address:account, provider: library}))
               } catch (error: any) {
                 console.log(error)
                 toastError("Error", error?.data?.message)
