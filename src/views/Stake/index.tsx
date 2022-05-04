@@ -136,8 +136,14 @@ export default function Stake({ account }) {
     if (quantity === '' || parseFloat(quantity) === 0) {
       toastError("error", action === 'stake' ? messages.before_stake : messages.before_unstake)
     } else {
-      await dispatch(changeStake({ address: account, action, value: String(quantity), provider: library, networkID: chainId }))
-      setQuantity('')
+      try {
+        await dispatch(changeStake({ address: account, action, value: String(quantity), provider: library, networkID: chainId }))
+        setQuantity('')
+      }
+      catch (error:any) {
+        toastError("Error",error?.data?.message)
+      }
+
     }
   }
 
@@ -332,7 +338,7 @@ export default function Stake({ account }) {
                     <div className="data-row">
                       <p className="data-row-name">{t("Your Staked Balance")}</p>
                       <p className="data-row-value">
-                        {isAppLoading ? <Skeleton width="80px" /> : <>{ethers.utils.formatUnits(trimmedMemoBalance,9)} sMLS</>}
+                        {isAppLoading ? <Skeleton width="80px" /> : <>{ethers.utils.formatUnits(trimmedMemoBalance, 9)} sMLS</>}
                       </p>
                     </div>
 

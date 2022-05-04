@@ -90,8 +90,9 @@ export const changeStake = createAsyncThunk(
   'stake/changeStake',
   async ({ action, value, provider, address, networkID }: IChangeStake, { dispatch }) => {
     // const { toastError, toastWarning } = useToast()
+
     if (!provider) {
-      dispatch(warning({ text: messages.please_connect_wallet }));
+      dispatch(warning({ text: messages.please_connect_wallet }))
       console.log('warning', messages.please_connect_wallet)
       return
     }
@@ -110,14 +111,14 @@ export const changeStake = createAsyncThunk(
         stakeTx = await staking.unstake(ethers.utils.parseUnits(value, 'gwei'), true)
       }
       const pendingTxnType = action === 'stake' ? 'staking' : 'unstaking'
-      dispatch(fetchPendingTxns({ txnHash: stakeTx.hash, text: getStakingTypeText(action), type: pendingTxnType }))
+      // dispatch(fetchPendingTxns({ txnHash: stakeTx.hash, text: getStakingTypeText(action), type: pendingTxnType }))
       await stakeTx.wait()
-      dispatch(warning({ text: messages.tx_successfully_send }));
+      // dispatch(warning({ text: messages.tx_successfully_send }))
       console.log('warning', messages.tx_successfully_send)
-    } catch (err: any) {
+    } catch (error: any) {
       // return toastError("error",err.message)
-      console.log(err)
-      return dispatch(error({ text: err.message }));
+      console.log("changeStake:",error)
+      // toastError("Error",  error?.data?.message)
       // return metamaskErrorWrap(err, dispatch)
     } finally {
       if (stakeTx) {
