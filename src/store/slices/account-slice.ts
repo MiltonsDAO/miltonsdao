@@ -1,7 +1,7 @@
 import { BigNumber, ethers } from 'ethers'
 import { getAddresses } from 'constants/'
 import { TimeTokenContract, TestContract, MemoTokenContract, DaiTokenContract, wMemoTokenContract } from 'abi'
-import PMLSContract from "config/abi/pmls.json"
+import PMLSContract from 'config/abi/pmls.json'
 import { setAll } from 'helpers'
 
 import { createSlice, createSelector, createAsyncThunk } from '@reduxjs/toolkit'
@@ -12,6 +12,7 @@ import React from 'react'
 import { RootState } from '../store'
 import { IToken } from 'helpers/tokens'
 import { BooleanArraySupportOption } from 'prettier'
+import { ERC20_INTERFACE, PMLS_INTERFACE, MLS_INTERFACE, REFERRAL_INTERFACE } from 'config/abi/erc20'
 
 interface IGetBalances {
   address: string
@@ -98,7 +99,6 @@ export const loadAccountDetails = createAsyncThunk(
     let stakeAllowance = 0
     let unstakeAllowance = 0
 
-    let partners
     let profit = BigNumber.from(0)
     var totalProfit = 0
     let sonslice: ISonSlice[] = []
@@ -116,7 +116,10 @@ export const loadAccountDetails = createAsyncThunk(
       memoBalance = await memoContract.balanceOf(address)
       console.log('memoBalance:', memoBalance)
       unstakeAllowance = await memoContract.allowance(address, addresses.STAKING_ADDRESS)
-
+      if (addresses.REFERRAL_ADDRESS) {
+        const referralContract = new ethers.Contract(addresses.REFERRAL_ADDRESS, REFERRAL_INTERFACE, provider)
+        referral = await referralContract.referrals(address)
+      }
       // if (addresses.WMEMO_ADDRESS) {
       //     memoWmemoAllowance = await memoContract.allowance(address, addresses.WMEMO_ADDRESS);
       // }
@@ -187,9 +190,9 @@ export const calculateUserBondDetails = createAsyncThunk(
 
     let interestDue, pendingPayout, bondMaturationBlock
     const bondDetails = await bondContract.bondInfo(address)
-    interestDue = ethers.utils.formatUnits(bondDetails.payout, "gwei")
+    interestDue = ethers.utils.formatUnits(bondDetails.payout, 'gwei')
 
-    bondMaturationBlock = Number(bondDetails.vesting) + Number(bondDetails.lastTime);
+    bondMaturationBlock = Number(bondDetails.vesting) + Number(bondDetails.lastTime)
 
     try {
       pendingPayout = await bondContract.pendingPayoutFor(address)
@@ -201,13 +204,13 @@ export const calculateUserBondDetails = createAsyncThunk(
       balance = '0'
 
     allowance = await reserveContract.allowance(address, bond.getAddressForBond(networkID))
-    console.log("reserveContract.allowance for bond:", bond.getAddressForBond(networkID), allowance)
+    console.log('reserveContract.allowance for bond:', bond.getAddressForBond(networkID), allowance)
     balance = await reserveContract.balanceOf(address)
-    const balanceVal = balance && ethers.utils.formatEther(balance);
+    const balanceVal = balance && ethers.utils.formatEther(balance)
     const avaxBalance = await provider.getSigner().getBalance()
     const avaxVal = ethers.utils.formatEther(avaxBalance)
 
-    const pendingPayoutVal = ethers.utils.formatUnits(pendingPayout, "gwei")
+    const pendingPayoutVal = ethers.utils.formatUnits(pendingPayout, 'gwei')
 
     return {
       bond: bond.name,

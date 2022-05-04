@@ -142,6 +142,9 @@ export default function AddLiquidity() {
   var USDT = useCurrency(tokens.usdt.address)
   var MLS = useCurrency(tokens.mls.address)
 
+  useEffect(() => {
+    dispatch(getBalances({ networkID: chainId, address: account, provider: library }))
+  })
   let pmls
   let usdt
   let mls
@@ -358,7 +361,7 @@ export default function AddLiquidity() {
               try {
                 let bondTx = await pmls.swap(pmlsAmountInWei)
                 await bondTx.wait()
-                await dispatch(getBalances({networkID: chainId, address:account, provider: library}))
+                await dispatch(getBalances({ networkID: chainId, address: account, provider: library }))
               } catch (error: any) {
                 console.log(error)
                 toastError("Error", error?.data?.message)

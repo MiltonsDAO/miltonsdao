@@ -34,7 +34,11 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
 
     const [quantity, setQuantity] = useState("");
     const [useAvax, setUseAvax] = useState(false);
-    const [referral, setReferral] = useState(zeroAddress);
+
+    const stateReferral = useSelector<AppState, string>(state => {
+        return state.account.referral;
+    });
+    const [referral, setReferral] = useState(stateReferral);
 
     const isBondLoading = useSelector<AppState, boolean>(state => state.bonding.loading ?? true);
     const [zapinOpen, setZapinOpen] = useState(false);

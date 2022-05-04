@@ -34,8 +34,6 @@ import "./zapin.scss";
 import "./choose-token.scss";
 
 
-const EasterEgg = dynamic(() => import('components/EasterEgg'), { ssr: false })
-
 // This config is required for number formatting
 BigNumber.config({
   EXPONENTIAL_AT: 1000,
