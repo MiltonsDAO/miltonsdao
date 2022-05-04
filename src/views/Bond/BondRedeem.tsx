@@ -12,6 +12,7 @@ import { IUserBondDetails } from "../../store/slices/account-slice";
 import { messages } from "../../constants/messages";
 import { warning } from "../../store/slices/messages-slice";
 import { AppDispatch, AppState } from 'state'
+import { useTranslation } from "contexts/Localization";
 
 interface IBondRedeem {
     bond: IAllBondData;
@@ -19,6 +20,7 @@ interface IBondRedeem {
 
 function BondRedeem({ bond }: IBondRedeem) {
     const dispatch = useDispatch();
+    const {t} = useTranslation()
     const {account, chainId, library } = useWeb3React()
     const address = account
     const provider = library
@@ -86,15 +88,15 @@ function BondRedeem({ bond }: IBondRedeem) {
             <Slide direction="right" in={true} mountOnEnter unmountOnExit {...{ timeout: 533 }}>
                 <Box className="bond-data">
                     <div className="data-row">
-                        <p className="bond-balance-title">Pending Rewards</p>
+                        <p className="bond-balance-title">{t("Pending Rewards")}</p>
                         <p className="price-data bond-balance-title">{isBondLoading ? <Skeleton width="100px" /> : `${bond.interestDue} MLS`}</p>
                     </div>
                     <div className="data-row">
-                        <p className="bond-balance-title">Claimable Rewards</p>
+                        <p className="bond-balance-title">{t("Claimable Rewards")}</p>
                         <p className="price-data bond-balance-title">{isBondLoading ? <Skeleton width="100px" /> : `${bond.pendingPayout} MLS`}</p>
                     </div>
                     <div className="data-row">
-                        <p className="bond-balance-title">Time until fully vested</p>
+                        <p className="bond-balance-title">{t("Time until fully vested")}</p>
                         <p className="price-data bond-balance-title">{isBondLoading ? <Skeleton width="100px" /> : vestingTime()}</p>
                     </div>
 
@@ -104,7 +106,7 @@ function BondRedeem({ bond }: IBondRedeem) {
                     </div>
 
                     <div className="data-row">
-                        <p className="bond-balance-title">Vesting Term</p>
+                        <p className="bond-balance-title">{t("Vesting Term")}</p>
                         <p className="bond-balance-title">{isBondLoading ? <Skeleton width="100px" /> : vestingPeriod()}</p>
                     </div>
                 </Box>
