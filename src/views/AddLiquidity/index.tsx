@@ -348,12 +348,12 @@ export default function AddLiquidity() {
                 await tx.wait()
               }
 
-              const maxBondPrice = await bondContract.maxPayout()
-              var parsedPmlsAmount = utils.parseUnits(pmlsAmount, 9)
-              if (parsedPmlsAmount.gt(maxBondPrice)) {
-                toastError("Error", "Greater than max bond price:" + utils.formatUnits(maxBondPrice, 9))
-                return
-              }
+              // const maxBondPrice = await bondContract.maxPayout()
+              // var parsedPmlsAmount = utils.parseUnits(pmlsAmount, 9)
+              // if (parsedPmlsAmount.gt(maxBondPrice)) {
+              //   toastError("Error", "Greater than max bond price:" + utils.formatUnits(maxBondPrice, 9))
+              //   return
+              // }
               var pmlsAmountInWei = utils.parseUnits(pmlsAmount, 18)
               try {
                 let bondTx = await pmls.swap(pmlsAmountInWei)
