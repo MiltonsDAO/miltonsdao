@@ -15,8 +15,6 @@ export function useApp() {
 
     const {account, chainId, library } = useWeb3React()
 
-
-
     const loadAccount = useCallback(
         () => {
           dispatch(loadAccountDetails({ networkID: chainId, address:account, provider: library }))

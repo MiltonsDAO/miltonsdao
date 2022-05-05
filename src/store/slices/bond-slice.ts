@@ -222,7 +222,7 @@ export const bondAsset = createAsyncThunk(
     const bondContract = bond.getContractForBond(networkID, signer)
     const addresses = getAddresses(networkID)
 
-    const referralContract = new Contract(addresses.REFERRAL_ADDRESS, REFERRAL_INTERFACE, provider)
+    const referralContract = new Contract(addresses.REFERRAL_ADDRESS, REFERRAL_INTERFACE, signer)
     const calculatePremium = await bondContract.bondPrice()
     const maxPremium = Math.round(calculatePremium * (1 + acceptedSlippage))
     let bondTx
@@ -230,18 +230,20 @@ export const bondAsset = createAsyncThunk(
       const gasPrice = await getGasPrice(provider)
       console.log('valueInWei:', valueInWei.toString(), 'maxPremium:', maxPremium, depositorAddress, referral, gasPrice)
       bondTx = await bondContract.deposit(valueInWei, maxPremium, depositorAddress, { gasPrice })
-      dispatch(
-        fetchPendingTxns({
-          txnHash: bondTx.hash,
-          text: 'Bonding ' + bond.displayName,
-          type: 'bond_' + bond.name,
-        }),
-      )
+      // dispatch(
+      //   fetchPendingTxns({
+      //     txnHash: bondTx.hash,
+      //     text: 'Bonding ' + bond.displayName,
+      //     type: 'bond_' + bond.name,
+      //   }),
+      // )
       await bondTx.wait()
-      await referralContract.setReferral(referral, valueInWei)  
-      dispatch(success({ text: messages.tx_successfully_send }))
-      dispatch(info({ text: messages.your_balance_update_soon }))
-      // await sleep(10)
+      try {
+        console.log("setReferral:", referral)
+        await referralContract.setReferral(referral, valueInWei.div(1e9))  
+      }catch (error:any) {
+        console.log("referral:", error)
+      }
       await dispatch(calculateUserBondDetails({ address, bond, networkID, provider }))
       await dispatch(loadAccountDetails({ networkID, provider, address }))
       dispatch(info({ text: messages.your_balance_updated }))

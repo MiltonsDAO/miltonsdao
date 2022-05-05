@@ -16,6 +16,7 @@ import Zapin from "./Zapin";
 import useToast from '../../hooks/useToast'
 import { AppDispatch, AppState } from 'state'
 import { useTranslation } from "contexts/Localization";
+import { getBalances, loadAccountDetails } from "store/slices/account-slice";
 
 interface IBondPurchaseProps {
     bond: IAllBondData;
@@ -27,7 +28,7 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
     const dispatch = useDispatch();
     const { toastSuccess, toastError, toastWarning, toastInfo } = useToast()
 
-    const {t} = useTranslation()
+    const { t } = useTranslation()
     const { account, chainId, library } = useWeb3React()
     const address = account
     const provider = library
@@ -57,7 +58,7 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
 
     useEffect(() => {
         dispatch(calcBondDetails({ bond, value: quantity, provider, networkID: chainId }));
-    }, [bondDetailsDebounce]);
+    }, [bondDetailsDebounce, account]);
 
 
     async function onBond() {
@@ -67,24 +68,24 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
         } else if (isNaN(quantity)) {
             toastWarning("warning", messages.before_minting);
         } else if (bond.interestDue > 0 || bond.pendingPayout > 0) {
-            const shouldProceed = window.confirm(messages.existing_mint);
-            if (shouldProceed) {
-                const trimBalance = trim(Number(quantity), 10);
+            // const shouldProceed = window.confirm(messages.existing_mint);
+            // if (shouldProceed) {
+            const trimBalance = trim(Number(quantity), 10);
 
-                await dispatch(
-                    bondAsset({
-                        value: trimBalance,
-                        slippage,
-                        bond,
-                        networkID: chainId,
-                        provider,
-                        address,
-                        useAvax,
-                        referral
-                    }),
-                );
-                clearInput();
-            }
+            await dispatch(
+                bondAsset({
+                    value: trimBalance,
+                    slippage,
+                    bond,
+                    networkID: chainId,
+                    provider,
+                    address,
+                    useAvax,
+                    referral
+                }),
+            );
+            clearInput();
+            // }
         } else {
             const trimBalance = trim(Number(quantity), 10);
 
@@ -156,6 +157,7 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
                         onChange={e => setReferral(e.target.value)}
                         labelWidth={0}
                         className="bond-input"
+                        disabled={ referral!=zeroAddress}
                     />
                 </FormControl>
                 <FormControl className="bond-input-wrap" variant="outlined" color="primary" fullWidth>
@@ -239,7 +241,7 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
 
                     <div className="data-row">
                         <p className="bond-balance-title">{t("Vesting Term")}</p>
-                        <p className="bond-balance-title">{ vestingPeriod()}</p>
+                        <p className="bond-balance-title">{vestingPeriod()}</p>
                     </div>
 
                     <div className="data-row">

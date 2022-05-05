@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { useWeb3React } from '@web3-react/core'
 import classnames from "classnames";
 import { Skeleton } from "@material-ui/lab";
@@ -15,6 +15,8 @@ import Page from '../Page'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import { AppState } from 'state'
 import { useTranslation } from "contexts/Localization";
+import { calcBondDetails } from "../../store/slices/bond-slice";
+import { getBalances, loadAccountDetails } from "../../store/slices/account-slice";
 
 function TabPanel(props: any) {
     const { children, value, index, ...other } = props;
@@ -32,6 +34,8 @@ export interface IBondProps {
 
 export function Bond({ bond }: IBondProps) {
     const [slippage, setSlippage] = useState(0.5);
+    const dispatch = useDispatch();
+    const { account, chainId, library } = useWeb3React()
 
     const [view, setView] = useState(0);
     const {t} = useTranslation()
@@ -45,6 +49,10 @@ export function Bond({ bond }: IBondProps) {
         setView(newView);
     };
 
+    useEffect(() => {
+        dispatch(getBalances({networkID: chainId, address:account, provider: library}));
+        dispatch(loadAccountDetails({networkID: chainId, address:account, provider: library}));
+    });
     return (
         <Page>
             <Fade in={true} mountOnEnter unmountOnExit>

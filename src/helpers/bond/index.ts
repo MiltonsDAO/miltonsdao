@@ -42,7 +42,7 @@ export const usdt = new StableBond({
       reserveAddress: '0xA388515Aeb4d8067470034a2561285f9C741C265',
     },
   },
-  tokensInStrategy: '60500000000000000000000000',
+  tokensInStrategy: '0',
 })
 
 
