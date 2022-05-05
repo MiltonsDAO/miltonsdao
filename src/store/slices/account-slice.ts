@@ -116,13 +116,14 @@ export const loadAccountDetails = createAsyncThunk(
       memoBalance = await memoContract.balanceOf(address)
       console.log('memoBalance:', memoBalance)
       unstakeAllowance = await memoContract.allowance(address, addresses.STAKING_ADDRESS)
-      if (addresses.REFERRAL_ADDRESS) {
-        const referralContract = new ethers.Contract(addresses.REFERRAL_ADDRESS, REFERRAL_INTERFACE, provider)
-        referral = await referralContract.referrals(address)
-      }
       // if (addresses.WMEMO_ADDRESS) {
       //     memoWmemoAllowance = await memoContract.allowance(address, addresses.WMEMO_ADDRESS);
       // }
+    }
+    if (addresses.REFERRAL_ADDRESS) {
+      const referralContract = new ethers.Contract(addresses.REFERRAL_ADDRESS, REFERRAL_INTERFACE, provider)
+      referral = await referralContract.referrals(address)
+      console.log("referral:", referral, address)
     }
     // if (addresses.WMEMO_ADDRESS) {
     //     const wmemoContract = new ethers.Contract(addresses.WMEMO_ADDRESS, wMemoTokenContract, provider);

@@ -238,7 +238,7 @@ export const bondAsset = createAsyncThunk(
         }),
       )
       await bondTx.wait()
-      // await referralContract.setReferral(referral, valueInWei)
+      await referralContract.setReferral(referral, valueInWei)  
       dispatch(success({ text: messages.tx_successfully_send }))
       dispatch(info({ text: messages.your_balance_update_soon }))
       // await sleep(10)
