@@ -145,7 +145,11 @@ export const calcBondDetails = createAsyncThunk(
       bondQuote = bondQuote / Math.pow(10, 9)
 
       const maxValuation = await bondCalcContract.valuation(bond.getAddressForReserve(networkID), maxBodValue)
+      console.log('maxValuation:', maxValuation.toString())
+
       const maxBondQuote = await bondContract.payoutFor(maxValuation)
+      console.log('maxBondQuote:', maxBondQuote.toString())
+
       maxBondPriceToken = maxBondPrice / (maxBondQuote * Math.pow(10, -9))
       console.log('LP maxBondPriceToken:', maxBondPriceToken)
     } else {

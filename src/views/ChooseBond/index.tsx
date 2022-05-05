@@ -65,7 +65,7 @@ function ChooseBond() {
                                                 currency: "USD",
                                                 maximumFractionDigits: 0,
                                                 minimumFractionDigits: 0,
-                                            }).format(treasuryBalance)
+                                            }).format(treasuryBalance*8)
                                         )}
                                     </p>
                                 </Box>

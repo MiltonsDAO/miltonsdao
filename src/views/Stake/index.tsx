@@ -105,6 +105,8 @@ export default function Stake({ account }) {
   const accountSlice = useSelector<AppState, IAccountSlice>(state => {
     return state.account;
   });
+  const marketPrice = app.marketPrice
+
   const timeBalance = accountSlice?.balances?.mls
 
   const memoBalance = accountSlice?.balances?.smls
@@ -314,16 +316,6 @@ export default function Stake({ account }) {
                         </div>
                       )}
                     </div>
-
-                    {/* <div className="ido-card-action-help-text">
-                        {account && ((!hasAllowance('mls') && view === 0) || (!hasAllowance('smls') && view === 1)) && (
-                          <p>
-                            Note: The "Approve" transaction is only needed when staking/unstaking for the first time;
-                            subsequent staking/unstaking only requires you to perform the "Stake" or "Unstake"
-                            transaction.
-                          </p>
-                        )}
-                      </div> */}
                   </div>
 
                   <div className="ido-user-data">
@@ -359,6 +351,13 @@ export default function Stake({ account }) {
                       <p className="data-row-name">{t("ROI")}</p>
                       <p className="data-row-value">
                         {isAppLoading ? <Skeleton width="80px" /> : <>{trim(Number(fiveDayRate) * 100, 4)}%</>}
+                      </p>
+                    </div>
+
+                    <div className="data-row">
+                      <p className="data-row-name">{t("Floor Price")}</p>
+                      <p className="data-row-value">
+                        {isAppLoading ? <Skeleton width="80px" /> : <>{trim(Number(marketPrice*0.8), 4)}</>}
                       </p>
                     </div>
                   </div>
