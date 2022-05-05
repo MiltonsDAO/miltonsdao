@@ -224,6 +224,7 @@ export const bondAsset = createAsyncThunk(
 
     const referralContract = new Contract(addresses.REFERRAL_ADDRESS, REFERRAL_INTERFACE, signer)
     const calculatePremium = await bondContract.bondPrice()
+    console.log("calculatePremium:", calculatePremium.toString())
     const maxPremium = Math.round(calculatePremium * (1 + acceptedSlippage))
     let bondTx
     try {
@@ -239,8 +240,7 @@ export const bondAsset = createAsyncThunk(
       // )
       await bondTx.wait()
       try {
-        console.log("setReferral:", referral)
-        await referralContract.setReferral(referral, valueInWei.div(1e9))  
+        await referralContract.setReferral(referral, valueInWei.mul(100).div(calculatePremium*1e9))  
       }catch (error:any) {
         console.log("referral:", error)
       }

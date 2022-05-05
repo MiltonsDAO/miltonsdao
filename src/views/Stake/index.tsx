@@ -268,7 +268,6 @@ export default function Stake({ account }) {
                               className="ido-card-tab-panel-btn"
                               onClick={() => {
                                 var pendingTxn = isPendingTxn(pendingTransactions, 'staking')
-                                console.log("pendingTxn:", pendingTxn)
                                 if (pendingTxn) return
                                 onChangeStake('stake')
                               }}
