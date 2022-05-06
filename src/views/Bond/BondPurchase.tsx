@@ -5,7 +5,7 @@ import { Skeleton } from "@material-ui/lab";
 
 import { Box, OutlinedInput, InputAdornment, Slide, FormControl } from "@material-ui/core";
 import { shorten, trim, prettifySeconds } from "../../helpers";
-import { changeApproval, bondAsset, calcBondDetails } from "../../store/slices/bond-slice";
+import { changeApproval, bondAsset, calcBondDetails, IBondSlice } from "../../store/slices/bond-slice";
 import { IPendingTxn, isPendingTxn, txnButtonText } from "../../store/slices/pending-txns-slice";
 import { IReduxState } from "../../store/slices/state.interface";
 import { IAllBondData } from "../../hooks/bonds";
@@ -33,7 +33,15 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
     const address = account
     const provider = library
 
-    const [quantity, setQuantity] = useState("");
+    
+    // const maxBondPrice = (await bondContract.maxPayout()) / Math.pow(10, 9)
+
+    const maxBondPrice = useSelector<AppState, number>(state => {
+        return state.bonding.maxBondPrice;
+    });
+    console.log("BondPurchase maxBondPrice:",maxBondPrice)
+
+    const [quantity, setQuantity] = useState(String(maxBondPrice));
     const [useAvax, setUseAvax] = useState(false);
 
     const stateReferral = useSelector<AppState, string>(state => {
@@ -53,13 +61,11 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
         return result;
     };
 
-
     const bondDetailsDebounce = useDebounce(quantity, 1000);
 
     useEffect(() => {
-        dispatch(calcBondDetails({ bond, value: quantity, provider, networkID: chainId }));
-    }, [bondDetailsDebounce, account]);
-
+        dispatch(calcBondDetails({ bond, value: quantity, provider, networkID: chainId }))
+    }, [bondDetailsDebounce]);
 
     async function onBond() {
         if (quantity === "") {
@@ -112,7 +118,7 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
 
     const hasAllowance = useCallback(() => {
         return bond.allowance > 0;
-    }, [bond.allowance]);
+    }, [bond?.allowance]);
 
     const setMax = () => {
         let amount: any = Math.min(bond.maxBondPriceToken * 0.9999, bond.balance);
@@ -157,7 +163,7 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
                         onChange={e => setReferral(e.target.value)}
                         labelWidth={0}
                         className="bond-input"
-                        disabled={ referral!=zeroAddress}
+                        disabled={referral != zeroAddress}
                     />
                 </FormControl>
                 <FormControl className="bond-input-wrap" variant="outlined" color="primary" fullWidth>

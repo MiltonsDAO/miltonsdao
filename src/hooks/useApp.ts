@@ -27,6 +27,7 @@ export function useApp() {
           bonds.map(async(bond) => {
             const bondContract = bond.getContractForBond(chainId, library)
             const maxBondPrice = (await bondContract.maxPayout()) / Math.pow(10, 9)
+            console.log("maxBondPrice:",maxBondPrice)
             dispatch(calcBondDetails({ bond, value: maxBondPrice.toString(), provider: library, networkID: chainId }))
           })
           tokens.map((token) => {

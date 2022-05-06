@@ -19,6 +19,12 @@ import { sleep } from 'helpers'
 import { BigNumber } from 'ethers'
 import { ContractInterface, Contract, utils } from 'ethers'
 import { ERC20_INTERFACE, PMLS_INTERFACE, MLS_INTERFACE, REFERRAL_INTERFACE } from 'config/abi/erc20'
+import { useSelector } from 'react-redux'
+import { stat } from 'fs'
+import { AppState } from 'state'
+
+import { IAllBondData } from 'hooks/bonds'
+import { toBn } from "evm-bn"
 
 interface IChangeApproval {
   bond: Bond
@@ -80,7 +86,7 @@ export const changeApproval = createAsyncThunk(
 
 interface ICalcBondDetails {
   bond: Bond
-  value: string | null
+  value: string | null 
   provider: StaticJsonRpcProvider | JsonRpcProvider
   networkID: Networks
 }
@@ -103,8 +109,14 @@ export const calcBondDetails = createAsyncThunk(
     if (!value) {
       value = '0'
     }
+    console.log("value:",value)
 
-    const amountInWei = ethers.utils.parseEther(value)
+    let amountInWei =  toBn(value)
+    // let amountInWei = BigNumber.from(value)
+    console.log("amountInWei:",amountInWei)
+
+    // let amountInWei = ethers.utils.parseUnits(value,"ether")
+    // console.log("amountInWei:",amountInWei)
 
     let bondPrice = 0,
       bondDiscount = 0,
@@ -113,11 +125,11 @@ export const calcBondDetails = createAsyncThunk(
 
     const addresses = getAddresses(networkID)
 
-
     const bondContract = bond.getContractForBond(networkID, provider)
     const bondCalcContract = getBondCalculator(networkID, provider)
 
     const terms = await bondContract.terms()
+
     const maxBondPrice = (await bondContract.maxPayout()) / Math.pow(10, 9)
 
     const marketPrice = (await getMarketPrice(networkID, provider)) / Math.pow(10, 9)
@@ -133,18 +145,18 @@ export const calcBondDetails = createAsyncThunk(
     }
 
     let maxBondPriceToken = 0
-    const maxBodValue = ethers.utils.parseEther('3.8')
+    const maxBondValue = ethers.utils.parseEther('10')
 
     if (bond.isLP) {
-      console.log('amountInWei:', amountInWei.toString())
-
       valuation = await bondCalcContract.valuation(bond.getAddressForReserve(networkID), amountInWei)
+      console.log('valuation:', valuation.toString())
+
       bondQuote = await bondContract.payoutFor(valuation)
       console.log('bondQuote:', bondQuote.toString())
 
       bondQuote = bondQuote / Math.pow(10, 9)
 
-      const maxValuation = await bondCalcContract.valuation(bond.getAddressForReserve(networkID), maxBodValue)
+      const maxValuation = await bondCalcContract.valuation(bond.getAddressForReserve(networkID), maxBondValue)
       console.log('maxValuation:', maxValuation.toString())
 
       const maxBondQuote = await bondContract.payoutFor(maxValuation)
@@ -156,7 +168,7 @@ export const calcBondDetails = createAsyncThunk(
       bondQuote = await bondContract.payoutFor(amountInWei)
       bondQuote = bondQuote / Math.pow(10, 18)
 
-      const maxBondQuote = await bondContract.payoutFor(maxBodValue)
+      const maxBondQuote = await bondContract.payoutFor(maxBondValue)
       maxBondPriceToken = maxBondPrice / (maxBondQuote * Math.pow(10, -18))
       console.log('maxBondPriceToken:', maxBondPriceToken)
     }
@@ -165,7 +177,6 @@ export const calcBondDetails = createAsyncThunk(
       dispatch(error({ text: messages.try_mint_more(maxBondPrice.toFixed(2).toString()) }))
     }
 
-    // Calculate bonds purchased
     const token = bond.getContractForReserve(networkID, provider)
     let purchased = await token.balanceOf(addresses.TREASURY_ADDRESS)
     if (bond.isLP) {
@@ -175,20 +186,13 @@ export const calcBondDetails = createAsyncThunk(
       purchased = await bondCalcContract.valuation(assetAddress, purchased)
       purchased = (markdown / Math.pow(10, 18)) * (purchased / Math.pow(10, 9))
 
-      // if (bond.name === avaxTime.name) {
-      //     const avaxPrice = getTokenPrice("AVAX");
-      //     purchased = purchased * avaxPrice;
-      // }
     } else {
       if (bond.tokensInStrategy) {
         purchased = BigNumber.from(purchased).add(BigNumber.from(bond.tokensInStrategy)).toString()
       }
       purchased = purchased / Math.pow(10, 18)
 
-      // if (bond.name === wavax.name) {
-      //     const avaxPrice = getTokenPrice("AVAX");
-      //     purchased = purchased * avaxPrice;
-      // }
+
     }
 
     return {
@@ -313,13 +317,21 @@ export const redeemBond = createAsyncThunk(
   },
 )
 
-export interface IBondSlice {
+export interface IBondSlice extends IBondDetails {
   loading: boolean
-  [key: string]: any
 }
 
 const initialState: IBondSlice = {
   loading: true,
+  bond: "",
+  bondDiscount: 0,
+  bondQuote: 0,
+  purchased: 0,
+  vestingTerm: 0,
+  maxBondPrice: 0,
+  bondPrice: 0,
+  marketPrice: 0,
+  maxBondPriceToken: 0
 }
 
 const setBondState = (state: IBondSlice, payload: any) => {
