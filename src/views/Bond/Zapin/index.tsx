@@ -213,11 +213,11 @@ function Zapin({ open, handleClose, bond }: IZapinProps) {
                                 <div
                                     className="zapin-header-token-select-btn"
                                     onClick={async () => {
-                                        if (isPendingTxn(pendingTransactions, "zapin_" + token.name + "_" + bond.name)) return;
+                                        if (isPendingTxn(pendingTransactions, "zapin_" + token.name + "_" + bond?.name)) return;
                                         await onMint();
                                     }}
                                 >
-                                    <p>{txnButtonText(pendingTransactions, "zapin_" + token.name + "_" + bond.name, "Mint")}</p>
+                                    <p>{txnButtonText(pendingTransactions, "zapin_" + token.name + "_" + bond?.name, "Mint")}</p>
                                 </div>
                             ) : (
                                 <div
@@ -249,7 +249,7 @@ function Zapin({ open, handleClose, bond }: IZapinProps) {
                         <div className="zapin-body-params">
                             <div className="data-row">
                                 <p className="data-row-name">Destination token </p>
-                                <p className="data-row-value">{bond.displayName}</p>
+                                <p className="data-row-value">{bond?.displayName}</p>
                             </div>
                             <div className="data-row">
                                 <p className="data-row-name">Slippage Tolerance</p>
@@ -261,19 +261,19 @@ function Zapin({ open, handleClose, bond }: IZapinProps) {
                             </div>
                             <div className="data-row">
                                 <p className="data-row-name">Minimum Received Amount</p>
-                                <p className="data-row-value">{isLoading ? <Skeleton width="100px" /> : `${minimumReceivedAmount} ${bond.displayUnits}`}</p>
+                                <p className="data-row-value">{isLoading ? <Skeleton width="100px" /> : `${minimumReceivedAmount} ${bond?.displayUnits}`}</p>
                             </div>
                             <div className="data-row">
                                 <p className="data-row-name">Approximately you will get</p>
-                                <p className="data-row-value">{isLoading ? <Skeleton width="100px" /> : `~ ${trim(bond.bondQuote, 4)} MLS`}</p>
+                                <p className="data-row-value">{isLoading ? <Skeleton width="100px" /> : `~ ${trim(bond?.bondQuote, 4)} MLS`}</p>
                             </div>
                             <div className="data-row">
                                 <p className="data-row-name">Max You Can Buy</p>
-                                <p className="data-row-value">{isLoading ? <Skeleton width="100px" /> : `${trim(bond.maxBondPrice, 4)} USDT`}</p>
+                                <p className="data-row-value">{isLoading ? <Skeleton width="100px" /> : `${trim(bond?.maxBondPrice, 4)} USDT`}</p>
                             </div>
                             <div className="data-row">
                                 <p className="data-row-name">ROI</p>
-                                <p className="data-row-value">{isLoading ? <Skeleton width="100px" /> : `${trim(bond.bondDiscount * 100, 2)}%`}</p>
+                                <p className="data-row-value">{isLoading ? <Skeleton width="100px" /> : `${trim(bond?.bondDiscount * 100, 2)}%`}</p>
                             </div>
                             <div className="data-row">
                                 <p className="data-row-name">Minimum purchase</p>
