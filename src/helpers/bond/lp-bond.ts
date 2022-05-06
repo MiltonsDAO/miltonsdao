@@ -56,6 +56,7 @@ export class LPBond extends Bond {
     const token = this.getContractForReserve(networkID, provider)
 
     let [reserve0, reserve1] = await token.getReserves()
+    console.log("reserve0:",reserve0.toString(),reserve1.toString())
     const token1: string = await token.token1()
     const isTime = token1.toLowerCase() === addresses.OHM_ADDRESS.toLowerCase()
 

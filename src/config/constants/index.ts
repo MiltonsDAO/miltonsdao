@@ -1,6 +1,6 @@
 import { ChainId, JSBI, Percent, Token } from '@pancakeswap/sdk'
 import { BigNumber } from '@ethersproject/bignumber'
-import { mainnetTokens, testnetTokens } from './tokens'
+import { mainnetTokens } from './tokens'
 
 export const ROUTER_ADDRESS = {
   [ChainId.MAINNET]: '0x10ED43C718714eb63d5aA57B78B54704E256024E',
@@ -19,8 +19,12 @@ export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
     mainnetTokens.usdt,
     mainnetTokens.mls,
   ],
-  [ChainId.TESTNET]: [testnetTokens.pmls, testnetTokens.usdt, testnetTokens.mls],
-  [ChainId.AVAX_TESTNET]: [testnetTokens.pmls, testnetTokens.usdt, testnetTokens.mls],
+  [ChainId.TESTNET]: [mainnetTokens.pmls,
+    mainnetTokens.usdt,
+    mainnetTokens.mls,],
+  [ChainId.AVAX_TESTNET]: [mainnetTokens.pmls,
+    mainnetTokens.usdt,
+    mainnetTokens.mls,],
 }
 
 /**
@@ -43,15 +47,15 @@ export const CUSTOM_BASES: { [chainId in ChainId]?: { [tokenAddress: string]: To
 // used for display in the default list when adding liquidity
 export const SUGGESTED_BASES: ChainTokenList = {
   [ChainId.MAINNET]: [mainnetTokens.pmls, mainnetTokens.usdt],
-  [ChainId.TESTNET]: [testnetTokens.pmls, testnetTokens.usdt],
-  [ChainId.AVAX_TESTNET]: [testnetTokens.pmls, testnetTokens.usdt],
+  [ChainId.TESTNET]: [mainnetTokens.pmls, mainnetTokens.usdt],
+  [ChainId.AVAX_TESTNET]: [mainnetTokens.pmls, mainnetTokens.usdt],
 }
 
 // used to construct the list of all pairs we consider by default in the frontend
 export const BASES_TO_TRACK_LIQUIDITY_FOR: ChainTokenList = {
   [ChainId.MAINNET]: [mainnetTokens.pmls, mainnetTokens.usdt],
-  [ChainId.TESTNET]: [testnetTokens.pmls, testnetTokens.usdt],
-  [ChainId.AVAX_TESTNET]: [testnetTokens.pmls, testnetTokens.usdt],
+  [ChainId.TESTNET]: [mainnetTokens.pmls, mainnetTokens.usdt],
+  [ChainId.AVAX_TESTNET]: [mainnetTokens.pmls, mainnetTokens.usdt],
 }
 
 export const PINNED_PAIRS: { readonly [chainId in ChainId]?: [Token, Token][] } = {

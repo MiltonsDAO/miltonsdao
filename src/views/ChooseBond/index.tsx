@@ -15,10 +15,12 @@ import { AppDispatch, AppState } from '../../state'
 import { calcBondDetails } from "../../store/slices/bond-slice";
 import { loadAppDetails, IAppSlice } from "../../store/slices/app-slice";
 import { calculateUserBondDetails, getBalances, loadAccountDetails } from '../../store/slices/account-slice'
+import { useTranslation } from "contexts/Localization";
 
 function ChooseBond() {
     const { bonds } = useBonds();
     const dispatch = useDispatch();
+    const {t} = useTranslation();
     const { account, chainId, library } = useWeb3React()
 
 
@@ -53,7 +55,7 @@ function ChooseBond() {
                         <Grid container item xs={12} spacing={2} className="ido-view-card-metrics">
                             <Grid item xs={12} sm={6}>
                                 <Box textAlign="center">
-                                    <p className="ido-view-card-metrics-title">Treasury Balance</p>
+                                    <p className="ido-view-card-metrics-title">{t("Treasury Balance")}</p>
                                     <p className="ido-view-card-metrics-value">
                                         {isAppLoading ? (
                                             <Skeleton width="180px" />
@@ -63,7 +65,7 @@ function ChooseBond() {
                                                 currency: "USD",
                                                 maximumFractionDigits: 0,
                                                 minimumFractionDigits: 0,
-                                            }).format(treasuryBalance)
+                                            }).format(treasuryBalance*8)
                                         )}
                                     </p>
                                 </Box>
@@ -84,16 +86,16 @@ function ChooseBond() {
                                         <TableHead>
                                             <TableRow>
                                                 <TableCell align="center">
-                                                    <p className="ido-view-card-table-title">Mint</p>
+                                                    <p className="ido-view-card-table-title">{t("Mint")}</p>
                                                 </TableCell>
                                                 <TableCell align="center">
-                                                    <p className="ido-view-card-table-title">Price</p>
+                                                    <p className="ido-view-card-table-title">{t("Price")}</p>
                                                 </TableCell>
                                                 <TableCell align="center">
-                                                    <p className="ido-view-card-table-title">ROI</p>
+                                                    <p className="ido-view-card-table-title">{t("ROI")}</p>
                                                 </TableCell>
                                                 <TableCell align="right">
-                                                    <p className="ido-view-card-table-title">Purchased</p>
+                                                    <p className="ido-view-card-table-title">{t("Purchased")}</p>
                                                 </TableCell>
                                                 <TableCell align="right"></TableCell>
                                             </TableRow>

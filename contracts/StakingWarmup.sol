@@ -1,4 +1,4 @@
-
+// SPDX-License-Identifier: AGPL-3.0-or-later
 pragma solidity 0.7.5;
 
 
@@ -77,17 +77,17 @@ interface IERC20 {
 contract StakingWarmup {
 
     address public immutable staking;
-    address public immutable sOHM;
+    IERC20 public immutable MEMOries;
 
-    constructor ( address _staking, address _sOHM ) {
+    constructor ( address _staking, address _MEMOries ) {
         require( _staking != address(0) );
         staking = _staking;
-        require( _sOHM != address(0) );
-        sOHM = _sOHM;
+        require( _MEMOries != address(0) );
+        MEMOries = IERC20(_MEMOries);
     }
 
     function retrieve( address _staker, uint _amount ) external {
-        require( msg.sender == staking, "msg.sender isnot staking" );
-        IERC20( sOHM ).transfer( _staker, _amount );
+        require( msg.sender == staking, "NA" );
+        MEMOries.transfer( _staker, _amount );
     }
 }

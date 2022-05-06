@@ -18,17 +18,17 @@ import tokens from 'config/constants/tokens'
 export type ConfigMenuItemsType = MenuItemsType & { hideSubNav?: boolean }
 
 const config: (t: ContextApi['t']) => ConfigMenuItemsType[] = (t) => [
-  {
-    label: t('IDO'),
-    icon: EarnIcon,
-    fillIcon: EarnFillIcon,
-    href: '/ido',
-    showItemsOnMobile: false,
-    items: [],
-  },
+  // {
+  //   label: t('IDO'),
+  //   icon: EarnIcon,
+  //   fillIcon: EarnFillIcon,
+  //   href: '/ido',
+  //   showItemsOnMobile: false,
+  //   items: [],
+  // },
 
   {
-    label: 'Stake',
+    label: t('Stake'),
     href: '/stake',
     icon: NftIcon,
     fillIcon: NftFillIcon,
@@ -44,8 +44,8 @@ const config: (t: ContextApi['t']) => ConfigMenuItemsType[] = (t) => [
     items: [],
   },
   {
-    label: 'Honor',
-    href: '/add/',
+    label: t('Honor'),
+    href: '/add/'.concat(tokens.pmls.address, "/", tokens.usdt.address),
     icon: SwapIcon,
     fillIcon: SwapFillIcon,
     showItemsOnMobile: false,

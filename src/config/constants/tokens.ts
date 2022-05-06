@@ -21,8 +21,8 @@ export const mainnetTokens = defineTokens({
     'https://www.binance.com/',
   ),
   // bnb here points to the wbnb contract. Wherever the currency BNB is required, conditional checks for the symbol 'BNB' can be used
-  pmls: new Token(MAINNET, '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', 18, 'BNB', 'BNB', 'https://www.binance.com/'),
-  mls: new Token(MAINNET, '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', 18, 'USDT', 'Tether USD', 'https://tether.to/'),
+  pmls: new Token(MAINNET, '0x577EFdc8c142E24b8b12A763aBA3753d57693df9', 18, 'PMLS', 'PMLS', 'https://www.binance.com/'),
+  mls: new Token(MAINNET, '0x7027Be050ad3c6Bd0f8c77374aF102D7f2947903', 9, 'MLS', 'MLS', 'https://tether.to/'),
   cake: new Token(
     MAINNET,
     '0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82',
@@ -42,48 +42,48 @@ export const mainnetTokens = defineTokens({
   ),
 } as const)
 
-export const testnetTokens = defineTokens({
-  wbnb: new Token(
-    MAINNET,
-    '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
-    18,
-    'WBNB',
-    'Wrapped BNB',
-    'https://www.binance.com/',
-  ),
-  pmls: new Token(
-    TESTNET,
-    '0xEfF46346a988b1D80010702eb232Fc077EEfF452',
-    18,
-    'PMLS',
-    'Miltons Token',
-    'https://pancakeswap.finance/',
-  ),
-  mls: new Token(
-    TESTNET,
-    '0x1Ed57ecF983bC2b62153A0D7133F5438a7Ff76D4',
-    18,
-    'MLS',
-    'Miltons Token',
-    'https://pancakeswap.finance/',
-  ),
-  cake: new Token(
-    MAINNET,
-    '0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82',
-    18,
-    'CAKE',
-    'PancakeSwap Token',
-    'https://pancakeswap.finance/',
-  ),
-  usdt: new Token(
-    TESTNET,
-    '0xc362B3ed5039447dB7a06F0a3d0bd9238E74d57c',
-    18,
-    'USDT',
-    'USDT Token',
-    'https://pancakeswap.finance/',
-  ),
-} as const)
+// export const testnetTokens = defineTokens({
+//   wbnb: new Token(
+//     MAINNET,
+//     '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
+//     18,
+//     'WBNB',
+//     'Wrapped BNB',
+//     'https://www.binance.com/',
+//   ),
+//   pmls: new Token(
+//     TESTNET,
+//     '0xEfF46346a988b1D80010702eb232Fc077EEfF452',
+//     18,
+//     'PMLS',
+//     'Miltons Token',
+//     'https://pancakeswap.finance/',
+//   ),
+//   mls: new Token(
+//     TESTNET,
+//     '0x1Ed57ecF983bC2b62153A0D7133F5438a7Ff76D4',
+//     18,
+//     'MLS',
+//     'Miltons Token',
+//     'https://pancakeswap.finance/',
+//   ),
+//   cake: new Token(
+//     MAINNET,
+//     '0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82',
+//     18,
+//     'CAKE',
+//     'PancakeSwap Token',
+//     'https://pancakeswap.finance/',
+//   ),
+//   usdt: new Token(
+//     TESTNET,
+//     '0xc362B3ed5039447dB7a06F0a3d0bd9238E74d57c',
+//     18,
+//     'USDT',
+//     'USDT Token',
+//     'https://pancakeswap.finance/',
+//   ),
+// } as const)
 
 const tokens = () => {
   const chainId = CHAIN_ID
@@ -91,13 +91,9 @@ const tokens = () => {
   // If testnet - return list comprised of testnetTokens wherever they exist, and mainnetTokens where they don't
   if (parseInt(chainId, 10) === ChainId.MAINNET) {
     return Object.keys(mainnetTokens).reduce((accum, key) => {
-      return { ...accum, [key]: testnetTokens[key] || mainnetTokens[key] }
-    }, {} as typeof testnetTokens & typeof mainnetTokens)
-  } else if (parseInt(chainId, 10) === ChainId.TESTNET) {
-    return Object.keys(testnetTokens).reduce((accum, key) => {
-      return { ...accum, [key]: testnetTokens[key] || mainnetTokens[key]}
-    }, {} as typeof testnetTokens)
-  }
+      return { ...accum, [key]:  mainnetTokens[key] }
+    }, {} as  typeof mainnetTokens)
+  } 
 
   return mainnetTokens
 }

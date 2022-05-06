@@ -67,8 +67,8 @@ export default function CurrencyInputPanel({
   label,
   onCurrencySelect,
   currency,
-  disableCurrencySelect = false,
-  hideBalance = false,
+  disableCurrencySelect = true,
+  hideBalance = true,
   pair = null, 
   otherCurrency,
   id,
@@ -92,6 +92,7 @@ export default function CurrencyInputPanel({
       showCommonBases={showCommonBases}
     />,
   )
+  console.log("currency:",currency)
   return (
     <Box position="relative" id={id}>
       <Flex mb="6px" alignItems="center" justifyContent="space-between">

@@ -1,7 +1,7 @@
 import { BigNumber, ethers } from 'ethers'
 import { getAddresses } from 'constants/'
 import { TimeTokenContract, TestContract, MemoTokenContract, DaiTokenContract, wMemoTokenContract } from 'abi'
-import PMLContract from "config/abi/pmls.json"
+import PMLSContract from 'config/abi/pmls.json'
 import { setAll } from 'helpers'
 
 import { createSlice, createSelector, createAsyncThunk } from '@reduxjs/toolkit'
@@ -12,6 +12,7 @@ import React from 'react'
 import { RootState } from '../store'
 import { IToken } from 'helpers/tokens'
 import { BooleanArraySupportOption } from 'prettier'
+import { ERC20_INTERFACE, PMLS_INTERFACE, MLS_INTERFACE, REFERRAL_INTERFACE } from 'config/abi/erc20'
 
 interface IGetBalances {
   address: string
@@ -21,9 +22,10 @@ interface IGetBalances {
 
 interface IAccountBalances {
   balances: {
-    smls: string
-    mls: string
-    pmls: string
+    smls: BigNumber
+    mls: BigNumber
+    pmls: BigNumber
+    usdt: BigNumber
   }
 }
 
@@ -34,13 +36,15 @@ export const getBalances = createAsyncThunk(
 
     const memoContract = new ethers.Contract(addresses.sOHM_ADDRESS, MemoTokenContract, provider)
     const memoBalance = await memoContract.balanceOf(address)
-    const timeContract = new ethers.Contract(addresses.OHM_ADDRESS, TimeTokenContract, provider)
-    const timeBalance = await timeContract.balanceOf(address)
-    console.log('balanceOf:', memoBalance, timeBalance)
 
-    const pmlsContract = new ethers.Contract(addresses.PMLS_ADDRESS, PMLContract, provider)
-    const pmlsBalance = await pmlsContract.balances(address)
-    console.log('pmlsBalance:', pmlsBalance)
+    const mlsContract = new ethers.Contract(addresses.OHM_ADDRESS, TimeTokenContract, provider)
+    const mlsBalance = await mlsContract.balanceOf(address)
+
+    const pmlsContract = new ethers.Contract(addresses.PMLS_ADDRESS, PMLSContract, provider)
+    const pmlsBalance = await pmlsContract.balanceOf(address)
+
+    const usdtContract = new ethers.Contract(addresses.USDT_ADDRESS, PMLSContract, provider)
+    const usdtBalance = await usdtContract.balanceOf(address)
 
     // const wmemoContract = new ethers.Contract(addresses.WMEMO_ADDRESS, wMemoTokenContract, provider);
     // const wmemoBalance = await wmemoContract.balanceOf(address);
@@ -48,9 +52,10 @@ export const getBalances = createAsyncThunk(
 
     return {
       balances: {
-        smls: ethers.utils.formatUnits(memoBalance, 'wei'),
-        mls: ethers.utils.formatUnits(timeBalance, 'wei'),
-        pmls: ethers.utils.formatUnits(pmlsBalance, 'wei'),
+        smls: memoBalance,
+        mls: mlsBalance,
+        pmls: pmlsBalance,
+        usdt: usdtBalance,
         // wmemo: ethers.utils.formatEther(wmemoBalance),
       },
     }
@@ -69,8 +74,8 @@ interface IUserAccountDetails {
   referral: string
   registered: boolean
   balances: {
-    mls: string
-    smls: string
+    mls: number
+    smls: number
     wmemo: string
   }
   staking: {
@@ -94,7 +99,6 @@ export const loadAccountDetails = createAsyncThunk(
     let stakeAllowance = 0
     let unstakeAllowance = 0
 
-    let partners
     let profit = BigNumber.from(0)
     var totalProfit = 0
     let sonslice: ISonSlice[] = []
@@ -103,19 +107,21 @@ export const loadAccountDetails = createAsyncThunk(
     const addresses = getAddresses(networkID)
 
     if (addresses.OHM_ADDRESS) {
-      const timeContract = new ethers.Contract(addresses.OHM_ADDRESS, TimeTokenContract, provider)
-      timeBalance = await timeContract.balanceOf(address)
-      stakeAllowance = await timeContract.allowance(address, addresses.STAKING_HELPER_ADDRESS)
+      const mlsContract = new ethers.Contract(addresses.OHM_ADDRESS, TimeTokenContract, provider)
+      timeBalance = await mlsContract.balanceOf(address)
+      stakeAllowance = await mlsContract.allowance(address, addresses.STAKING_HELPER_ADDRESS)
     }
     if (addresses.sOHM_ADDRESS) {
       const memoContract = new ethers.Contract(addresses.sOHM_ADDRESS, MemoTokenContract, provider)
       memoBalance = await memoContract.balanceOf(address)
-      console.log('memoBalance:', memoBalance)
       unstakeAllowance = await memoContract.allowance(address, addresses.STAKING_ADDRESS)
-
       // if (addresses.WMEMO_ADDRESS) {
       //     memoWmemoAllowance = await memoContract.allowance(address, addresses.WMEMO_ADDRESS);
       // }
+    }
+    if (addresses.REFERRAL_ADDRESS) {
+      const referralContract = new ethers.Contract(addresses.REFERRAL_ADDRESS, REFERRAL_INTERFACE, provider)
+      referral = await referralContract.referrals(address)
     }
     // if (addresses.WMEMO_ADDRESS) {
     //     const wmemoContract = new ethers.Contract(addresses.WMEMO_ADDRESS, wMemoTokenContract, provider);
@@ -127,8 +133,8 @@ export const loadAccountDetails = createAsyncThunk(
       referral: referral,
       registered: registered,
       balances: {
-        smls: ethers.utils.formatUnits(memoBalance, 'gwei'),
-        mls: ethers.utils.formatUnits(timeBalance, 'ether'),
+        smls: memoBalance,
+        mls: timeBalance,
         wmemo: ethers.utils.formatEther(wmemoBalance),
       },
       staking: {
@@ -183,9 +189,10 @@ export const calculateUserBondDetails = createAsyncThunk(
 
     let interestDue, pendingPayout, bondMaturationBlock
     const bondDetails = await bondContract.bondInfo(address)
+    interestDue = ethers.utils.formatUnits(bondDetails.payout, 'gwei')
 
-    interestDue = bondDetails.payout / Math.pow(10, 18)
     bondMaturationBlock = Number(bondDetails.vesting) + Number(bondDetails.lastTime)
+
     try {
       pendingPayout = await bondContract.pendingPayoutFor(address)
     } catch (error) {
@@ -196,28 +203,25 @@ export const calculateUserBondDetails = createAsyncThunk(
       balance = '0'
 
     allowance = await reserveContract.allowance(address, bond.getAddressForBond(networkID))
-    console.log('address:', address)
+    console.log('reserveContract.allowance for bond:', bond.getAddressForBond(networkID), allowance)
     balance = await reserveContract.balanceOf(address)
-    console.log('reserveContract balance:', balance)
-
-    const balanceVal = ethers.utils.formatEther(balance)
-
+    const balanceVal = balance && ethers.utils.formatEther(balance)
     const avaxBalance = await provider.getSigner().getBalance()
     const avaxVal = ethers.utils.formatEther(avaxBalance)
 
-    const pendingPayoutVal = ethers.utils.formatUnits(pendingPayout, 'ether')
+    const pendingPayoutVal = ethers.utils.formatUnits(pendingPayout, 'gwei')
 
     return {
       bond: bond.name,
       displayName: bond.displayName,
       bondIconSvg: bond.bondIconSvg,
       isLP: bond.isLP,
-      allowance: Number(allowance),
-      balance: Number(balanceVal),
-      avaxBalance: Number(avaxVal),
-      interestDue,
+      allowance: allowance,
+      balance: balanceVal,
+      avaxBalance: avaxVal,
+      interestDue: interestDue,
       bondMaturationBlock,
-      pendingPayout: Number(pendingPayoutVal),
+      pendingPayout: pendingPayoutVal,
     }
   },
 )
@@ -293,6 +297,7 @@ export interface IAccountSlice {
     smls: BigNumber
     mls: BigNumber
     pmls: BigNumber
+    usdt: BigNumber
     // wmemo: BigNumber
   }
   loading: boolean
@@ -317,7 +322,7 @@ const initialState: IAccountSlice = {
   registered: false,
   totalProfit: 0,
   bonds: {},
-  balances: { smls: BigNumber.from(0), mls: BigNumber.from(0), pmls: BigNumber.from(0) },
+  balances: { smls: BigNumber.from(0), mls: BigNumber.from(0), pmls: BigNumber.from(0), usdt: BigNumber.from(0) },
   staking: { mls: BigNumber.from(0), smls: BigNumber.from(0) },
   wrapping: { smls: BigNumber.from(0) },
   tokens: {},

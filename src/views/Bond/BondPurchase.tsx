@@ -5,7 +5,7 @@ import { Skeleton } from "@material-ui/lab";
 
 import { Box, OutlinedInput, InputAdornment, Slide, FormControl } from "@material-ui/core";
 import { shorten, trim, prettifySeconds } from "../../helpers";
-import { changeApproval, bondAsset, calcBondDetails } from "../../store/slices/bond-slice";
+import { changeApproval, bondAsset, calcBondDetails, IBondSlice } from "../../store/slices/bond-slice";
 import { IPendingTxn, isPendingTxn, txnButtonText } from "../../store/slices/pending-txns-slice";
 import { IReduxState } from "../../store/slices/state.interface";
 import { IAllBondData } from "../../hooks/bonds";
@@ -15,6 +15,8 @@ import { warning } from "../../store/slices/messages-slice";
 import Zapin from "./Zapin";
 import useToast from '../../hooks/useToast'
 import { AppDispatch, AppState } from 'state'
+import { useTranslation } from "contexts/Localization";
+import { getBalances, loadAccountDetails } from "store/slices/account-slice";
 
 interface IBondPurchaseProps {
     bond: IAllBondData;
@@ -26,13 +28,26 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
     const dispatch = useDispatch();
     const { toastSuccess, toastError, toastWarning, toastInfo } = useToast()
 
+    const { t } = useTranslation()
     const { account, chainId, library } = useWeb3React()
     const address = account
     const provider = library
 
-    const [quantity, setQuantity] = useState("");
+    
+    // const maxBondPrice = (await bondContract.maxPayout()) / Math.pow(10, 9)
+
+    const maxBondPrice = useSelector<AppState, number>(state => {
+        return state.bonding.maxBondPrice;
+    });
+    console.log("BondPurchase maxBondPrice:",maxBondPrice)
+
+    const [quantity, setQuantity] = useState(String(maxBondPrice));
     const [useAvax, setUseAvax] = useState(false);
-    const [referral, setReferral] = useState(zeroAddress);
+
+    const stateReferral = useSelector<AppState, string>(state => {
+        return state.account.referral;
+    });
+    const [referral, setReferral] = useState(stateReferral);
 
     const isBondLoading = useSelector<AppState, boolean>(state => state.bonding.loading ?? true);
     const [zapinOpen, setZapinOpen] = useState(false);
@@ -42,8 +57,15 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
     });
 
     const vestingPeriod = () => {
-        return prettifySeconds(bond.vestingTerm, "day");
+        var result = prettifySeconds(bond.vestingTerm, "day");
+        return result;
     };
+
+    const bondDetailsDebounce = useDebounce(quantity, 1000);
+
+    useEffect(() => {
+        dispatch(calcBondDetails({ bond, value: quantity, provider, networkID: chainId }))
+    }, [bondDetailsDebounce]);
 
     async function onBond() {
         if (quantity === "") {
@@ -52,27 +74,26 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
         } else if (isNaN(quantity)) {
             toastWarning("warning", messages.before_minting);
         } else if (bond.interestDue > 0 || bond.pendingPayout > 0) {
-            const shouldProceed = window.confirm(messages.existing_mint);
-            if (shouldProceed) {
-                const trimBalance = trim(Number(quantity), 10);
+            // const shouldProceed = window.confirm(messages.existing_mint);
+            // if (shouldProceed) {
+            const trimBalance = trim(Number(quantity), 10);
 
-                await dispatch(
-                    bondAsset({
-                        value: trimBalance,
-                        slippage,
-                        bond,
-                        networkID: chainId,
-                        provider,
-                        address,
-                        useAvax,
-                        referral
-                    }),
-                );
-                clearInput();
-            }
+            await dispatch(
+                bondAsset({
+                    value: trimBalance,
+                    slippage,
+                    bond,
+                    networkID: chainId,
+                    provider,
+                    address,
+                    useAvax,
+                    referral
+                }),
+            );
+            clearInput();
+            // }
         } else {
             const trimBalance = trim(Number(quantity), 10);
-            console.log("trimBalance:", trimBalance)
 
             await dispatch(
                 //@ts-ignore
@@ -97,21 +118,16 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
 
     const hasAllowance = useCallback(() => {
         return bond.allowance > 0;
-    }, [bond.allowance]);
+    }, [bond?.allowance]);
 
     const setMax = () => {
-        let amount: any = Math.min(bond.maxBondPriceToken * 0.9999, useAvax ? bond.avaxBalance * 0.99 : bond.balance);
+        let amount: any = Math.min(bond.maxBondPriceToken * 0.9999, bond.balance);
         if (amount) {
             amount = trim(amount);
         }
         setQuantity((amount || "").toString());
     };
 
-    const bondDetailsDebounce = useDebounce(quantity, 1000);
-
-    useEffect(() => {
-        dispatch(calcBondDetails({ bond, value: quantity, provider, networkID: chainId }));
-    }, [bondDetailsDebounce]);
 
     const onSeekApproval = async () => {
         dispatch(changeApproval({ address, bond, provider, networkID: chainId }));
@@ -147,6 +163,7 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
                         onChange={e => setReferral(e.target.value)}
                         labelWidth={0}
                         className="bond-input"
+                        disabled={referral != zeroAddress}
                     />
                 </FormControl>
                 <FormControl className="bond-input-wrap" variant="outlined" color="primary" fullWidth>
@@ -160,14 +177,14 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
                         endAdornment={
                             <InputAdornment position="end">
                                 <div className="stake-input-btn" onClick={setMax}>
-                                    <p>Max</p>
+                                    <p>{t("Max")}</p>
                                 </div>
                             </InputAdornment>
                         }
                     />
                 </FormControl>
 
-                {hasAllowance() || useAvax ? (
+                {hasAllowance() ? (
                     <div
                         className="transaction-button bond-approve-btn"
                         onClick={async () => {
@@ -201,40 +218,40 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
             <Slide direction="left" in={true} mountOnEnter unmountOnExit {...{ timeout: 533 }}>
                 <Box className="bond-data">
                     <div className="data-row">
-                        <p className="bond-balance-title">Your Balance</p>
+                        <p className="bond-balance-title">{t("Your Balance")}</p>
                         <p className="bond-balance-title">
                             {isBondLoading ? (
-                                <Skeleton width="100px" />
+                                0
                             ) : (
                                 <>
-                                    {trim(useAvax ? bond.avaxBalance : bond.balance, 18)} {displayUnits}
+                                    {trim(bond.balance, 9)} {displayUnits}
                                 </>
                             )}
                         </p>
                     </div>
 
                     <div className="data-row">
-                        <p className="bond-balance-title">You Will Get</p>
-                        <p className="price-data bond-balance-title">{isBondLoading ? <Skeleton width="100px" /> : `${trim(bond.bondQuote, 4)} MLS`}</p>
+                        <p className="bond-balance-title">{t("You Will Get")}</p>
+                        <p className="price-data bond-balance-title">{isBondLoading ? 0 : `${trim(bond.bondQuote, 4)} MLS`}</p>
                     </div>
 
                     <div className={`data-row`}>
-                        <p className="bond-balance-title">Max You Can Buy</p>
-                        <p className="price-data bond-balance-title">{isBondLoading ? <Skeleton width="100px" /> : `${trim(bond.maxBondPrice, 4)} MLS`}</p>
+                        <p className="bond-balance-title">{t("Max You Can Buy")}</p>
+                        <p className="price-data bond-balance-title">{isBondLoading ? 0 : `${trim(bond.maxBondPrice, 4)} USDT`}</p>
                     </div>
 
                     <div className="data-row">
-                        <p className="bond-balance-title">ROI</p>
-                        <p className="bond-balance-title">{isBondLoading ? <Skeleton width="100px" /> : `${trim(bond.bondDiscount * 100, 2)}%`}</p>
+                        <p className="bond-balance-title">{t("ROI")}</p>
+                        <p className="bond-balance-title">{isBondLoading ? 0 : `${trim(bond.bondDiscount * 100, 2)}%`}</p>
                     </div>
 
                     <div className="data-row">
-                        <p className="bond-balance-title">Vesting Term</p>
-                        <p className="bond-balance-title">{isBondLoading ? <Skeleton width="100px" /> : vestingPeriod()}</p>
+                        <p className="bond-balance-title">{t("Vesting Term")}</p>
+                        <p className="bond-balance-title">{vestingPeriod()}</p>
                     </div>
 
                     <div className="data-row">
-                        <p className="bond-balance-title">Minimum purchase</p>
+                        <p className="bond-balance-title">{t("Minimum purchase")}</p>
                         <p className="bond-balance-title">0.01 MLS</p>
                     </div>
                 </Box>

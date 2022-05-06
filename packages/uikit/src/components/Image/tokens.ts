@@ -686,7 +686,7 @@ const tokens = {
     decimals: 18,
     projectLink: "https://www.centre.io/usdc",
   },
-  dai: {
+  usdt: {
     symbol: "DAI",
     address: {
       56: "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3",

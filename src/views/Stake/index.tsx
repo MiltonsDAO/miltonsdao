@@ -49,7 +49,7 @@ import { useMatchBreakpoints } from '../../../packages/uikit/src/hooks'
 import useBonds from '../../hooks/bonds'
 import useTokens from '../../hooks/Tokens'
 import { useApp } from "../../hooks/useApp";
-import { changeApproval } from "../../store/slices/wrap-slice";
+import { changeApproval } from "../../store/slices/stake-thunk";
 import { changeStake } from "../../store/slices/stake-thunk";
 import { messages } from "../../constants/messages";
 import { warning, success, info, error } from "../../store/slices/messages-slice";
@@ -88,12 +88,12 @@ export default function Stake({ account }) {
 
   const isAppLoading = useSelector<AppState, boolean>(state => state.app.loading);
 
-  useEffect(() => {
-    if (account) {
-      loadApp()
-      loadAccount()
-    }
-  }, [account])
+  // useEffect(() => {
+  //   if (account) {
+  //     loadApp()
+  //     loadAccount()
+  //   }
+  // }, [account])
 
   const app = useSelector<AppState, IAppSlice>(state => {
     return state.app;
@@ -105,14 +105,15 @@ export default function Stake({ account }) {
   const accountSlice = useSelector<AppState, IAccountSlice>(state => {
     return state.account;
   });
-  console.log("accountSlice:", accountSlice)
-  const timeBalance = accountSlice.balances && accountSlice.balances.mls.toString();
+  const marketPrice = app.marketPrice
 
-  const memoBalance = accountSlice.balances && accountSlice.balances.smls.toString();
+  const timeBalance = accountSlice?.balances?.mls
 
-  const stakeAllowance: BigNumber = accountSlice.staking && accountSlice.staking.mls;
+  const memoBalance = accountSlice?.balances?.smls
 
-  const unstakeAllowance: BigNumber = accountSlice.staking && accountSlice.staking.smls;
+  const stakeAllowance: BigNumber = accountSlice?.staking?.mls;
+
+  const unstakeAllowance: BigNumber = accountSlice?.staking?.smls;
   const stakingRebase = app.stakingRebase;
   const stakingAPY = app.stakingAPY;
   const stakingTVL = app.stakingTVL;
@@ -123,9 +124,9 @@ export default function Stake({ account }) {
 
   const setMax = () => {
     if (view === 0) {
-      setQuantity(timeBalance)
+      setQuantity(ethers.utils.formatUnits(timeBalance, 9))
     } else {
-      setQuantity(memoBalance)
+      setQuantity(ethers.utils.formatUnits(memoBalance, 9))
     }
   }
 
@@ -137,15 +138,21 @@ export default function Stake({ account }) {
     if (quantity === '' || parseFloat(quantity) === 0) {
       toastError("error", action === 'stake' ? messages.before_stake : messages.before_unstake)
     } else {
-      await dispatch(changeStake({ address: account, action, value: String(quantity), provider: library, networkID: chainId }))
-      setQuantity('')
+      try {
+        await dispatch(changeStake({ address: account, action, value: String(quantity), provider: library, networkID: chainId }))
+        setQuantity('')
+      }
+      catch (error:any) {
+        toastError("Error",error?.data?.message)
+      }
+
     }
   }
 
   const hasAllowance = useCallback(
     (token) => {
-      if (token === 'mls') return stakeAllowance.toString() != "0"
-      if (token === 'smls') return unstakeAllowance.toString() != "0"
+      if (token === 'mls') return stakeAllowance?.toString() != "0"
+      if (token === 'smls') return unstakeAllowance?.toString() != "0"
       return 0
     },
     [stakeAllowance],
@@ -156,11 +163,11 @@ export default function Stake({ account }) {
     setQuantity('')
   }
 
-  const trimmedMemoBalance = trim(Number(memoBalance), 6)
+  const trimmedMemoBalance = memoBalance
   let trimmedStakingAPY = trim(stakingAPY * 100, 1)
 
-  const stakingRebasePercentage = trim(stakingRebase * 100, 4)
-  const nextRewardValue = trim((Number(stakingRebasePercentage) / 100) * Number(trimmedMemoBalance), 6)
+  const stakingRebasePercentage = trim(stakingRebase * 100, 4);
+  const nextRewardValue = (Number(stakingRebasePercentage) / 100) * Number(trimmedMemoBalance) / 1e9;
 
 
   return (
@@ -203,7 +210,7 @@ export default function Stake({ account }) {
                               minimumFractionDigits: 0,
                             }).format(stakingTVL)
                           ) : (
-                            <Skeleton width="150px" />
+                            0
                           )}
                         </p>
                       </div>
@@ -263,7 +270,6 @@ export default function Stake({ account }) {
                               className="ido-card-tab-panel-btn"
                               onClick={() => {
                                 var pendingTxn = isPendingTxn(pendingTransactions, 'staking')
-                                console.log("pendingTxn:", pendingTxn)
                                 if (pendingTxn) return
                                 onChangeStake('stake')
                               }}
@@ -310,37 +316,27 @@ export default function Stake({ account }) {
                         </div>
                       )}
                     </div>
-
-                    {/* <div className="ido-card-action-help-text">
-                        {account && ((!hasAllowance('mls') && view === 0) || (!hasAllowance('smls') && view === 1)) && (
-                          <p>
-                            Note: The "Approve" transaction is only needed when staking/unstaking for the first time;
-                            subsequent staking/unstaking only requires you to perform the "Stake" or "Unstake"
-                            transaction.
-                          </p>
-                        )}
-                      </div> */}
                   </div>
 
                   <div className="ido-user-data">
                     <div className="data-row">
                       <p className="data-row-name">{t("Your Balance")}</p>
                       <p className="data-row-value">
-                        {isAppLoading ? <Skeleton width="80px" /> : <>{trim(Number(timeBalance), 18)} MLS</>}
+                        {isAppLoading ? <Skeleton width="80px" /> : <>{ethers.utils.formatUnits(timeBalance, 9)} MLS</>}
                       </p>
                     </div>
 
                     <div className="data-row">
                       <p className="data-row-name">{t("Your Staked Balance")}</p>
                       <p className="data-row-value">
-                        {isAppLoading ? <Skeleton width="80px" /> : <>{trimmedMemoBalance} sMLS</>}
+                        {isAppLoading ? <Skeleton width="80px" /> : <>{ethers.utils.formatUnits(trimmedMemoBalance, 9)} sMLS</>}
                       </p>
                     </div>
 
                     <div className="data-row">
                       <p className="data-row-name">{t("Next Reward Amount")}</p>
                       <p className="data-row-value">
-                        {isAppLoading ? <Skeleton width="80px" /> : <>{nextRewardValue} sMLS</>}
+                        {isAppLoading ? <Skeleton width="80px" /> : <>{nextRewardValue} MLS</>}
                       </p>
                     </div>
 
@@ -352,9 +348,16 @@ export default function Stake({ account }) {
                     </div>
 
                     <div className="data-row">
-                      <p className="data-row-name">{t("ROI (5-Day Rate)")}</p>
+                      <p className="data-row-name">{t("ROI")}</p>
                       <p className="data-row-value">
                         {isAppLoading ? <Skeleton width="80px" /> : <>{trim(Number(fiveDayRate) * 100, 4)}%</>}
+                      </p>
+                    </div>
+
+                    <div className="data-row">
+                      <p className="data-row-name">{t("Floor Price")}</p>
+                      <p className="data-row-value">
+                        {isAppLoading ? <Skeleton width="80px" /> : <>{trim(Number(marketPrice*0.8), 4)}</>}
                       </p>
                     </div>
                   </div>

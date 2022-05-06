@@ -60,10 +60,10 @@ var featured = {
   min_swap_level: '',
   symbol: 'PMLS',
   decimal: 18,
-  // usdt:"0x55d398326f99059fF775485246999027B3197955", //mainnet
-  usdt:"0xc362B3ed5039447dB7a06F0a3d0bd9238E74d57c", //testnet
-  // address: '0xdaBeF048B7DaB6f10638f59Debde38B1c35bB1B0', //mainnet
-  address: "0x76C8F34C5f33f6e8115BDc7AaE69bb2e7eC525dE", //testnet
+  usdt:"0x55d398326f99059fF775485246999027B3197955", //mainnet
+  address: '0xdaBeF048B7DaB6f10638f59Debde38B1c35bB1B0', //mainnet
+  // usdt:"0xc362B3ed5039447dB7a06F0a3d0bd9238E74d57c", //testnet
+  // address: "0x76C8F34C5f33f6e8115BDc7AaE69bb2e7eC525dE", //testnet
 
   token_address: 'TBA',
   abi_name: '',

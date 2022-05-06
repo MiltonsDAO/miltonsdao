@@ -55,7 +55,7 @@ export const changeApproval = createAsyncThunk(
       }
     }
 
-    await sleep(2)
+    // await sleep(2)
 
     const tokenAllowance = await tokenContract.allowance(address, addresses.ZAPIN_ADDRESS)
 
@@ -262,9 +262,9 @@ export const zapinMint = createAsyncThunk(
       )
       await zapinTx.wait()
       dispatch(success({ text: messages.tx_successfully_send }))
-      await sleep(0.01)
+      // await sleep(0.01)
       dispatch(info({ text: messages.your_balance_update_soon }))
-      await sleep(10)
+      // await sleep(10)
       await dispatch(calculateUserBondDetails({ address, bond, networkID, provider }))
       dispatch(info({ text: messages.your_balance_updated }))
       return

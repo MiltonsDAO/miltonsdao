@@ -4,18 +4,18 @@
             "inputs": [
                 {
                     "internalType": "address",
-                    "name": "_OHM",
+                    "name": "_Time",
                     "type": "address"
                 },
                 {
                     "internalType": "address",
-                    "name": "_sOHM",
+                    "name": "_Memories",
                     "type": "address"
                 },
                 {
-                    "internalType": "uint256",
+                    "internalType": "uint32",
                     "name": "_epochLength",
-                    "type": "uint256"
+                    "type": "uint32"
                 },
                 {
                     "internalType": "uint256",
@@ -23,9 +23,9 @@
                     "type": "uint256"
                 },
                 {
-                    "internalType": "uint256",
-                    "name": "_firstEpochBlock",
-                    "type": "uint256"
+                    "internalType": "uint32",
+                    "name": "_firstEpochTime",
+                    "type": "uint32"
                 }
             ],
             "stateMutability": "nonpayable",
@@ -37,17 +37,144 @@
                 {
                     "indexed": true,
                     "internalType": "address",
-                    "name": "previousOwner",
+                    "name": "recipient",
                     "type": "address"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                }
+            ],
+            "name": "LogClaim",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "user",
+                    "type": "address"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "bool",
+                    "name": "locked",
+                    "type": "bool"
+                }
+            ],
+            "name": "LogDepositLock",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "recipient",
+                    "type": "address"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "memoAmount",
+                    "type": "uint256"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "timeAmount",
+                    "type": "uint256"
+                }
+            ],
+            "name": "LogForfeit",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "distribute",
+                    "type": "uint256"
+                }
+            ],
+            "name": "LogRebase",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": false,
+                    "internalType": "enum MlsStaking.CONTRACTS",
+                    "name": "contractType",
+                    "type": "uint8"
                 },
                 {
                     "indexed": true,
                     "internalType": "address",
-                    "name": "newOwner",
+                    "name": "_contract",
                     "type": "address"
                 }
             ],
-            "name": "OwnershipPulled",
+            "name": "LogSetContract",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "recipient",
+                    "type": "address"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                }
+            ],
+            "name": "LogStake",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "recipient",
+                    "type": "address"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                }
+            ],
+            "name": "LogUnstake",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "period",
+                    "type": "uint256"
+                }
+            ],
+            "name": "LogWarmupPeriod",
             "type": "event"
         },
         {
@@ -66,15 +193,28 @@
                     "type": "address"
                 }
             ],
-            "name": "OwnershipPushed",
+            "name": "OwnershipTransferred",
             "type": "event"
         },
         {
             "inputs": [],
-            "name": "OHM",
+            "name": "Memories",
             "outputs": [
                 {
-                    "internalType": "address",
+                    "internalType": "contract IMemo",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "Time",
+            "outputs": [
+                {
+                    "internalType": "contract IERC20",
                     "name": "",
                     "type": "address"
                 }
@@ -97,6 +237,13 @@
         },
         {
             "inputs": [],
+            "name": "claimOwnership",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [],
             "name": "contractBalance",
             "outputs": [
                 {
@@ -113,7 +260,7 @@
             "name": "distributor",
             "outputs": [
                 {
-                    "internalType": "address",
+                    "internalType": "contract IDistributor",
                     "name": "",
                     "type": "address"
                 }
@@ -127,23 +274,23 @@
             "outputs": [
                 {
                     "internalType": "uint256",
-                    "name": "length",
-                    "type": "uint256"
-                },
-                {
-                    "internalType": "uint256",
                     "name": "number",
-                    "type": "uint256"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "endBlock",
                     "type": "uint256"
                 },
                 {
                     "internalType": "uint256",
                     "name": "distribute",
                     "type": "uint256"
+                },
+                {
+                    "internalType": "uint32",
+                    "name": "length",
+                    "type": "uint32"
+                },
+                {
+                    "internalType": "uint32",
+                    "name": "endTime",
+                    "type": "uint32"
                 }
             ],
             "stateMutability": "view",
@@ -152,19 +299,6 @@
         {
             "inputs": [],
             "name": "forfeit",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "_amount",
-                    "type": "uint256"
-                }
-            ],
-            "name": "giveLockBonus",
             "outputs": [],
             "stateMutability": "nonpayable",
             "type": "function"
@@ -184,7 +318,7 @@
         },
         {
             "inputs": [],
-            "name": "locker",
+            "name": "owner",
             "outputs": [
                 {
                     "internalType": "address",
@@ -197,7 +331,7 @@
         },
         {
             "inputs": [],
-            "name": "manager",
+            "name": "pendingOwner",
             "outputs": [
                 {
                     "internalType": "address",
@@ -206,26 +340,6 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "name": "pullManagement",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "newOwner_",
-                    "type": "address"
-                }
-            ],
-            "name": "pushManagement",
-            "outputs": [],
-            "stateMutability": "nonpayable",
             "type": "function"
         },
         {
@@ -236,42 +350,9 @@
             "type": "function"
         },
         {
-            "inputs": [],
-            "name": "renounceManagement",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
             "inputs": [
                 {
-                    "internalType": "uint256",
-                    "name": "_amount",
-                    "type": "uint256"
-                }
-            ],
-            "name": "returnLockBonus",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "name": "sMIL",
-            "outputs": [
-                {
-                    "internalType": "address",
-                    "name": "",
-                    "type": "address"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "enum OlympusStaking.CONTRACTS",
+                    "internalType": "enum MlsStaking.CONTRACTS",
                     "name": "_contract",
                     "type": "uint8"
                 },
@@ -346,6 +427,29 @@
         {
             "inputs": [
                 {
+                    "internalType": "address",
+                    "name": "newOwner",
+                    "type": "address"
+                },
+                {
+                    "internalType": "bool",
+                    "name": "direct",
+                    "type": "bool"
+                },
+                {
+                    "internalType": "bool",
+                    "name": "renounce",
+                    "type": "bool"
+                }
+            ],
+            "name": "transferOwnership",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
                     "internalType": "uint256",
                     "name": "_amount",
                     "type": "uint256"
@@ -366,7 +470,7 @@
             "name": "warmupContract",
             "outputs": [
                 {
-                    "internalType": "address",
+                    "internalType": "contract IWarmup",
                     "name": "",
                     "type": "address"
                 }

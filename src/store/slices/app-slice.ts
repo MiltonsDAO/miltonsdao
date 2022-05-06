@@ -24,15 +24,15 @@ export const loadAppDetails = createAsyncThunk(
     const currentBlock = await provider.getBlockNumber()
     const currentBlockTime = (await provider.getBlock(currentBlock)).timestamp
     const memoContract = new ethers.Contract(addresses.sOHM_ADDRESS, MemoTokenContract, provider)
-    const timeContract = new ethers.Contract(addresses.OHM_ADDRESS, TimeTokenContract, provider)
+    const mlsContract = new ethers.Contract(addresses.OHM_ADDRESS, TimeTokenContract, provider)
 
-    const marketPrice = await getMarketPrice(networkID, provider)
+    const marketPrice = (await getMarketPrice(networkID, provider)) / Math.pow(10, 9);
 
-    const totalSupply = await timeContract.totalSupply()
-    const circSupply = await memoContract.circulatingSupply()
+    const totalSupply = (await mlsContract.totalSupply()) / Math.pow(10, 9);
+    const circSupply = (await memoContract.circulatingSupply()) / Math.pow(10, 9);
 
-    const stakingTVL = circSupply * marketPrice / Math.pow(10, 18)
-    const marketCap = totalSupply * marketPrice
+    const stakingTVL = circSupply * marketPrice;
+    const marketCap = totalSupply * marketPrice;
 
     const tokenBalPromises = allBonds.map((bond) => bond.getTreasuryBalance(networkID, provider))
     const tokenBalances = await Promise.all(tokenBalPromises)
@@ -51,11 +51,14 @@ export const loadAppDetails = createAsyncThunk(
 
     const epoch = await stakingContract.epoch()
     const stakingReward = epoch.distribute
-    const circ = await memoContract.circulatingSupply()
-    const stakingRebase = stakingReward / circ
+    const circulatingSupply = await memoContract.circulatingSupply()
+    console.log("circulatingSupply:",circulatingSupply.toString())
+
+    const stakingRebase = stakingReward / circulatingSupply
     const fiveDayRate = Math.pow(1 + stakingRebase, 5 * 3) - 1
     const stakingAPY = Math.pow(1 + stakingRebase, 365 * 3) - 1
 
+    console.log("stakingAPY:",stakingAPY)
     const currentIndex = await stakingContract.index()
     const nextRebase = epoch.endTime
 

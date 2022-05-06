@@ -1,6 +1,6 @@
 import { Networks } from 'constants/blockchain'
-import { LPBond, CustomLPBond } from './lp-bond'
-import { StableBond, CustomBond } from './stable-bond'
+import { LPBond } from './lp-bond'
+import { StableBond } from './stable-bond'
 
 import MimIcon from 'assets/tokens/MIM.svg'
 import AvaxIcon from 'assets/tokens/AVAX.svg'
@@ -16,7 +16,7 @@ import {
   LpReserveContract,
 } from '../../abi'
 
-export const dai = new StableBond({
+export const usdt = new StableBond({
   name: 'USDT',
   displayName: 'USDT',
   bondToken: 'USDT',
@@ -26,11 +26,11 @@ export const dai = new StableBond({
   reserveContractAbi: StableReserveContract,
   networkAddrs: {
     [Networks.BSC]: {
-      bondAddress: '0x0a5572622800fDF2F06B63BD8F4108F14902a38e',
-      reserveAddress: '0x4aEeB8D61FEABC8695Db1831c03914DD94067120',
+      bondAddress: '0x29CEa51B5a6d7aDF16b375f31Cb56958cd19Eb95',
+      reserveAddress: '0x55d398326f99059fF775485246999027B3197955',
     },
     [Networks.BSC_TESTNET]: {
-      bondAddress: '0x45F71Ce19Be285394361B6089A5D252ab1F3F19B',
+      bondAddress: '0xce284f850a2A5393C5DBC9091D35c57a4Ef31038',
       reserveAddress: '0xc362B3ed5039447dB7a06F0a3d0bd9238E74d57c',
     },
     [Networks.AVAX_TESTNET]: {
@@ -42,26 +42,11 @@ export const dai = new StableBond({
       reserveAddress: '0xA388515Aeb4d8067470034a2561285f9C741C265',
     },
   },
-  tokensInStrategy: '60500000000000000000000000',
+  tokensInStrategy: '0',
 })
 
-// export const wavax = new CustomBond({
-//     name: "wavax",
-//     displayName: "wAVAX",
-//     bondToken: "AVAX",
-//     bondIconSvg: AvaxIcon,
-//     bondContractABI: WavaxBondContract,
-//     reserveContractAbi: StableReserveContract,
-//     networkAddrs: {
-//         [Networks.BSC]: {
-//             bondAddress: "0xE02B1AA2c4BE73093BE79d763fdFFC0E3cf67318",
-//             reserveAddress: "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
-//         },
-//     },
-//     tokensInStrategy: "756916000000000000000000",
-// });
 
-export const daiOHM = new LPBond({
+export const usdtMLS = new LPBond({
   name: 'usdt_mls_lp',
   displayName: 'MLS-USDT LP',
   bondToken: 'USDT',
@@ -71,12 +56,12 @@ export const daiOHM = new LPBond({
   reserveContractAbi: LpReserveContract,
   networkAddrs: {
     [Networks.BSC]: {
-      bondAddress: '0x0a5572622800fDF2F06B63BD8F4108F14902a38e',
-      reserveAddress: '0x4aEeB8D61FEABC8695Db1831c03914DD94067120',
+      bondAddress: '0x46fF83f877153a554734199c0a4453BDC14316bE',
+      reserveAddress: '0x9EBe39eC93D28b83298fCa61a6Ce0DD260A1314D',
     },
     [Networks.BSC_TESTNET]: {
-      bondAddress: '0xbF855DD1fe2516d2e963cc993cf5D6b5c2A8B35c',
-      reserveAddress: '0x608Db5A4D978bbe2eF456C2B579dBB1764346c35',
+      bondAddress: '0xa0621192e912c599A553c53A60b1c48f78D36f06',
+      reserveAddress: '0xBC24d3D48991a61d4C93c8c6883da1CAf5259D64',
     },
     [Networks.AVAX_TESTNET]: {
       bondAddress: '0x82985685C9fD9a4f40Ae6B3e755075372262CEb3',
@@ -88,9 +73,9 @@ export const daiOHM = new LPBond({
     },
   },
   lpUrl:
-    'https://testnet.bscscan.com/#/pool/',
+    'https://bscscan.com/address/0x46fF83f877153a554734199c0a4453BDC14316bE#code',
 })
 
 
 
-export default [dai, daiOHM]
+export default [usdt, usdtMLS]
