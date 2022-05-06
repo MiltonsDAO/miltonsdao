@@ -33,13 +33,12 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
     const address = account
     const provider = library
 
-    
     // const maxBondPrice = (await bondContract.maxPayout()) / Math.pow(10, 9)
 
     const maxBondPrice = useSelector<AppState, number>(state => {
         return state.bonding.maxBondPrice;
     });
-    console.log("BondPurchase maxBondPrice:",maxBondPrice)
+    // console.log("BondPurchase maxBondPrice:",maxBondPrice)
 
     const [quantity, setQuantity] = useState(String(maxBondPrice));
     const [useAvax, setUseAvax] = useState(false);

@@ -22,9 +22,7 @@ export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
   [ChainId.TESTNET]: [mainnetTokens.pmls,
     mainnetTokens.usdt,
     mainnetTokens.mls,],
-  [ChainId.AVAX_TESTNET]: [mainnetTokens.pmls,
-    mainnetTokens.usdt,
-    mainnetTokens.mls,],
+
 }
 
 /**
@@ -48,14 +46,12 @@ export const CUSTOM_BASES: { [chainId in ChainId]?: { [tokenAddress: string]: To
 export const SUGGESTED_BASES: ChainTokenList = {
   [ChainId.MAINNET]: [mainnetTokens.pmls, mainnetTokens.usdt],
   [ChainId.TESTNET]: [mainnetTokens.pmls, mainnetTokens.usdt],
-  [ChainId.AVAX_TESTNET]: [mainnetTokens.pmls, mainnetTokens.usdt],
 }
 
 // used to construct the list of all pairs we consider by default in the frontend
 export const BASES_TO_TRACK_LIQUIDITY_FOR: ChainTokenList = {
   [ChainId.MAINNET]: [mainnetTokens.pmls, mainnetTokens.usdt],
   [ChainId.TESTNET]: [mainnetTokens.pmls, mainnetTokens.usdt],
-  [ChainId.AVAX_TESTNET]: [mainnetTokens.pmls, mainnetTokens.usdt],
 }
 
 export const PINNED_PAIRS: { readonly [chainId in ChainId]?: [Token, Token][] } = {
@@ -65,9 +61,7 @@ export const PINNED_PAIRS: { readonly [chainId in ChainId]?: [Token, Token][] } 
   [ChainId.TESTNET]: [
     [mainnetTokens.pmls, mainnetTokens.usdt],
   ],
-  [ChainId.AVAX_TESTNET]: [
-    [mainnetTokens.pmls, mainnetTokens.usdt],
-  ],
+
 }
 
 export const NetworkContextName = 'NETWORK'
