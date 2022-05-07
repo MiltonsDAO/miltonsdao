@@ -129,7 +129,7 @@ export const changeStake = createAsyncThunk(
         }
       } else {
         if (!newSMLSBalance.eq(0)) {
-          stakeTx = await newStaking.unstake(ethers.utils.parseUnits(value, 'gwei'), false)
+          stakeTx = await newStaking.unstake(ethers.utils.parseUnits(value, 'gwei'), true)
         } else if (!smlsBalance.eq(0)){
           stakeTx = await staking.unstake(ethers.utils.parseUnits(value, 'gwei'), false)
         }
