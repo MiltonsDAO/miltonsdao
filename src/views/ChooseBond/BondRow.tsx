@@ -59,7 +59,7 @@ export function BondDataCard({ bond }: IBondProps) {
                     </p>
                 </div>
                 <NextLinkFromReactRouter to={`/mints/${bond.name}`} >
-                    <div className="bond-table-btn">
+                    <div className="bond-card-btn">
                         <p>Mint {bond.displayName}</p>
                     </div>
                 </NextLinkFromReactRouter>
