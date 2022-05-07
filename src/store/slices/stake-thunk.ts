@@ -123,18 +123,15 @@ export const changeStake = createAsyncThunk(
           stakeTx = await stakingHelper.stake(ethers.utils.parseUnits(value, 'gwei'), address)
         }
       } else {
-
         if (!newSMLSBalance.eq(0)) {
           const allowance = await newSMLS.allowance(address, addresses.NEW_STAKING_ADDRESS)
           if (allowance.eq(0)) {
             const recipient = await newSMLS.approve(addresses.NEW_STAKING_ADDRESS, MaxUint256)
             await recipient.wait()
           }
-          console.log("newStaking.unstake")
           stakeTx = await newStaking.unstake(ethers.utils.parseUnits(value, 'gwei'), false)
         } 
         if (!smlsBalance.eq(0)){
-          console.log("staking.unstake")
           stakeTx = await staking.unstake(ethers.utils.parseUnits(value, 'gwei'), false)
         }
       }
@@ -144,7 +141,6 @@ export const changeStake = createAsyncThunk(
       dispatch(getBalances({ address, networkID, provider }))
       dispatch(loadAppDetails({ networkID, provider }))
 
-      console.log('warning', messages.tx_successfully_send)
     } catch (error: any) {
       console.log("changeStake:",error)
       return

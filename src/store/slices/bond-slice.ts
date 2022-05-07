@@ -124,7 +124,7 @@ export const calcBondDetails = createAsyncThunk(
     const terms = await bondContract.terms()
 
     const maxBondPrice = (await bondContract.maxPayout()) / Math.pow(10, 9)
-
+    console.log("maxBondPrice:",maxBondPrice)
     const marketPrice = (await getMarketPrice(networkID, provider)) / Math.pow(10, 9)
 
     try {
@@ -138,11 +138,10 @@ export const calcBondDetails = createAsyncThunk(
     }
 
     let maxBondPriceToken = 0
-    const maxBondValue = ethers.utils.parseEther('10')
+    const maxBondValue = ethers.utils.parseEther('1')
 
     if (bond.isLP) {
       valuation = await bondCalcContract.valuation(bond.getAddressForReserve(networkID), amountInWei)
-
       bondQuote = await bondContract.payoutFor(valuation)
 
       bondQuote = bondQuote / Math.pow(10, 9)
@@ -154,7 +153,7 @@ export const calcBondDetails = createAsyncThunk(
       // console.log('maxBondQuote:', maxBondQuote.toString())
 
       maxBondPriceToken = maxBondPrice / (maxBondQuote * Math.pow(10, -9))
-      // console.log('LP maxBondPriceToken:', maxBondPriceToken)
+      console.log('LP maxBondPriceToken:', maxBondPriceToken)
     } else {
       bondQuote = await bondContract.payoutFor(amountInWei)
       bondQuote = bondQuote / Math.pow(10, 18)
