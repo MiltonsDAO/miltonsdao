@@ -13,6 +13,7 @@ import { metamaskErrorWrap } from 'helpers/metamask-error-wrap'
 import { sleep } from 'helpers'
 import useToast from 'hooks/useToast'
 import { loadAppDetails, IAppSlice } from '../../store/slices/app-slice'
+import { MaxUint256 } from '@ethersproject/constants'
 
 interface IChangeApproval {
   token: string
@@ -45,6 +46,8 @@ export const changeApproval = createAsyncThunk(
       }
 
       if (token === 'smls') {
+        const stakingAllowance = await memoContract.allowance(address, addresses.STAKING_ADDRESS)
+        console.log("stakingAllowance:",stakingAllowance)
         approveTx = await memoContract.approve(addresses.NEW_STAKING_ADDRESS, ethers.constants.MaxUint256, { gasPrice })
       }
 
@@ -108,14 +111,13 @@ export const changeStake = createAsyncThunk(
     const smls = new ethers.Contract(addresses.sOHM_ADDRESS, MemoTokenContract, signer)
     const newSMLS = new ethers.Contract(addresses.NEW_sOHM_ADDRESS, MemoTokenContract, signer)
 
+    const anotherStaking = new ethers.Contract("0x2C2cf7AeE572A5832b7d21383B62F196413F7706", StakingContract, signer) 
+
     const mlsBalance = await mls.balanceOf(address)
-    console.log("mlsBalance:",mlsBalance.toString())
 
     const smlsBalance = await smls.balanceOf(address)
-    console.log("smlsBalance:",smlsBalance)
 
     const newSMLSBalance = await newSMLS.balanceOf(address)
-    console.log("newSMLSBalance:",newSMLSBalance)
 
     let stakeTx
 
@@ -129,8 +131,14 @@ export const changeStake = createAsyncThunk(
         }
       } else {
         if (!newSMLSBalance.eq(0)) {
-          stakeTx = await newStaking.unstake(ethers.utils.parseUnits(value, 'gwei'), true)
-        } else if (!smlsBalance.eq(0)){
+          const allowance = await newSMLS.allowance(address, addresses.NEW_STAKING_ADDRESS)
+          if (allowance.eq(0)) {
+            const recipient = await newSMLS.approve(addresses.NEW_STAKING_ADDRESS, MaxUint256)
+            await recipient.wait()
+          }
+          stakeTx = await newStaking.unstake(ethers.utils.parseUnits(value, 'gwei'), false)
+        } 
+        if (!smlsBalance.eq(0)){
           stakeTx = await staking.unstake(ethers.utils.parseUnits(value, 'gwei'), false)
         }
       }
@@ -142,6 +150,7 @@ export const changeStake = createAsyncThunk(
     } catch (error: any) {
       // return toastError("error",err.message)
       console.log("changeStake:",error)
+      return
       // toastError("Error",  error?.data?.message)
       // return metamaskErrorWrap(err, dispatch)
     } finally {
