@@ -61,7 +61,7 @@ const BSC_MAINNET = {
 // }
 export const getAddresses = (networkID: number) => {
   if (networkID === Networks.BSC) return BSC_MAINNET
-  else if (networkID === Networks.BSC_TESTNET) return BSC_TESTNET
+  // else if (networkID === Networks.BSC_TESTNET) return BSC_TESTNET
   // else if (networkID === Networks.AVAX_TESTNET) return AVAX_TESTNET
   // else if (networkID === Networks.HARDHAT) return HARDHAT
   throw Error("Network don't support")
