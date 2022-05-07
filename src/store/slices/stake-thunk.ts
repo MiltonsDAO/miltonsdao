@@ -3,7 +3,7 @@ import { getAddresses } from 'constants/'
 import { StakingHelperContract, TimeTokenContract, MemoTokenContract, StakingContract } from '../../abi'
 import { clearPendingTxn, fetchPendingTxns, getStakingTypeText } from './pending-txns-slice'
 import { createAsyncThunk } from '@reduxjs/toolkit'
-import { fetchAccountSuccess, getBalances } from './account-slice'
+import { fetchAccountSuccess, getBalances, loadAccountDetails, calculateUserTokenDetails} from './account-slice'
 import { JsonRpcProvider, StaticJsonRpcProvider } from '@ethersproject/providers'
 import { Networks } from 'constants/blockchain'
 import { warning, success, info, error } from '../../store/slices/messages-slice'
@@ -12,6 +12,7 @@ import { getGasPrice } from 'helpers/get-gas-price'
 import { metamaskErrorWrap } from 'helpers/metamask-error-wrap'
 import { sleep } from 'helpers'
 import useToast from 'hooks/useToast'
+import { loadAppDetails, IAppSlice } from '../../store/slices/app-slice'
 
 interface IChangeApproval {
   token: string
@@ -100,15 +101,38 @@ export const changeStake = createAsyncThunk(
     const signer = provider.getSigner()
     const staking = new ethers.Contract(addresses.STAKING_ADDRESS, StakingContract, signer)
     const stakingHelper = new ethers.Contract(addresses.STAKING_HELPER_ADDRESS, StakingHelperContract, signer)
+    const mls = new ethers.Contract(addresses.OHM_ADDRESS, TimeTokenContract, signer)
+
+    const newStaking = new ethers.Contract(addresses.NEW_STAKING_ADDRESS, StakingContract, signer)
+    const newStakingHelper = new ethers.Contract(addresses.NEW_STAKING_HELPER_ADDRESS, StakingHelperContract, signer)
+    const smls = new ethers.Contract(addresses.sOHM_ADDRESS, MemoTokenContract, signer)
+    const newSMLS = new ethers.Contract(addresses.NEW_sOHM_ADDRESS, MemoTokenContract, signer)
+
+    const mlsBalance = await mls.balanceOf(address)
+    console.log("mlsBalance:",mlsBalance.toString())
+
+    const smlsBalance = await smls.balanceOf(address)
+    console.log("smlsBalance:",smlsBalance)
+
+    const newSMLSBalance = await newSMLS.balanceOf(address)
+    console.log("newSMLSBalance:",newSMLSBalance)
 
     let stakeTx
 
     try {
       const gasPrice = await getGasPrice(provider)
       if (action === 'stake') {
-        stakeTx = await stakingHelper.stake(ethers.utils.parseUnits(value, 'gwei'), address)
+        if (!mlsBalance.eq(0)) {
+          stakeTx = await newStakingHelper.stake(ethers.utils.parseUnits(value, 'gwei'), address)
+        } else {
+          stakeTx = await stakingHelper.stake(ethers.utils.parseUnits(value, 'gwei'), address)
+        }
       } else {
-        stakeTx = await staking.unstake(ethers.utils.parseUnits(value, 'gwei'), true)
+        if (!newSMLSBalance.eq(0)) {
+          stakeTx = await newStaking.unstake(ethers.utils.parseUnits(value, 'gwei'), false)
+        } else if (!smlsBalance.eq(0)){
+          stakeTx = await staking.unstake(ethers.utils.parseUnits(value, 'gwei'), false)
+        }
       }
       const pendingTxnType = action === 'stake' ? 'staking' : 'unstaking'
       // dispatch(fetchPendingTxns({ txnHash: stakeTx.hash, text: getStakingTypeText(action), type: pendingTxnType }))
@@ -129,6 +153,8 @@ export const changeStake = createAsyncThunk(
 
     // await sleep(10)
     await dispatch(getBalances({ address, networkID, provider }))
+    await dispatch(loadAppDetails({ networkID: networkID, provider: provider }))
+
     console.log('warning', messages.your_balance_updated)
     // toastInfo('Info', messages.your_balance_updated)
     return

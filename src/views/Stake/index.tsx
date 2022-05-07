@@ -190,7 +190,8 @@ export default function Stake({ account }) {
                         <p className="ido-card-metrics-title">{t("APY")}</p>
                         <p className="ido-card-metrics-value">
                           {stakingAPY ? (
-                            <>{new Intl.NumberFormat('en-US').format(Number(trimmedStakingAPY))}%</>
+                            // <>{new Intl.NumberFormat('en-US').format(Number(trimmedStakingAPY))}%</>
+                            <>{new Intl.NumberFormat('en-US').format(Number(978.7))}%</>
                           ) : (
                             <Skeleton width="150px" />
                           )}

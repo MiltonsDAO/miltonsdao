@@ -35,7 +35,13 @@ export const getBalances = createAsyncThunk(
     const addresses = getAddresses(networkID)
 
     const memoContract = new ethers.Contract(addresses.sOHM_ADDRESS, MemoTokenContract, provider)
-    const memoBalance = await memoContract.balanceOf(address)
+    let memoBalance = await memoContract.balanceOf(address)
+
+    const newMemoContract = new ethers.Contract(addresses.NEW_sOHM_ADDRESS, MemoTokenContract, provider)
+    const newMemoBalance = await newMemoContract.balanceOf(address)
+    if (!newMemoBalance.eq(0)) {
+      memoBalance = newMemoBalance
+    }
 
     const mlsContract = new ethers.Contract(addresses.OHM_ADDRESS, TimeTokenContract, provider)
     const mlsBalance = await mlsContract.balanceOf(address)
@@ -115,9 +121,15 @@ export const loadAccountDetails = createAsyncThunk(
       const memoContract = new ethers.Contract(addresses.sOHM_ADDRESS, MemoTokenContract, provider)
       memoBalance = await memoContract.balanceOf(address)
       unstakeAllowance = await memoContract.allowance(address, addresses.STAKING_ADDRESS)
-      // if (addresses.WMEMO_ADDRESS) {
-      //     memoWmemoAllowance = await memoContract.allowance(address, addresses.WMEMO_ADDRESS);
-      // }
+    }
+    if (addresses.NEW_sOHM_ADDRESS) {
+      const memoContract = new ethers.Contract(addresses.NEW_sOHM_ADDRESS, MemoTokenContract, provider)
+      const memo = await memoContract.balanceOf(address)
+      const allowance = await memoContract.allowance(address, addresses.NEW_STAKING_ADDRESS)
+      if (!memo.eq(0)) {
+        memoBalance = memo
+        unstakeAllowance = allowance
+      }
     }
     if (addresses.REFERRAL_ADDRESS) {
       const referralContract = new ethers.Contract(addresses.REFERRAL_ADDRESS, REFERRAL_INTERFACE, provider)

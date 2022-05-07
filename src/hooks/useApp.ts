@@ -33,9 +33,9 @@ export function useApp() {
       // }
       dispatch(calcBondDetails({ bond, value: null, provider: library, networkID: chainId }))
     })
-    tokens.map((token) => {
-      dispatch(calculateUserTokenDetails({ address: '', token, networkID: chainId, provider: library }))
-    })
+    // tokens.map((token) => {
+    //   dispatch(calculateUserTokenDetails({ address: '', token, networkID: chainId, provider: library }))
+    // })
   }, [account])
   return { loadApp, loadAccount }
 }

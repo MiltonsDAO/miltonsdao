@@ -52,8 +52,8 @@ function GlobalHooks() {
   const { loadApp, loadAccount } = useApp()
 
   useEffect(() => {
+    loadApp()
     if (account) {
-      loadApp()
       loadAccount()
       dispatch(getBalances({networkID: chainId, address:account, provider: library}))
     }
