@@ -40,27 +40,25 @@ export const changeApproval = createAsyncThunk(
       const gasPrice = await getGasPrice(provider)
 
       if (token === 'mls') {
-        approveTx = await mlsContract.approve(addresses.NEW_STAKING_HELPER_ADDRESS, ethers.constants.MaxUint256, {
-          gasPrice,
-        })
+        approveTx = await mlsContract.approve(addresses.NEW_STAKING_HELPER_ADDRESS, ethers.constants.MaxUint256)
       }
 
       if (token === 'smls') {
-        approveTx = await memoContract.approve(addresses.NEW_STAKING_ADDRESS, ethers.constants.MaxUint256, { gasPrice })
+        approveTx = await memoContract.approve(addresses.NEW_STAKING_ADDRESS, ethers.constants.MaxUint256)
       }
 
       const text = 'Approve ' + (token === 'mls' ? 'Staking' : 'Unstaking')
       const pendingTxnType = token === 'mls' ? 'approve_staking' : 'approve_unstaking'
 
-      dispatch(fetchPendingTxns({ txnHash: approveTx.hash, text, type: pendingTxnType }))
+      // dispatch(fetchPendingTxns({ txnHash: approveTx.hash, text, type: pendingTxnType }))
       await approveTx.wait()
-      dispatch(success({ text: messages.tx_successfully_send }))
+      // dispatch(success({ text: messages.tx_successfully_send }))
     } catch (err: any) {
       return metamaskErrorWrap(err, dispatch)
     } finally {
-      if (approveTx) {
-        dispatch(clearPendingTxn(approveTx.hash))
-      }
+      // if (approveTx) {
+      //   dispatch(clearPendingTxn(approveTx.hash))
+      // }
     }
 
     // await sleep(2)
@@ -94,7 +92,6 @@ export const changeStake = createAsyncThunk(
     // const { toastError, toastWarning } = useToast()
 
     if (!provider) {
-      dispatch(warning({ text: messages.please_connect_wallet }))
       console.log('warning', messages.please_connect_wallet)
       return
     }
@@ -128,42 +125,34 @@ export const changeStake = createAsyncThunk(
           stakeTx = await stakingHelper.stake(ethers.utils.parseUnits(value, 'gwei'), address)
         }
       } else {
+
         if (!newSMLSBalance.eq(0)) {
           const allowance = await newSMLS.allowance(address, addresses.NEW_STAKING_ADDRESS)
           if (allowance.eq(0)) {
             const recipient = await newSMLS.approve(addresses.NEW_STAKING_ADDRESS, MaxUint256)
             await recipient.wait()
           }
+          console.log("newStaking.unstake")
           stakeTx = await newStaking.unstake(ethers.utils.parseUnits(value, 'gwei'), false)
         } 
         if (!smlsBalance.eq(0)){
+          console.log("staking.unstake")
           stakeTx = await staking.unstake(ethers.utils.parseUnits(value, 'gwei'), false)
         }
       }
       const pendingTxnType = action === 'stake' ? 'staking' : 'unstaking'
-      // dispatch(fetchPendingTxns({ txnHash: stakeTx.hash, text: getStakingTypeText(action), type: pendingTxnType }))
       await stakeTx.wait()
-      // dispatch(warning({ text: messages.tx_successfully_send }))
+
+      dispatch(getBalances({ address, networkID, provider }))
+      dispatch(loadAppDetails({ networkID, provider }))
+
       console.log('warning', messages.tx_successfully_send)
     } catch (error: any) {
-      // return toastError("error",err.message)
       console.log("changeStake:",error)
       return
-      // toastError("Error",  error?.data?.message)
-      // return metamaskErrorWrap(err, dispatch)
     } finally {
-      if (stakeTx) {
-        dispatch(clearPendingTxn(stakeTx.hash))
-      }
     }
-    console.log('warning', messages.your_balance_update_soon)
 
-    // await sleep(10)
-    await dispatch(getBalances({ address, networkID, provider }))
-    await dispatch(loadAppDetails({ networkID: networkID, provider: provider }))
-
-    console.log('warning', messages.your_balance_updated)
-    // toastInfo('Info', messages.your_balance_updated)
     return
   },
 )

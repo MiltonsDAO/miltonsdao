@@ -111,9 +111,9 @@ export default function Stake({ account }) {
 
   const memoBalance = accountSlice?.balances?.smls
 
-  const stakeAllowance: BigNumber = accountSlice?.staking?.mls;
+  const stakeAllowance = accountSlice?.staking?.mls;
 
-  const unstakeAllowance: BigNumber = accountSlice?.staking?.smls;
+  const unstakeAllowance = accountSlice?.staking?.smls;
   const stakingRebase = app.stakingRebase;
   const stakingAPY = app.stakingAPY;
   const stakingTVL = app.stakingTVL;
@@ -142,8 +142,8 @@ export default function Stake({ account }) {
         await dispatch(changeStake({ address: account, action, value: String(quantity), provider: library, networkID: chainId }))
         setQuantity('')
       }
-      catch (error:any) {
-        toastError("Error",error?.data?.message)
+      catch (error: any) {
+        toastError("Error", error?.data?.message)
       }
 
     }
@@ -151,8 +151,14 @@ export default function Stake({ account }) {
 
   const hasAllowance = useCallback(
     (token) => {
-      if (token === 'mls') return stakeAllowance?.toString() != "0"
-      if (token === 'smls') return unstakeAllowance?.toString() != "0"
+      if (token === 'mls') {
+        console.log("stakeAllowance:",stakeAllowance)
+        return stakeAllowance != 0
+      }
+      if (token === 'smls') {
+        console.log("unstakeAllowance:",unstakeAllowance)
+        return unstakeAllowance != 0
+      }
       return 0
     },
     [stakeAllowance],
@@ -359,7 +365,7 @@ export default function Stake({ account }) {
                     <div className="data-row">
                       <p className="data-row-name">{t("Floor Price")}</p>
                       <p className="data-row-value">
-                        {isAppLoading ? <Skeleton width="80px" /> : <>{trim(Number(marketPrice*0.8), 4)}</>}
+                        {isAppLoading ? <Skeleton width="80px" /> : <>{trim(Number(marketPrice * 0.8), 4)}</>}
                       </p>
                     </div>
                   </div>

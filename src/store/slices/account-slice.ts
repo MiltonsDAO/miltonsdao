@@ -319,8 +319,8 @@ export interface IAccountSlice {
   registered: boolean
   totalProfit: number
   staking: {
-    mls: BigNumber
-    smls: BigNumber
+    mls: number
+    smls: number
   }
   wrapping: {
     smls: BigNumber
@@ -336,7 +336,7 @@ const initialState: IAccountSlice = {
   totalProfit: 0,
   bonds: {},
   balances: { smls: BigNumber.from(0), mls: BigNumber.from(0), pmls: BigNumber.from(0), usdt: BigNumber.from(0) },
-  staking: { mls: BigNumber.from(0), smls: BigNumber.from(0) },
+  staking: { mls: 0, smls: 0 },
   wrapping: { smls: BigNumber.from(0) },
   tokens: {},
 }

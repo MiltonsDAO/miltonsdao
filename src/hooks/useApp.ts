@@ -22,15 +22,6 @@ export function useApp() {
   const loadApp = useCallback(() => {
     dispatch(loadAppDetails({ networkID: chainId, provider: library }))
     bonds.map(async (bond) => {
-      // const bondContract = bond.getContractForBond(chainId, library)
-      // let maxBondPrice = (await bondContract.maxPayout()) / Math.pow(10, 9)
-      // let value = maxBondPrice
-      // if (bond.isLP) {
-      //   const bondCalcContract = getBondCalculator(chainId, library)
-      //   const valuation = await bondCalcContract.valuation(bond.getAddressForReserve(chainId), maxBondPrice)
-      //   const bondQuote = await bondContract.payoutFor(valuation)
-      //   value = bondQuote
-      // }
       dispatch(calcBondDetails({ bond, value: null, provider: library, networkID: chainId }))
     })
     // tokens.map((token) => {

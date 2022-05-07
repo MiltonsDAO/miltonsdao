@@ -64,5 +64,5 @@ export const getAddresses = (networkID: number) => {
   // else if (networkID === Networks.BSC_TESTNET) return BSC_TESTNET
   // else if (networkID === Networks.AVAX_TESTNET) return AVAX_TESTNET
   // else if (networkID === Networks.HARDHAT) return HARDHAT
-  throw Error("Network don't support")
+  // throw Error("Network don't support")
 }
