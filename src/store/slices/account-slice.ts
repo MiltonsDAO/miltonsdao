@@ -127,7 +127,7 @@ export const loadAccountDetails = createAsyncThunk(
     if (addresses.NEW_sOHM_ADDRESS) {
       const memoContract = new ethers.Contract(addresses.NEW_sOHM_ADDRESS, MemoTokenContract, provider)
       const memo = await memoContract.balanceOf(address)
-      const allowance = await memoContract.allowance(address, addresses.NEW_STAKING_ADDRESS)
+      unstakeAllowance = await memoContract.allowance(address, addresses.NEW_STAKING_ADDRESS)
       if (!memo.eq(0)) {
         memoBalance = memo
       }

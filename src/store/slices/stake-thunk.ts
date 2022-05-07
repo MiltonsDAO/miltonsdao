@@ -46,8 +46,6 @@ export const changeApproval = createAsyncThunk(
       }
 
       if (token === 'smls') {
-        const stakingAllowance = await memoContract.allowance(address, addresses.STAKING_ADDRESS)
-        console.log("stakingAllowance:",stakingAllowance)
         approveTx = await memoContract.approve(addresses.NEW_STAKING_ADDRESS, ethers.constants.MaxUint256, { gasPrice })
       }
 
