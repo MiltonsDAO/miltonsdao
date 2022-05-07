@@ -85,15 +85,15 @@ function BondRedeem({ bond }: IBondRedeem) {
                 </div>
             </Box>
 
-            <Slide direction="right" in={true} mountOnEnter unmountOnExit {...{ timeout: 533 }}>
+            <Slide direction="right" in={true} mountOnEnter unmountOnExit {...{ timeout: 1000 }}>
                 <Box className="bond-data">
                     <div className="data-row">
                         <p className="bond-balance-title">{t("Pending Rewards")}</p>
-                        <p className="price-data bond-balance-title">{isBondLoading ? <Skeleton width="100px" /> : `${bond.interestDue} MLS`}</p>
+                        <p className="price-data bond-balance-title">{isBondLoading ? <Skeleton width="100px" /> : `${bond?.interestDue} MLS`}</p>
                     </div>
                     <div className="data-row">
                         <p className="bond-balance-title">{t("Claimable Rewards")}</p>
-                        <p className="price-data bond-balance-title">{isBondLoading ? <Skeleton width="100px" /> : `${bond.pendingPayout} MLS`}</p>
+                        <p className="price-data bond-balance-title">{isBondLoading ? <Skeleton width="100px" /> : `${bond?.pendingPayout} MLS`}</p>
                     </div>
                     <div className="data-row">
                         <p className="bond-balance-title">{t("Time until fully vested")}</p>
@@ -102,7 +102,7 @@ function BondRedeem({ bond }: IBondRedeem) {
 
                     <div className="data-row">
                         <p className="bond-balance-title">ROI</p>
-                        <p className="bond-balance-title">{isBondLoading ? <Skeleton width="100px" /> : `${trim(bond.bondDiscount * 100, 2)}%`}</p>
+                        <p className="bond-balance-title">{isBondLoading ? <Skeleton width="100px" /> : `${trim(bond?.bondDiscount * 100, 2)}%`}</p>
                     </div>
 
                     <div className="data-row">
