@@ -106,8 +106,6 @@ export const changeStake = createAsyncThunk(
     const smls = new ethers.Contract(addresses.sOHM_ADDRESS, MemoTokenContract, signer)
     const newSMLS = new ethers.Contract(addresses.NEW_sOHM_ADDRESS, MemoTokenContract, signer)
 
-    const anotherStaking = new ethers.Contract("0x2C2cf7AeE572A5832b7d21383B62F196413F7706", StakingContract, signer) 
-
     const mlsBalance = await mls.balanceOf(address)
 
     const smlsBalance = await smls.balanceOf(address)
