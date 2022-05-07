@@ -115,12 +115,14 @@ export const loadAccountDetails = createAsyncThunk(
     if (addresses.OHM_ADDRESS) {
       const mlsContract = new ethers.Contract(addresses.OHM_ADDRESS, TimeTokenContract, provider)
       timeBalance = await mlsContract.balanceOf(address)
-      stakeAllowance = await mlsContract.allowance(address, addresses.STAKING_HELPER_ADDRESS)
+      // stakeAllowance = await mlsContract.allowance(address, addresses.STAKING_HELPER_ADDRESS)
+      stakeAllowance = await mlsContract.allowance(address, addresses.NEW_STAKING_HELPER_ADDRESS)
     }
     if (addresses.sOHM_ADDRESS) {
       const memoContract = new ethers.Contract(addresses.sOHM_ADDRESS, MemoTokenContract, provider)
       memoBalance = await memoContract.balanceOf(address)
-      unstakeAllowance = await memoContract.allowance(address, addresses.STAKING_ADDRESS)
+      // unstakeAllowance = await memoContract.allowance(address, addresses.STAKING_ADDRESS)
+      unstakeAllowance = await memoContract.allowance(address, addresses.NEW_STAKING_ADDRESS)
     }
     if (addresses.NEW_sOHM_ADDRESS) {
       const memoContract = new ethers.Contract(addresses.NEW_sOHM_ADDRESS, MemoTokenContract, provider)
@@ -128,7 +130,6 @@ export const loadAccountDetails = createAsyncThunk(
       const allowance = await memoContract.allowance(address, addresses.NEW_STAKING_ADDRESS)
       if (!memo.eq(0)) {
         memoBalance = memo
-        unstakeAllowance = allowance
       }
     }
     if (addresses.REFERRAL_ADDRESS) {

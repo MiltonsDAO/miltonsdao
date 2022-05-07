@@ -39,13 +39,13 @@ export const changeApproval = createAsyncThunk(
       const gasPrice = await getGasPrice(provider)
 
       if (token === 'mls') {
-        approveTx = await mlsContract.approve(addresses.STAKING_HELPER_ADDRESS, ethers.constants.MaxUint256, {
+        approveTx = await mlsContract.approve(addresses.NEW_STAKING_HELPER_ADDRESS, ethers.constants.MaxUint256, {
           gasPrice,
         })
       }
 
       if (token === 'smls') {
-        approveTx = await memoContract.approve(addresses.STAKING_ADDRESS, ethers.constants.MaxUint256, { gasPrice })
+        approveTx = await memoContract.approve(addresses.NEW_STAKING_ADDRESS, ethers.constants.MaxUint256, { gasPrice })
       }
 
       const text = 'Approve ' + (token === 'mls' ? 'Staking' : 'Unstaking')
@@ -64,8 +64,8 @@ export const changeApproval = createAsyncThunk(
 
     // await sleep(2)
 
-    const stakeAllowance = await mlsContract.allowance(address, addresses.STAKING_HELPER_ADDRESS)
-    const unstakeAllowance = await memoContract.allowance(address, addresses.STAKING_ADDRESS)
+    const stakeAllowance = await mlsContract.allowance(address, addresses.NEW_STAKING_HELPER_ADDRESS)
+    const unstakeAllowance = await memoContract.allowance(address, addresses.NEW_STAKING_ADDRESS)
 
     return dispatch(
       fetchAccountSuccess({
