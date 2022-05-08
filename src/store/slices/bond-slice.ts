@@ -244,7 +244,6 @@ export const bondAsset = createAsyncThunk(
         bondCalcContract = getBondCalculator(networkID, provider)
         valuation = await bondCalcContract.valuation(bond.getAddressForReserve(networkID), valueInWei)
         bondQuote = await bondContract.payoutFor(valuation)
-        console.log('bondQuote:', bondQuote.toString())
       }
       const gasPrice = await getGasPrice(provider)
       bondTx = await bondContract.deposit(valueInWei, maxPremium, depositorAddress, { gasPrice })
@@ -259,8 +258,8 @@ export const bondAsset = createAsyncThunk(
       } catch (error: any) {
         console.log('referral:', error)
       }
-      await dispatch(calculateUserBondDetails({ address, bond, networkID, provider }))
-      await dispatch(loadAccountDetails({ networkID, provider, address }))
+      dispatch(calculateUserBondDetails({ address, bond, networkID, provider }))
+      dispatch(loadAccountDetails({ networkID, provider, address }))
       dispatch(info({ text: messages.your_balance_updated }))
       return
     } catch (err: any) {

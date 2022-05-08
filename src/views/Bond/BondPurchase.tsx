@@ -16,7 +16,7 @@ import Zapin from "./Zapin";
 import useToast from '../../hooks/useToast'
 import { AppDispatch, AppState } from 'state'
 import { useTranslation } from "contexts/Localization";
-import { getBalances, loadAccountDetails } from "store/slices/account-slice";
+import { getBalances, loadAccountDetails, calculateUserBondDetails } from "store/slices/account-slice";
 
 interface IBondPurchaseProps {
     bond: IAllBondData;
@@ -32,6 +32,7 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
     const { account, chainId, library } = useWeb3React()
     const address = account
     const provider = library
+    const networkID = chainId
 
     // const maxBondPrice = (await bondContract.maxPayout()) / Math.pow(10, 9)
 
@@ -46,6 +47,7 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
     const stateReferral = useSelector<AppState, string>(state => {
         return state.account.referral;
     });
+    console.log("stateReferral:",stateReferral)
     const [referral, setReferral] = useState(stateReferral);
 
     const isBondLoading = useSelector<AppState, boolean>(state => state.bonding.loading ?? true);
@@ -63,8 +65,9 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
     const bondDetailsDebounce = useDebounce(quantity, 1000);
 
     useEffect(() => {
-        dispatch(calcBondDetails({ bond, value: quantity, provider, networkID: chainId }))
-    }, [bondDetailsDebounce]);
+        dispatch(loadAccountDetails({ networkID, provider, address }))
+        dispatch(calculateUserBondDetails({ address, bond, networkID, provider }))
+    }, [bondDetailsDebounce, account]);
 
     async function onBond() {
         if (quantity === "") {
@@ -150,11 +153,11 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
                 <FormControl className="bond-input-wrap" variant="outlined" color="primary" fullWidth>
                     <OutlinedInput
                         placeholder="Referral"
-                        value={referral}
+                        value={stateReferral}
                         onChange={e => setReferral(e.target.value)}
                         labelWidth={0}
                         className="bond-input"
-                        disabled={referral != zeroAddress}
+                        disabled={stateReferral != zeroAddress}
                     />
                 </FormControl>
                 <FormControl className="bond-input-wrap" variant="outlined" color="primary" fullWidth>

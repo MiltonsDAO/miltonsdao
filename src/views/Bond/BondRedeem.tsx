@@ -8,11 +8,12 @@ import { trim, prettifySeconds, prettyVestingPeriod } from "../../helpers";
 import { IPendingTxn, isPendingTxn, txnButtonText } from "../../store/slices/pending-txns-slice";
 import { IReduxState } from "../../store/slices/state.interface";
 import { IAllBondData } from "../../hooks/bonds";
-import { IUserBondDetails } from "../../store/slices/account-slice";
+import { IUserBondDetails, loadAccountDetails, calculateUserBondDetails } from "../../store/slices/account-slice";
 import { messages } from "../../constants/messages";
 import { warning } from "../../store/slices/messages-slice";
 import { AppDispatch, AppState } from 'state'
 import { useTranslation } from "contexts/Localization";
+import { useEffect } from "react";
 
 interface IBondRedeem {
     bond: IAllBondData;
@@ -20,10 +21,11 @@ interface IBondRedeem {
 
 function BondRedeem({ bond }: IBondRedeem) {
     const dispatch = useDispatch();
-    const {t} = useTranslation()
-    const {account, chainId, library } = useWeb3React()
+    const { t } = useTranslation()
+    const { account, chainId, library } = useWeb3React()
     const address = account
     const provider = library
+    const networkID = chainId
     const isBondLoading = useSelector<AppState, boolean>(state => state.bonding.loading ?? true);
 
     const currentBlockTime = useSelector<AppState, number>(state => {
@@ -62,6 +64,10 @@ function BondRedeem({ bond }: IBondRedeem) {
         return prettifySeconds(bondingState.vestingTerm, "day");
     };
 
+    useEffect(() => {
+        dispatch(calculateUserBondDetails({ address, bond, networkID, provider }))
+        // dispatch(loadAccountDetails({ networkID, provider, address }))
+    }, [account])
     return (
         <Box display="flex" flexDirection="column">
             <Box display="flex" justifyContent="space-around" flexWrap="wrap">
