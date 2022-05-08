@@ -84,7 +84,7 @@ interface IUserAccountDetails {
     smls: number
     wmemo: string
   }
-  staking: {
+  allowance: {
     mls: number
     smls: number
   }
@@ -151,7 +151,7 @@ export const loadAccountDetails = createAsyncThunk(
         mls: timeBalance,
         wmemo: ethers.utils.formatEther(wmemoBalance),
       },
-      staking: {
+      allowance: {
         mls: Number(stakeAllowance),
         smls: Number(unstakeAllowance),
       },
@@ -319,7 +319,7 @@ export interface IAccountSlice {
   referral: string
   registered: boolean
   totalProfit: number
-  staking: {
+  allowance: {
     mls: number
     smls: number
   }
@@ -337,7 +337,7 @@ const initialState: IAccountSlice = {
   totalProfit: 0,
   bonds: {},
   balances: { smls: BigNumber.from(0), mls: BigNumber.from(0), pmls: BigNumber.from(0), usdt: BigNumber.from(0) },
-  staking: { mls: 0, smls: 0 },
+  allowance: { mls: 0, smls: 0 },
   wrapping: { smls: BigNumber.from(0) },
   tokens: {},
 }

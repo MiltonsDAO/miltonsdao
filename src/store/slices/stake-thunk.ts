@@ -27,7 +27,7 @@ export const changeApproval = createAsyncThunk(
   async ({ token, provider, address, networkID }: IChangeApproval, { dispatch }) => {
     if (!provider) {
       console.log(messages.please_connect_wallet)
-      dispatch(warning({ text: messages.please_connect_wallet }))
+      // dispatch(warning({ text: messages.please_connect_wallet }))
       return
     }
     const addresses = getAddresses(networkID)
@@ -38,6 +38,9 @@ export const changeApproval = createAsyncThunk(
     const newSMLSContract = new ethers.Contract(addresses.NEW_sOHM_ADDRESS, MemoTokenContract, signer)
 
     const newSMLSBalance = await newSMLSContract.balanceOf(address)
+
+    let unstakeAllowance = await smlsContract.allowance(address, addresses.STAKING_ADDRESS)
+    let newUnstakeAllowance = await newSMLSContract.allowance(address, addresses.NEW_STAKING_ADDRESS)
 
     let approveTx
     try {
@@ -51,45 +54,44 @@ export const changeApproval = createAsyncThunk(
         const smlsBalance = await smlsContract.balanceOf(address)
 
         if (smlsBalance != 0) {
-          const allowance = await smlsContract.allowance(address, addresses.STAKING_ADDRESS)
-          if (allowance.eq(0)) {
+          if (unstakeAllowance.eq(0)) {
             approveTx = await smlsContract.approve(addresses.STAKING_ADDRESS, ethers.constants.MaxUint256)
+            await approveTx.wait()
           }
         }
-        const newAllowance = await newSMLSContract.allowance(address, addresses.NEW_STAKING_ADDRESS)
-        if (newAllowance.eq(0)) {
+        if (newUnstakeAllowance.eq(0)) {
           approveTx = await newSMLSContract.approve(addresses.NEW_STAKING_ADDRESS, ethers.constants.MaxUint256)
+          await approveTx.wait()
         }
       }
 
-      const text = 'Approve ' + (token === 'mls' ? 'Staking' : 'Unstaking')
-      const pendingTxnType = token === 'mls' ? 'approve_staking' : 'approve_unstaking'
+      // const text = 'Approve ' + (token === 'mls' ? 'Staking' : 'Unstaking')
+      // const pendingTxnType = token === 'mls' ? 'approve_staking' : 'approve_unstaking'
 
       // dispatch(fetchPendingTxns({ txnHash: approveTx.hash, text, type: pendingTxnType }))
-      await approveTx.wait()
       // dispatch(success({ text: messages.tx_successfully_send }))
     } catch (err: any) {
-      return metamaskErrorWrap(err, dispatch)
+      console.log(err)
     } finally {
       // if (approveTx) {
       //   dispatch(clearPendingTxn(approveTx.hash))
       // }
     }
 
-    // await sleep(2)
+    unstakeAllowance = await smlsContract.allowance(address, addresses.STAKING_ADDRESS)
+    newUnstakeAllowance = await newSMLSContract.allowance(address, addresses.NEW_STAKING_ADDRESS)
 
     const stakeAllowance = await mlsContract.allowance(address, addresses.NEW_STAKING_HELPER_ADDRESS)
-    let unstakeAllowance = await smlsContract.allowance(address, addresses.STAKING_ADDRESS)
-    const newUnstakeAllowance = await newSMLSContract.allowance(address, addresses.NEW_STAKING_ADDRESS)
-    if (newSMLSBalance != 0) {
+    if (newUnstakeAllowance != 0) {
       unstakeAllowance = newUnstakeAllowance
     }
+    console.log("unstakeAllowance:", unstakeAllowance)
+
     return dispatch(
       fetchAccountSuccess({
-        staking: {
+        allowance: {
           mls: Number(stakeAllowance),
-          timeStake: Number(stakeAllowance),
-          memoUnstake: Number(unstakeAllowance),
+          smls: Number(unstakeAllowance)
         },
       }),
     )
