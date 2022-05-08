@@ -3,7 +3,7 @@ import { getAddresses } from 'constants/'
 import { StakingHelperContract, TimeTokenContract, MemoTokenContract, StakingContract } from '../../abi'
 import { clearPendingTxn, fetchPendingTxns, getStakingTypeText } from './pending-txns-slice'
 import { createAsyncThunk } from '@reduxjs/toolkit'
-import { fetchAccountSuccess, getBalances, loadAccountDetails, calculateUserTokenDetails} from './account-slice'
+import { fetchAccountSuccess, getBalances, loadAccountDetails, calculateUserTokenDetails } from './account-slice'
 import { JsonRpcProvider, StaticJsonRpcProvider } from '@ethersproject/providers'
 import { Networks } from 'constants/blockchain'
 import { warning, success, info, error } from '../../store/slices/messages-slice'
@@ -46,13 +46,17 @@ export const changeApproval = createAsyncThunk(
       }
 
       if (token === 'smls') {
-        const allowance = await smlsContract.allowance(address, addresses.STAKING_ADDRESS)
-        if (allowance.eq(0)) {
-          approveTx = await smlsContract.approve(addresses.STAKING_ADDRESS, ethers.constants.MaxUint256)
-        }
-        const newAllowance = await newSMLSContract.allowance(address, addresses.NEW_STAKING_ADDRESS)
-        if (newAllowance.eq(0)) {
-          approveTx = await newSMLSContract.approve(addresses.NEW_STAKING_ADDRESS, ethers.constants.MaxUint256)
+        const smlsBalance = await smlsContract.balanceOf(address)
+        if (smlsBalance == 0) {
+          const newAllowance = await newSMLSContract.allowance(address, addresses.NEW_STAKING_ADDRESS)
+          if (newAllowance.eq(0)) {
+            approveTx = await newSMLSContract.approve(addresses.NEW_STAKING_ADDRESS, ethers.constants.MaxUint256)
+          }
+        } else {
+          const allowance = await smlsContract.allowance(address, addresses.STAKING_ADDRESS)
+          if (allowance.eq(0)) {
+            approveTx = await smlsContract.approve(addresses.STAKING_ADDRESS, ethers.constants.MaxUint256)
+          }
         }
       }
 
@@ -76,7 +80,7 @@ export const changeApproval = createAsyncThunk(
     let unstakeAllowance = await smlsContract.allowance(address, addresses.STAKING_ADDRESS)
     const newUnstakeAllowance = await newSMLSContract.allowance(address, addresses.NEW_STAKING_ADDRESS)
     unstakeAllowance = Math.min(unstakeAllowance, newUnstakeAllowance)
-
+    console.log('unstakeAllowance:', unstakeAllowance)
     return dispatch(
       fetchAccountSuccess({
         staking: {
@@ -141,8 +145,8 @@ export const changeStake = createAsyncThunk(
             await recipient.wait()
           }
           stakeTx = await newStaking.unstake(ethers.utils.parseUnits(value, 'gwei'), false)
-        } 
-        if (!smlsBalance.eq(0)){
+        }
+        if (!smlsBalance.eq(0)) {
           stakeTx = await staking.unstake(ethers.utils.parseUnits(value, 'gwei'), false)
         }
       }
@@ -151,9 +155,8 @@ export const changeStake = createAsyncThunk(
 
       dispatch(getBalances({ address, networkID, provider }))
       dispatch(loadAppDetails({ networkID, provider }))
-
     } catch (error: any) {
-      console.log("changeStake:",error)
+      console.log('changeStake:', error)
       return
     } finally {
     }
