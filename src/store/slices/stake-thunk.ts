@@ -37,7 +37,6 @@ export const changeApproval = createAsyncThunk(
     const smlsContract = new ethers.Contract(addresses.sOHM_ADDRESS, MemoTokenContract, signer)
     const newSMLSContract = new ethers.Contract(addresses.NEW_sOHM_ADDRESS, MemoTokenContract, signer)
 
-    const smlsBalance = await smlsContract.balanceOf(address)
     const newSMLSBalance = await newSMLSContract.balanceOf(address)
 
     let approveTx
@@ -49,16 +48,17 @@ export const changeApproval = createAsyncThunk(
       }
 
       if (token === 'smls') {
-        if (smlsBalance == 0) {
-          const newAllowance = await newSMLSContract.allowance(address, addresses.NEW_STAKING_ADDRESS)
-          if (newAllowance.eq(0)) {
-            approveTx = await newSMLSContract.approve(addresses.NEW_STAKING_ADDRESS, ethers.constants.MaxUint256)
-          }
-        } else {
+        const smlsBalance = await smlsContract.balanceOf(address)
+
+        if (smlsBalance != 0) {
           const allowance = await smlsContract.allowance(address, addresses.STAKING_ADDRESS)
           if (allowance.eq(0)) {
             approveTx = await smlsContract.approve(addresses.STAKING_ADDRESS, ethers.constants.MaxUint256)
           }
+        }
+        const newAllowance = await newSMLSContract.allowance(address, addresses.NEW_STAKING_ADDRESS)
+        if (newAllowance.eq(0)) {
+          approveTx = await newSMLSContract.approve(addresses.NEW_STAKING_ADDRESS, ethers.constants.MaxUint256)
         }
       }
 
@@ -142,11 +142,6 @@ export const changeStake = createAsyncThunk(
         }
       } else {
         if (!newSMLSBalance.eq(0)) {
-          const allowance = await newSMLS.allowance(address, addresses.NEW_STAKING_ADDRESS)
-          if (allowance.eq(0)) {
-            const recipient = await newSMLS.approve(addresses.NEW_STAKING_ADDRESS, MaxUint256)
-            await recipient.wait()
-          }
           stakeTx = await newStaking.unstake(ethers.utils.parseUnits(value, 'gwei'), false)
         }
         if (!smlsBalance.eq(0)) {
