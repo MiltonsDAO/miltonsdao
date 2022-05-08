@@ -37,6 +37,9 @@ export const changeApproval = createAsyncThunk(
     const smlsContract = new ethers.Contract(addresses.sOHM_ADDRESS, MemoTokenContract, signer)
     const newSMLSContract = new ethers.Contract(addresses.NEW_sOHM_ADDRESS, MemoTokenContract, signer)
 
+    const smlsBalance = await smlsContract.balanceOf(address)
+    const newSMLSBalance = await newSMLSContract.balanceOf(address)
+
     let approveTx
     try {
       const gasPrice = await getGasPrice(provider)
@@ -46,7 +49,6 @@ export const changeApproval = createAsyncThunk(
       }
 
       if (token === 'smls') {
-        const smlsBalance = await smlsContract.balanceOf(address)
         if (smlsBalance == 0) {
           const newAllowance = await newSMLSContract.allowance(address, addresses.NEW_STAKING_ADDRESS)
           if (newAllowance.eq(0)) {
@@ -79,8 +81,9 @@ export const changeApproval = createAsyncThunk(
     const stakeAllowance = await mlsContract.allowance(address, addresses.NEW_STAKING_HELPER_ADDRESS)
     let unstakeAllowance = await smlsContract.allowance(address, addresses.STAKING_ADDRESS)
     const newUnstakeAllowance = await newSMLSContract.allowance(address, addresses.NEW_STAKING_ADDRESS)
-    unstakeAllowance = Math.min(unstakeAllowance, newUnstakeAllowance)
-    console.log('unstakeAllowance:', unstakeAllowance)
+    if (newSMLSBalance != 0) {
+      unstakeAllowance = newUnstakeAllowance
+    }
     return dispatch(
       fetchAccountSuccess({
         staking: {
