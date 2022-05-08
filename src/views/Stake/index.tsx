@@ -152,11 +152,9 @@ export default function Stake({ account }) {
   const hasAllowance = useCallback(
     (token) => {
       if (token === 'mls') {
-        console.log("stakeAllowance:",stakeAllowance)
         return stakeAllowance != 0
       }
       if (token === 'smls') {
-        console.log("unstakeAllowance:",unstakeAllowance)
         return unstakeAllowance != 0
       }
       return 0
@@ -288,7 +286,6 @@ export default function Stake({ account }) {
                             <div
                               className="ido-card-tab-panel-btn"
                               onClick={() => {
-                                if (isPendingTxn(pendingTransactions, 'approve_staking')) return
                                 onSeekApproval('mls')
                               }}
                             >
@@ -314,7 +311,6 @@ export default function Stake({ account }) {
                             <div
                               className="ido-card-tab-panel-btn"
                               onClick={() => {
-                                if (isPendingTxn(pendingTransactions, 'approve_unstaking')) return
                                 onSeekApproval('smls')
                               }}
                             >

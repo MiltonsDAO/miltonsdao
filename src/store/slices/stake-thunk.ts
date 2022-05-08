@@ -26,6 +26,7 @@ export const changeApproval = createAsyncThunk(
   'stake/changeApproval',
   async ({ token, provider, address, networkID }: IChangeApproval, { dispatch }) => {
     if (!provider) {
+      console.log(messages.please_connect_wallet)
       dispatch(warning({ text: messages.please_connect_wallet }))
       return
     }
@@ -72,7 +73,9 @@ export const changeApproval = createAsyncThunk(
     // await sleep(2)
 
     const stakeAllowance = await mlsContract.allowance(address, addresses.NEW_STAKING_HELPER_ADDRESS)
-    const unstakeAllowance = await smlsContract.allowance(address, addresses.NEW_STAKING_ADDRESS)
+    let unstakeAllowance = await smlsContract.allowance(address, addresses.STAKING_ADDRESS)
+    const newUnstakeAllowance = await newSMLSContract.allowance(address, addresses.NEW_STAKING_ADDRESS)
+    unstakeAllowance = Math.min(unstakeAllowance, newUnstakeAllowance)
 
     return dispatch(
       fetchAccountSuccess({
