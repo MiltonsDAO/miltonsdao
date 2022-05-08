@@ -139,7 +139,8 @@ export const changeStake = createAsyncThunk(
       const parsedValue = ethers.utils.parseUnits(value, 'gwei')
       if (action === 'stake') {
         if (!mlsBalance.eq(0)) {
-          stakeTx = await newStakingHelper.stake(parsedValue, address)
+          const min = Math.min(mlsBalance, Number(parsedValue))
+          stakeTx = await newStakingHelper.stake(min, address)
         } 
       } else {
         if (!newSMLSBalance.eq(0) ) {
