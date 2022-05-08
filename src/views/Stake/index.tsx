@@ -146,10 +146,10 @@ export default function Stake({ account }) {
   const hasAllowance = useCallback(
     (token) => {
       if (token === 'mls') {
-        return stakeAllowance.eq(0)
+        return !stakeAllowance.eq(0)
       }
       if (token === 'smls') {
-        return unstakeAllowance.eq(0)
+        return !unstakeAllowance.eq(0)
       }
       return 0
     },
@@ -265,7 +265,7 @@ export default function Stake({ account }) {
 
                       {view === 0 && (
                         <div className="ido-card-tab-panel">
-                          {account && hasAllowance('mls') ? (
+                          {hasAllowance('mls') ? (
                             <div
                               className="ido-card-tab-panel-btn"
                               onClick={() => {

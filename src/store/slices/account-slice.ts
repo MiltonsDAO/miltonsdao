@@ -95,8 +95,8 @@ export const loadAccountDetails = createAsyncThunk(
     let wmemoBalance 
     let memoWmemoAllowance = 0
 
-    let stakeAllowance
-    let unstakeAllowance
+    let stakeAllowance = BigNumber.from(0)
+    let unstakeAllowance = BigNumber.from(0)
 
     var totalProfit = 0
     let sonslice: ISonSlice[] = []
@@ -119,7 +119,7 @@ export const loadAccountDetails = createAsyncThunk(
     if (addresses.NEW_sOHM_ADDRESS) {
       const newSMLSContract = new ethers.Contract(addresses.NEW_sOHM_ADDRESS, MemoTokenContract, provider)
       const newSMLSBalance = await newSMLSContract.balanceOf(address)
-      if (unstakeAllowance != 0) {
+      if (!unstakeAllowance.eq(0)) {
         unstakeAllowance = await newSMLSContract.allowance(address, addresses.NEW_STAKING_ADDRESS)
       }
       if (smlsBalance == 0) {
