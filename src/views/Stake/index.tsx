@@ -105,7 +105,6 @@ export default function Stake({ account }) {
   const memoBalance = accountSlice?.balances?.smls
 
   const stakeAllowance = accountSlice?.allowance?.mls;
-
   const unstakeAllowance = accountSlice?.allowance?.smls;
 
   const stakingRebase = app.stakingRebase;
@@ -189,8 +188,8 @@ export default function Stake({ account }) {
                         <p className="ido-card-metrics-value">
                           {stakingAPY ? (
                             // <>{new Intl.NumberFormat('en-US').format(Number(trimmedStakingAPY))}%</>
-                            // <div style={trimmedStakingAPY.length >= 15 ? { fontSize: "10px" } : {}}>{new Intl.NumberFormat('en-US').format(Number(trimmedStakingAPY))}%</div>
-                            <>{new Intl.NumberFormat('en-US').format(Number(978.7))}%</>
+                            <div style={trimmedStakingAPY.length >= 15 ? { fontSize: "10px" } : {}}>{new Intl.NumberFormat('en-US').format(Number(trimmedStakingAPY))}%</div>
+                            // <>{new Intl.NumberFormat('en-US').format(Number(978.7))}%</>
                           ) : (
                             <Skeleton width="150px" />
                           )}

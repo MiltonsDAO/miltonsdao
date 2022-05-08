@@ -39,6 +39,7 @@ export const changeApproval = createAsyncThunk(
 
     const newSMLSBalance = await newSMLSContract.balanceOf(address)
 
+    let stakeAllowance = await mlsContract.allowance(address, addresses.STAKING_HELPER_ADDRESS)
     let unstakeAllowance = await smlsContract.allowance(address, addresses.STAKING_ADDRESS)
     let newUnstakeAllowance = await newSMLSContract.allowance(address, addresses.NEW_STAKING_ADDRESS)
 
@@ -47,7 +48,9 @@ export const changeApproval = createAsyncThunk(
       const gasPrice = await getGasPrice(provider)
 
       if (token === 'mls') {
-        approveTx = await mlsContract.approve(addresses.NEW_STAKING_HELPER_ADDRESS, ethers.constants.MaxUint256)
+        if (stakeAllowance.eq(0)) {
+          approveTx = await mlsContract.approve(addresses.NEW_STAKING_HELPER_ADDRESS, ethers.constants.MaxUint256)
+        }
       }
 
       if (token === 'smls') {
@@ -81,7 +84,6 @@ export const changeApproval = createAsyncThunk(
     unstakeAllowance = await smlsContract.allowance(address, addresses.STAKING_ADDRESS)
     newUnstakeAllowance = await newSMLSContract.allowance(address, addresses.NEW_STAKING_ADDRESS)
 
-    const stakeAllowance = await mlsContract.allowance(address, addresses.NEW_STAKING_HELPER_ADDRESS)
     if (newUnstakeAllowance != 0) {
       unstakeAllowance = newUnstakeAllowance
     }
