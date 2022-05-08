@@ -35,10 +35,10 @@ export const getBalances = createAsyncThunk(
     const addresses = getAddresses(networkID)
 
     const smlsContract = new ethers.Contract(addresses.sOHM_ADDRESS, MemoTokenContract, provider)
-    let smlsBalance = await smlsContract.balanceOf(address)
+    let smlsBalance:BigNumber = await smlsContract.balanceOf(address)
 
     const newMemoContract = new ethers.Contract(addresses.NEW_sOHM_ADDRESS, MemoTokenContract, provider)
-    const newSMLSBalance = await newMemoContract.balanceOf(address)
+    const newSMLSBalance:BigNumber  = await newMemoContract.balanceOf(address)
     smlsBalance = newSMLSBalance.add(smlsBalance)
 
     const mlsContract = new ethers.Contract(addresses.OHM_ADDRESS, TimeTokenContract, provider)
@@ -50,17 +50,12 @@ export const getBalances = createAsyncThunk(
     const usdtContract = new ethers.Contract(addresses.USDT_ADDRESS, PMLSContract, provider)
     const usdtBalance = await usdtContract.balanceOf(address)
 
-    // const wmemoContract = new ethers.Contract(addresses.WMEMO_ADDRESS, wMemoTokenContract, provider);
-    // const wmemoBalance = await wmemoContract.balanceOf(address);
-    // console.log("wmemoBalance:", wmemoBalance);
-
     return {
       balances: {
         smls: smlsBalance,
         mls: mlsBalance,
         pmls: pmlsBalance,
         usdt: usdtBalance,
-        // wmemo: ethers.utils.formatEther(wmemoBalance),
       },
     }
   },
@@ -83,8 +78,8 @@ interface IUserAccountDetails {
     wmemo: string
   }
   allowance: {
-    mls: number
-    smls: number
+    mls: BigNumber
+    smls: BigNumber
   }
   wrapping: {
     smls: number
@@ -98,12 +93,11 @@ export const loadAccountDetails = createAsyncThunk(
     let smlsBalance
 
     let wmemoBalance 
-    let memoWmemoAllowance 
+    let memoWmemoAllowance = 0
 
-    let stakeAllowance 
+    let stakeAllowance
     let unstakeAllowance
 
-    let profit = BigNumber.from(0)
     var totalProfit = 0
     let sonslice: ISonSlice[] = []
     let referral = ''
@@ -113,7 +107,6 @@ export const loadAccountDetails = createAsyncThunk(
     if (addresses.OHM_ADDRESS) {
       const mlsContract = new ethers.Contract(addresses.OHM_ADDRESS, TimeTokenContract, provider)
       timeBalance = await mlsContract.balanceOf(address)
-      // stakeAllowance = await mlsContract.allowance(address, addresses.STAKING_HELPER_ADDRESS)
       stakeAllowance = await mlsContract.allowance(address, addresses.NEW_STAKING_HELPER_ADDRESS)
     }
     if (addresses.sOHM_ADDRESS) {
@@ -124,16 +117,17 @@ export const loadAccountDetails = createAsyncThunk(
     if (addresses.NEW_sOHM_ADDRESS) {
       const newSMLSContract = new ethers.Contract(addresses.NEW_sOHM_ADDRESS, MemoTokenContract, provider)
       const newSMLSBalance = await newSMLSContract.balanceOf(address)
-      if (smlsBalance.eq(0)) {
-        smlsBalance = newSMLSBalance
+      if (unstakeAllowance != 0) {
         unstakeAllowance = await newSMLSContract.allowance(address, addresses.NEW_STAKING_ADDRESS)
+      }
+      if (smlsBalance == 0) {
+        smlsBalance = newSMLSBalance
       }
     }
     if (addresses.REFERRAL_ADDRESS) {
       const referralContract = new ethers.Contract(addresses.REFERRAL_ADDRESS, REFERRAL_INTERFACE, provider)
       referral = await referralContract.referrals(address)
     }
-
     return {
       totalProfit: totalProfit,
       partners: sonslice,
@@ -145,8 +139,8 @@ export const loadAccountDetails = createAsyncThunk(
         wmemo: ethers.utils.formatEther(wmemoBalance),
       },
       allowance: {
-        mls: Number(stakeAllowance),
-        smls: Number(unstakeAllowance),
+        mls: stakeAllowance,
+        smls: unstakeAllowance,
       },
       wrapping: {
         smls: Number(memoWmemoAllowance),
@@ -210,7 +204,6 @@ export const calculateUserBondDetails = createAsyncThunk(
       balance = '0'
 
     allowance = await reserveContract.allowance(address, bond.getAddressForBond(networkID))
-    console.log('reserveContract.allowance for bond:', bond.getAddressForBond(networkID), allowance)
     balance = await reserveContract.balanceOf(address)
     const balanceVal = balance && ethers.utils.formatEther(balance)
     const avaxBalance = await provider.getSigner().getBalance()
@@ -313,8 +306,8 @@ export interface IAccountSlice {
   registered: boolean
   totalProfit: number
   allowance: {
-    mls: number
-    smls: number
+    mls: BigNumber
+    smls: BigNumber
   }
   wrapping: {
     smls: BigNumber
@@ -330,7 +323,7 @@ const initialState: IAccountSlice = {
   totalProfit: 0,
   bonds: {},
   balances: { smls: BigNumber.from(0), mls: BigNumber.from(0), pmls: BigNumber.from(0), usdt: BigNumber.from(0) },
-  allowance: { mls: 0, smls: 0 },
+  allowance: { mls: BigNumber.from(0), smls: BigNumber.from(0) },
   wrapping: { smls: BigNumber.from(0) },
   tokens: {},
 }

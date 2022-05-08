@@ -88,13 +88,6 @@ export default function Stake({ account }) {
 
   const isAppLoading = useSelector<AppState, boolean>(state => state.app.loading);
 
-  useEffect(() => {
-    loadApp()
-    if (account) {
-      loadAccount()
-    }
-  }, [account])
-
   const app = useSelector<AppState, IAppSlice>(state => {
     return state.app;
   });
@@ -153,10 +146,10 @@ export default function Stake({ account }) {
   const hasAllowance = useCallback(
     (token) => {
       if (token === 'mls') {
-        return stakeAllowance != 0
+        return stakeAllowance.eq(0)
       }
       if (token === 'smls') {
-        return unstakeAllowance != 0
+        return unstakeAllowance.eq(0)
       }
       return 0
     },

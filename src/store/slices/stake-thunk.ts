@@ -90,8 +90,8 @@ export const changeApproval = createAsyncThunk(
     return dispatch(
       fetchAccountSuccess({
         allowance: {
-          mls: Number(stakeAllowance),
-          smls: Number(unstakeAllowance),
+          mls: stakeAllowance,
+          smls: unstakeAllowance,
         },
       }),
     )
