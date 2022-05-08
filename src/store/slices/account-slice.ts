@@ -96,14 +96,14 @@ interface IUserAccountDetails {
 export const loadAccountDetails = createAsyncThunk(
   'account/loadAccountDetails',
   async ({ networkID, provider, address }: ILoadAccountDetails): Promise<IUserAccountDetails> => {
-    let timeBalance = 0
-    let smlsBalance = 0
+    let timeBalance 
+    let smlsBalance
 
-    let wmemoBalance = 0
-    let memoWmemoAllowance = 0
+    let wmemoBalance 
+    let memoWmemoAllowance 
 
-    let stakeAllowance = 0
-    let unstakeAllowance = 0
+    let stakeAllowance 
+    let unstakeAllowance
 
     let profit = BigNumber.from(0)
     var totalProfit = 0
@@ -126,7 +126,7 @@ export const loadAccountDetails = createAsyncThunk(
     if (addresses.NEW_sOHM_ADDRESS) {
       const newSMLSContract = new ethers.Contract(addresses.NEW_sOHM_ADDRESS, MemoTokenContract, provider)
       const newSMLSBalance = await newSMLSContract.balanceOf(address)
-      if (smlsBalance == 0) {
+      if (smlsBalance.eq(0)) {
         smlsBalance = newSMLSBalance
         unstakeAllowance = await newSMLSContract.allowance(address, addresses.NEW_STAKING_ADDRESS)
       }
