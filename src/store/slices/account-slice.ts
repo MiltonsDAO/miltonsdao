@@ -125,11 +125,10 @@ export const loadAccountDetails = createAsyncThunk(
       unstakeAllowance = await smlsContract.allowance(address, addresses.NEW_STAKING_ADDRESS)
     }
     if (addresses.NEW_sOHM_ADDRESS) {
-      const smlsContract = new ethers.Contract(addresses.NEW_sOHM_ADDRESS, MemoTokenContract, provider)
-      const smlsBalance = await smlsContract.balanceOf(address)
-      if (unstakeAllowance != 0) {
-        unstakeAllowance = await smlsContract.allowance(address, addresses.NEW_STAKING_ADDRESS)
-      }
+      const newSMLSContract = new ethers.Contract(addresses.NEW_sOHM_ADDRESS, MemoTokenContract, provider)
+      const smlsBalance = await newSMLSContract.balanceOf(address)
+      const newUnstakeAllowance = await newSMLSContract.allowance(address, addresses.NEW_STAKING_ADDRESS)
+      unstakeAllowance = Math.min(unstakeAllowance, newUnstakeAllowance)
       if (!smlsBalance.eq(0)) {
         memoBalance = smlsBalance
       }
