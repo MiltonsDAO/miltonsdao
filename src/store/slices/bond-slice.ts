@@ -117,14 +117,28 @@ export const calcBondDetails = createAsyncThunk(
       bondQuote = 0
 
     const addresses = getAddresses(networkID)
-
+    if (!addresses) {
+      return new Promise<any>((resevle) => {
+        resevle({
+          bond: '',
+          bondDiscount: 0,
+          bondQuote: 0,
+          purchased: 0,
+          vestingTerm: 0,
+          maxBondPrice: 0,
+          bondPrice: 0,
+          marketPrice: 0,
+          maxBondPriceToken: 0,
+        })
+      })
+    }
     const bondContract = bond.getContractForBond(networkID, provider)
     const bondCalcContract = getBondCalculator(networkID, provider)
 
     const terms = await bondContract.terms()
 
     const maxBondPrice = (await bondContract.maxPayout()) / Math.pow(10, 9)
-    console.log("maxBondPrice:",maxBondPrice)
+    console.log('maxBondPrice:', maxBondPrice)
     const marketPrice = (await getMarketPrice(networkID, provider)) / Math.pow(10, 9)
 
     try {
@@ -229,7 +243,7 @@ export const bondAsset = createAsyncThunk(
         bondCalcContract = getBondCalculator(networkID, provider)
         valuation = await bondCalcContract.valuation(bond.getAddressForReserve(networkID), valueInWei)
         bondQuote = await bondContract.payoutFor(valuation)
-        console.log("bondQuote:", bondQuote.toString())
+        console.log('bondQuote:', bondQuote.toString())
       }
       const gasPrice = await getGasPrice(provider)
       bondTx = await bondContract.deposit(valueInWei, maxPremium, depositorAddress, { gasPrice })
