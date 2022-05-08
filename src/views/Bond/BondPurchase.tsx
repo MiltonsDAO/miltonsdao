@@ -47,7 +47,6 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
     const stateReferral = useSelector<AppState, string>(state => {
         return state.account.referral;
     });
-    console.log("stateReferral:",stateReferral)
     const [referral, setReferral] = useState(stateReferral);
 
     const isBondLoading = useSelector<AppState, boolean>(state => state.bonding.loading ?? true);
@@ -67,6 +66,7 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
     useEffect(() => {
         dispatch(loadAccountDetails({ networkID, provider, address }))
         dispatch(calculateUserBondDetails({ address, bond, networkID, provider }))
+        dispatch(calcBondDetails({ bond, value: quantity, provider, networkID }));
     }, [bondDetailsDebounce, account]);
 
     async function onBond() {
