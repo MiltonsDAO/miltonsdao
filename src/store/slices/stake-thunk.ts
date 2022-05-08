@@ -39,7 +39,7 @@ export const changeApproval = createAsyncThunk(
 
     const newSMLSBalance = await newSMLSContract.balanceOf(address)
 
-    let stakeAllowance = await mlsContract.allowance(address, addresses.STAKING_HELPER_ADDRESS)
+    let stakeAllowance = await mlsContract.allowance(address, addresses.NEW_STAKING_HELPER_ADDRESS)
     let unstakeAllowance = await smlsContract.allowance(address, addresses.STAKING_ADDRESS)
     let newUnstakeAllowance = await newSMLSContract.allowance(address, addresses.NEW_STAKING_ADDRESS)
 
