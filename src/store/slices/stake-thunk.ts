@@ -149,7 +149,7 @@ export const changeStake = createAsyncThunk(
         }
         if (!smlsBalance.eq(0)) {
           const min = Math.min(smlsBalance, Number(parsedValue))
-          stakeTx = await staking.unstake(min, true)
+          stakeTx = await staking.unstake(min, false)
         }
       }
       const pendingTxnType = action === 'stake' ? 'staking' : 'unstaking'
