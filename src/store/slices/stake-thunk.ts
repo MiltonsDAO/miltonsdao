@@ -33,7 +33,8 @@ export const changeApproval = createAsyncThunk(
 
     const signer = provider.getSigner()
     const mlsContract = new ethers.Contract(addresses.OHM_ADDRESS, TimeTokenContract, signer)
-    const memoContract = new ethers.Contract(addresses.sOHM_ADDRESS, MemoTokenContract, signer)
+    const smlsContract = new ethers.Contract(addresses.sOHM_ADDRESS, MemoTokenContract, signer)
+    const newSMLSContract = new ethers.Contract(addresses.NEW_sOHM_ADDRESS, MemoTokenContract, signer)
 
     let approveTx
     try {
@@ -44,7 +45,14 @@ export const changeApproval = createAsyncThunk(
       }
 
       if (token === 'smls') {
-        approveTx = await memoContract.approve(addresses.NEW_STAKING_ADDRESS, ethers.constants.MaxUint256)
+        const allowance = await smlsContract.allowance(address, addresses.STAKING_ADDRESS)
+        if (allowance.eq(0)) {
+          approveTx = await smlsContract.approve(addresses.STAKING_ADDRESS, ethers.constants.MaxUint256)
+        }
+        const newAllowance = await newSMLSContract.allowance(address, addresses.NEW_STAKING_ADDRESS)
+        if (newAllowance.eq(0)) {
+          approveTx = await newSMLSContract.approve(addresses.NEW_STAKING_ADDRESS, ethers.constants.MaxUint256)
+        }
       }
 
       const text = 'Approve ' + (token === 'mls' ? 'Staking' : 'Unstaking')
@@ -64,7 +72,7 @@ export const changeApproval = createAsyncThunk(
     // await sleep(2)
 
     const stakeAllowance = await mlsContract.allowance(address, addresses.NEW_STAKING_HELPER_ADDRESS)
-    const unstakeAllowance = await memoContract.allowance(address, addresses.NEW_STAKING_ADDRESS)
+    const unstakeAllowance = await smlsContract.allowance(address, addresses.NEW_STAKING_ADDRESS)
 
     return dispatch(
       fetchAccountSuccess({

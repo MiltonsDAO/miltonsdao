@@ -34,8 +34,8 @@ export const getBalances = createAsyncThunk(
   async ({ address, networkID, provider }: IGetBalances): Promise<IAccountBalances> => {
     const addresses = getAddresses(networkID)
 
-    const memoContract = new ethers.Contract(addresses.sOHM_ADDRESS, MemoTokenContract, provider)
-    let memoBalance = await memoContract.balanceOf(address)
+    const smlsContract = new ethers.Contract(addresses.sOHM_ADDRESS, MemoTokenContract, provider)
+    let memoBalance = await smlsContract.balanceOf(address)
 
     const newMemoContract = new ethers.Contract(addresses.NEW_sOHM_ADDRESS, MemoTokenContract, provider)
     const newMemoBalance = await newMemoContract.balanceOf(address)
@@ -119,15 +119,15 @@ export const loadAccountDetails = createAsyncThunk(
       stakeAllowance = await mlsContract.allowance(address, addresses.NEW_STAKING_HELPER_ADDRESS)
     }
     if (addresses.sOHM_ADDRESS) {
-      const memoContract = new ethers.Contract(addresses.sOHM_ADDRESS, MemoTokenContract, provider)
-      memoBalance = await memoContract.balanceOf(address)
-      // unstakeAllowance = await memoContract.allowance(address, addresses.STAKING_ADDRESS)
-      unstakeAllowance = await memoContract.allowance(address, addresses.NEW_STAKING_ADDRESS)
+      const smlsContract = new ethers.Contract(addresses.sOHM_ADDRESS, MemoTokenContract, provider)
+      memoBalance = await smlsContract.balanceOf(address)
+      // unstakeAllowance = await smlsContract.allowance(address, addresses.STAKING_ADDRESS)
+      unstakeAllowance = await smlsContract.allowance(address, addresses.NEW_STAKING_ADDRESS)
     }
     if (addresses.NEW_sOHM_ADDRESS) {
-      const memoContract = new ethers.Contract(addresses.NEW_sOHM_ADDRESS, MemoTokenContract, provider)
-      const memo = await memoContract.balanceOf(address)
-      unstakeAllowance = await memoContract.allowance(address, addresses.NEW_STAKING_ADDRESS)
+      const smlsContract = new ethers.Contract(addresses.NEW_sOHM_ADDRESS, MemoTokenContract, provider)
+      const memo = await smlsContract.balanceOf(address)
+      unstakeAllowance = await smlsContract.allowance(address, addresses.NEW_STAKING_ADDRESS)
       if (!memo.eq(0)) {
         memoBalance = memo
       }
