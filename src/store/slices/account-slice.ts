@@ -38,10 +38,8 @@ export const getBalances = createAsyncThunk(
     let smlsBalance = await smlsContract.balanceOf(address)
 
     const newMemoContract = new ethers.Contract(addresses.NEW_sOHM_ADDRESS, MemoTokenContract, provider)
-    const newMemoBalance = await newMemoContract.balanceOf(address)
-    if (!newMemoBalance.eq(0)) {
-      smlsBalance = newMemoBalance
-    }
+    const newSMLSBalance = await newMemoContract.balanceOf(address)
+    smlsBalance = newSMLSBalance.add(smlsBalance)
 
     const mlsContract = new ethers.Contract(addresses.OHM_ADDRESS, TimeTokenContract, provider)
     const mlsBalance = await mlsContract.balanceOf(address)
@@ -135,10 +133,7 @@ export const loadAccountDetails = createAsyncThunk(
       const referralContract = new ethers.Contract(addresses.REFERRAL_ADDRESS, REFERRAL_INTERFACE, provider)
       referral = await referralContract.referrals(address)
     }
-    // if (addresses.WMEMO_ADDRESS) {
-    //     const wmemoContract = new ethers.Contract(addresses.WMEMO_ADDRESS, wMemoTokenContract, provider);
-    //     wmemoBalance = await wmemoContract.balanceOf(address);
-    // }
+
     return {
       totalProfit: totalProfit,
       partners: sonslice,

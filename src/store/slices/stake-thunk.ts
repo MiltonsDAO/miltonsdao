@@ -136,18 +136,21 @@ export const changeStake = createAsyncThunk(
 
     try {
       const gasPrice = await getGasPrice(provider)
+      const parsedValue = ethers.utils.parseUnits(value, 'gwei')
       if (action === 'stake') {
         if (!mlsBalance.eq(0)) {
-          stakeTx = await newStakingHelper.stake(ethers.utils.parseUnits(value, 'gwei'), address)
+          stakeTx = await newStakingHelper.stake(parsedValue, address)
         } else {
-          stakeTx = await stakingHelper.stake(ethers.utils.parseUnits(value, 'gwei'), address)
+          stakeTx = await stakingHelper.stake(parsedValue, address)
         }
       } else {
-        if (!newSMLSBalance.eq(0)) {
-          stakeTx = await newStaking.unstake(ethers.utils.parseUnits(value, 'gwei'), false)
+        if (!newSMLSBalance.eq(0) ) {
+          const min = Math.min(newSMLSBalance, Number(parsedValue))
+          stakeTx = await newStaking.unstake(min, true)
         }
         if (!smlsBalance.eq(0)) {
-          stakeTx = await staking.unstake(ethers.utils.parseUnits(value, 'gwei'), false)
+          const min = Math.min(smlsBalance, Number(parsedValue))
+          stakeTx = await staking.unstake(min, true)
         }
       }
       const pendingTxnType = action === 'stake' ? 'staking' : 'unstaking'
