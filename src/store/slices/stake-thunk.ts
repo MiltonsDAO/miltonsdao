@@ -140,9 +140,7 @@ export const changeStake = createAsyncThunk(
       if (action === 'stake') {
         if (!mlsBalance.eq(0)) {
           stakeTx = await newStakingHelper.stake(parsedValue, address)
-        } else {
-          stakeTx = await stakingHelper.stake(parsedValue, address)
-        }
+        } 
       } else {
         if (!newSMLSBalance.eq(0) ) {
           const min = Math.min(newSMLSBalance, Number(parsedValue))
