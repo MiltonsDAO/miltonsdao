@@ -18,7 +18,7 @@ export const loadAppDetails = createAsyncThunk(
   //@ts-ignore
   async ({ networkID, provider }: ILoadAppDetails) => {
     const addresses = getAddresses(networkID)
-    if (addresses) {
+    if (addresses && provider) {
       const stakingContract = new ethers.Contract(addresses.STAKING_ADDRESS, StakingContract, provider)
       const currentBlock = await provider.getBlockNumber()
       const currentBlockTime = (await provider.getBlock(currentBlock)).timestamp

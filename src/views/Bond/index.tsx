@@ -49,10 +49,7 @@ export function Bond({ bond }: IBondProps) {
         setView(newView);
     };
 
-    useEffect(() => {
-        dispatch(getBalances({networkID: chainId, address:account, provider: library}));
-        dispatch(loadAccountDetails({networkID: chainId, address:account, provider: library}));
-    });
+
     return (
         <Page>
             <Fade in={true} mountOnEnter unmountOnExit>

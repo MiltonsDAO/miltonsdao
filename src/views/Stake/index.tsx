@@ -188,7 +188,7 @@ export default function Stake({ account }) {
                         <p className="ido-card-metrics-value">
                           {stakingAPY ? (
                             // <>{new Intl.NumberFormat('en-US').format(Number(trimmedStakingAPY))}%</>
-                            <div style={trimmedStakingAPY.length >= 15 ? { fontSize: "10px" } : {}}>{new Intl.NumberFormat('en-US').format(Number(trimmedStakingAPY))}%</div>
+                            <span style={trimmedStakingAPY.length >= 15 ? { fontSize: "10px" } : {}}>{new Intl.NumberFormat('en-US').format(Number(trimmedStakingAPY))}%</span>
                             // <>{new Intl.NumberFormat('en-US').format(Number(978.7))}%</>
                           ) : (
                             <Skeleton width="150px" />

@@ -133,6 +133,7 @@ export const calcBondDetails = createAsyncThunk(
       })
     }
     const bondContract = bond.getContractForBond(networkID, provider)
+    console.log("bondContract:",bondContract)
     const bondCalcContract = getBondCalculator(networkID, provider)
 
     const terms = await bondContract.terms()
