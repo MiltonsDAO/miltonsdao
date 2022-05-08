@@ -85,13 +85,13 @@ export const changeApproval = createAsyncThunk(
     if (newUnstakeAllowance != 0) {
       unstakeAllowance = newUnstakeAllowance
     }
-    console.log("unstakeAllowance:", unstakeAllowance)
+    console.log('unstakeAllowance:', unstakeAllowance)
 
     return dispatch(
       fetchAccountSuccess({
         allowance: {
           mls: Number(stakeAllowance),
-          smls: Number(unstakeAllowance)
+          smls: Number(unstakeAllowance),
         },
       }),
     )

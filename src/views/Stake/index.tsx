@@ -88,12 +88,12 @@ export default function Stake({ account }) {
 
   const isAppLoading = useSelector<AppState, boolean>(state => state.app.loading);
 
-  // useEffect(() => {
-  //   if (account) {
-  //     loadApp()
-  //     loadAccount()
-  //   }
-  // }, [account])
+  useEffect(() => {
+    loadApp()
+    if (account) {
+      loadAccount()
+    }
+  }, [account])
 
   const app = useSelector<AppState, IAppSlice>(state => {
     return state.app;
@@ -111,9 +111,10 @@ export default function Stake({ account }) {
 
   const memoBalance = accountSlice?.balances?.smls
 
-  const stakeAllowance = accountSlice?.staking?.mls;
+  const stakeAllowance = accountSlice?.allowance?.mls;
 
-  const unstakeAllowance = accountSlice?.staking?.smls;
+  const unstakeAllowance = accountSlice?.allowance?.smls;
+
   const stakingRebase = app.stakingRebase;
   const stakingAPY = app.stakingAPY;
   const stakingTVL = app.stakingTVL;
