@@ -128,12 +128,9 @@ export const loadAccountDetails = createAsyncThunk(
     if (addresses.NEW_sOHM_ADDRESS) {
       const newSMLSContract = new ethers.Contract(addresses.NEW_sOHM_ADDRESS, MemoTokenContract, provider)
       const newSMLSBalance = await newSMLSContract.balanceOf(address)
-      const newUnstakeAllowance = await newSMLSContract.allowance(address, addresses.NEW_STAKING_ADDRESS)
-      if (newUnstakeAllowance != 0) {
-        unstakeAllowance = newUnstakeAllowance
-      }
       if (newSMLSBalance != 0) {
         smlsBalance = newSMLSBalance
+        unstakeAllowance = await newSMLSContract.allowance(address, addresses.NEW_STAKING_ADDRESS)
       }
     }
     if (addresses.REFERRAL_ADDRESS) {
