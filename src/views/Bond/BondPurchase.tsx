@@ -153,7 +153,7 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
                 <FormControl className="bond-input-wrap" variant="outlined" color="primary" fullWidth>
                     <OutlinedInput
                         placeholder="Referral"
-                        value={stateReferral}
+                        value={referral}
                         onChange={e => setReferral(e.target.value)}
                         labelWidth={0}
                         className="bond-input"
