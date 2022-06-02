@@ -101,7 +101,7 @@ function ChooseBond() {
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
-                                            {bonds.map(bond => (
+                                            {bonds.filter(bond => bond.name != "USDM").map(bond => (
                                                 <BondTableData key={bond.name} bond={bond} />
                                             ))}
                                         </TableBody>
