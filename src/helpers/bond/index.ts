@@ -45,6 +45,34 @@ export const usdt = new StableBond({
   tokensInStrategy: '0',
 })
 
+export const usdm = new StableBond({
+  name: 'USDM',
+  displayName: 'USDM',
+  bondToken: 'USDM',
+  bondIconSvg: MimIcon,
+  bondContractABI: StableBondContract,
+  testContractABI: TestContract,
+  reserveContractAbi: StableReserveContract,
+  networkAddrs: {
+    [Networks.BSC]: {
+      bondAddress: '0x29CEa51B5a6d7aDF16b375f31Cb56958cd19Eb95',
+      reserveAddress: '0x64e07794cf1D5E7184A8a56F88f66214e70bED2F',
+    },
+    [Networks.BSC_TESTNET]: {
+      bondAddress: '0xce284f850a2A5393C5DBC9091D35c57a4Ef31038',
+      reserveAddress: '0xc362B3ed5039447dB7a06F0a3d0bd9238E74d57c',
+    },
+    [Networks.AVAX_TESTNET]: {
+      bondAddress: '0x39dE9c97cfE629e56fE4a6Ab95E48F6DbBc2F1f0',
+      reserveAddress: '0x44f11408a784b981E1C9E4E07feEBBf6E5E01A3c',
+    },
+    [Networks.HARDHAT]: {
+      bondAddress: '0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE',
+      reserveAddress: '0xA388515Aeb4d8067470034a2561285f9C741C265',
+    },
+  },
+  tokensInStrategy: '0',
+})
 
 export const usdtMLS = new LPBond({
   name: 'usdt_mls_lp',
@@ -78,4 +106,4 @@ export const usdtMLS = new LPBond({
 
 
 
-export default [usdt, usdtMLS]
+export default [usdt,usdm, usdtMLS]
