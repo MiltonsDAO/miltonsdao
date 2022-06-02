@@ -2,13 +2,13 @@
 	{
 		"inputs": [
 			{
-				"internalType": "address",
-				"name": "_mls",
-				"type": "address"
+				"internalType": "uint256",
+				"name": "selfFee",
+				"type": "uint256"
 			},
 			{
 				"internalType": "uint256",
-				"name": "fee",
+				"name": "refFee",
 				"type": "uint256"
 			}
 		],
@@ -35,6 +35,37 @@
 		"type": "event"
 	},
 	{
+		"inputs": [],
+		"name": "Mls",
+		"outputs": [
+			{
+				"internalType": "contract IMLS",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "profit",
+				"type": "uint256"
+			}
+		],
+		"name": "addProfit",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"inputs": [
 			{
 				"internalType": "address",
@@ -43,6 +74,30 @@
 			}
 		],
 		"name": "isReferral",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_ref",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_sender",
+				"type": "address"
+			}
+		],
+		"name": "isSubordinate",
 		"outputs": [
 			{
 				"internalType": "bool",
@@ -67,6 +122,25 @@
 		"type": "function"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "nfts",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
 		"inputs": [],
 		"name": "owner",
 		"outputs": [
@@ -80,20 +154,32 @@
 		"type": "function"
 	},
 	{
-		"inputs": [],
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
 		"name": "participants",
 		"outputs": [
 			{
-				"internalType": "address[]",
+				"internalType": "address",
 				"name": "",
-				"type": "address[]"
+				"type": "address"
 			}
 		],
 		"stateMutability": "view",
 		"type": "function"
 	},
 	{
-		"inputs": [],
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			}
+		],
 		"name": "referralFee",
 		"outputs": [
 			{
@@ -135,6 +221,25 @@
 		"inputs": [
 			{
 				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			}
+		],
+		"name": "selfReferralFee",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
 				"name": "ref",
 				"type": "address"
 			},
@@ -165,6 +270,19 @@
 	{
 		"inputs": [
 			{
+				"internalType": "uint256",
+				"name": "fee",
+				"type": "uint256"
+			}
+		],
+		"name": "setSelfReferralFee",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
 				"internalType": "address",
 				"name": "_addr",
 				"type": "address"
@@ -173,21 +291,9 @@
 		"name": "subordinate",
 		"outputs": [
 			{
-				"components": [
-					{
-						"internalType": "address",
-						"name": "msgsender",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "amount",
-						"type": "uint256"
-					}
-				],
-				"internalType": "struct SenderAmount[]",
+				"internalType": "address[]",
 				"name": "",
-				"type": "tuple[]"
+				"type": "address[]"
 			}
 		],
 		"stateMutability": "view",
@@ -197,18 +303,19 @@
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "_addr",
+				"name": "",
 				"type": "address"
-			},
+			}
+		],
+		"name": "totalProfit",
+		"outputs": [
 			{
 				"internalType": "uint256",
-				"name": "_amount",
+				"name": "",
 				"type": "uint256"
 			}
 		],
-		"name": "transfer",
-		"outputs": [],
-		"stateMutability": "nonpayable",
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
