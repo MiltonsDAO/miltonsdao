@@ -15,7 +15,6 @@ const NETWORK_CONFIG = {
     name: 'BNB Smart Chain Testnet',
     scanURL: BASE_BSC_SCAN_URLS[ChainId.TESTNET],
   },
-
   // [ChainId.HARDHAT]: {
   //   name: 'Hardhat',
   //   scanURL: BASE_BSC_SCAN_URLS[ChainId.HARDHAT],
@@ -29,7 +28,6 @@ const NETWORK_CONFIG = {
 export const setupNetwork = async (externalProvider?: ExternalProvider) => {
   const provider = externalProvider || window.ethereum
   const chainId = parseInt(CHAIN_ID, 10) as keyof typeof NETWORK_CONFIG
-  console.log("chainId:",chainId)
   if (!NETWORK_CONFIG[chainId]) {
     console.error('Invalid chain id')
     return false

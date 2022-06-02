@@ -88,13 +88,6 @@ export default function Stake({ account }) {
 
   const isAppLoading = useSelector<AppState, boolean>(state => state.app.loading);
 
-  // useEffect(() => {
-  //   if (account) {
-  //     loadApp()
-  //     loadAccount()
-  //   }
-  // }, [account])
-
   const app = useSelector<AppState, IAppSlice>(state => {
     return state.app;
   });
@@ -111,9 +104,9 @@ export default function Stake({ account }) {
 
   const memoBalance = accountSlice?.balances?.smls
 
-  const stakeAllowance: BigNumber = accountSlice?.staking?.mls;
+  const stakeAllowance = accountSlice?.allowance?.mls;
+  const unstakeAllowance = accountSlice?.allowance?.smls;
 
-  const unstakeAllowance: BigNumber = accountSlice?.staking?.smls;
   const stakingRebase = app.stakingRebase;
   const stakingAPY = app.stakingAPY;
   const stakingTVL = app.stakingTVL;
@@ -142,8 +135,8 @@ export default function Stake({ account }) {
         await dispatch(changeStake({ address: account, action, value: String(quantity), provider: library, networkID: chainId }))
         setQuantity('')
       }
-      catch (error:any) {
-        toastError("Error",error?.data?.message)
+      catch (error: any) {
+        toastError("Error", error?.data?.message)
       }
 
     }
@@ -151,8 +144,12 @@ export default function Stake({ account }) {
 
   const hasAllowance = useCallback(
     (token) => {
-      if (token === 'mls') return stakeAllowance?.toString() != "0"
-      if (token === 'smls') return unstakeAllowance?.toString() != "0"
+      if (token === 'mls') {
+        return !stakeAllowance.eq(0)
+      }
+      if (token === 'smls') {
+        return !unstakeAllowance.eq(0)
+      }
       return 0
     },
     [stakeAllowance],
@@ -190,7 +187,9 @@ export default function Stake({ account }) {
                         <p className="ido-card-metrics-title">{t("APY")}</p>
                         <p className="ido-card-metrics-value">
                           {stakingAPY ? (
-                            <>{new Intl.NumberFormat('en-US').format(Number(trimmedStakingAPY))}%</>
+                            // <>{new Intl.NumberFormat('en-US').format(Number(trimmedStakingAPY))}%</>
+                            <span style={trimmedStakingAPY.length >= 15 ? { fontSize: "10px" } : {}}>{new Intl.NumberFormat('en-US').format(Number(trimmedStakingAPY))}%</span>
+                            // <>{new Intl.NumberFormat('en-US').format(Number(978.7))}%</>
                           ) : (
                             <Skeleton width="150px" />
                           )}
@@ -265,7 +264,7 @@ export default function Stake({ account }) {
 
                       {view === 0 && (
                         <div className="ido-card-tab-panel">
-                          {account && hasAllowance('mls') ? (
+                          {hasAllowance('mls') ? (
                             <div
                               className="ido-card-tab-panel-btn"
                               onClick={() => {
@@ -280,7 +279,6 @@ export default function Stake({ account }) {
                             <div
                               className="ido-card-tab-panel-btn"
                               onClick={() => {
-                                if (isPendingTxn(pendingTransactions, 'approve_staking')) return
                                 onSeekApproval('mls')
                               }}
                             >
@@ -306,7 +304,6 @@ export default function Stake({ account }) {
                             <div
                               className="ido-card-tab-panel-btn"
                               onClick={() => {
-                                if (isPendingTxn(pendingTransactions, 'approve_unstaking')) return
                                 onSeekApproval('smls')
                               }}
                             >
@@ -357,7 +354,7 @@ export default function Stake({ account }) {
                     <div className="data-row">
                       <p className="data-row-name">{t("Floor Price")}</p>
                       <p className="data-row-value">
-                        {isAppLoading ? <Skeleton width="80px" /> : <>{trim(Number(marketPrice*0.8), 4)}</>}
+                        {isAppLoading ? <Skeleton width="80px" /> : <>{trim(Number(marketPrice * 0.8), 4)}</>}
                       </p>
                     </div>
                   </div>

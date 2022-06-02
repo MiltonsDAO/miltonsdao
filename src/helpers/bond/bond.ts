@@ -49,7 +49,7 @@ export abstract class Bond {
   }
 
   public getAddressForBond(networkID: Networks) {
-    return this.networkAddrs[networkID].bondAddress
+    if (this.networkAddrs[networkID]) return this.networkAddrs[networkID].bondAddress
   }
 
   public getContractForBond(networkID: Networks, provider: StaticJsonRpcProvider | JsonRpcSigner) {

@@ -28,11 +28,11 @@ export const changeApproval = createAsyncThunk(
     }
     const addresses = getAddresses(networkID);
     const signer = provider.getSigner();
-    const memoContract = new ethers.Contract(addresses.sOHM_ADDRESS, wMemoTokenContract, signer);
+    const smlsContract = new ethers.Contract(addresses.sOHM_ADDRESS, wMemoTokenContract, signer);
     let approveTx;
     try {
         const gasPrice = await getGasPrice(provider);
-        approveTx = await memoContract.approve(addresses.WMEMO_ADDRESS, ethers.constants.MaxUint256, { gasPrice });
+        approveTx = await smlsContract.approve(addresses.WMEMO_ADDRESS, ethers.constants.MaxUint256, { gasPrice });
         const text = "Approve Wrapping";
         const pendingTxnType = "approve_wrapping";
         dispatch(fetchPendingTxns({ txnHash: approveTx.hash, text, type: pendingTxnType }));
@@ -46,7 +46,7 @@ export const changeApproval = createAsyncThunk(
         }
     }
     // await sleep(2);
-    const wmemoAllowance = await memoContract.allowance(address, addresses.WMEMO_ADDRESS);
+    const wmemoAllowance = await smlsContract.allowance(address, addresses.WMEMO_ADDRESS);
     return dispatch(
         fetchAccountSuccess({
             wrapping: {

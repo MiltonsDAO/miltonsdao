@@ -33,7 +33,6 @@ export class LPBond extends Bond {
     const tokenAddress = this.getAddressForReserve(networkID)
     const bondCalculator = getBondCalculator(networkID, provider)
     const tokenAmount = await token.balanceOf(addresses.TREASURY_ADDRESS)
-    console.log('lp-bond tokenAmount:', tokenAmount)
 
     const valuation = await bondCalculator.valuation(tokenAddress, tokenAmount)
     const markdown = await bondCalculator.markdown(tokenAddress)
@@ -56,7 +55,6 @@ export class LPBond extends Bond {
     const token = this.getContractForReserve(networkID, provider)
 
     let [reserve0, reserve1] = await token.getReserves()
-    console.log("reserve0:",reserve0.toString(),reserve1.toString())
     const token1: string = await token.token1()
     const isTime = token1.toLowerCase() === addresses.OHM_ADDRESS.toLowerCase()
 

@@ -9,11 +9,12 @@ import { useWeb3React } from '@web3-react/core'
 
 import AddLiquidity from '../views/AddLiquidity'
 import MintPage from './mints'
+import StakePage from './stake'
 
 const IndexPage = () => {
   const { account } = useWeb3React()
 
-  return <MintPage />
+  return <StakePage />
 }
 
 export default IndexPage

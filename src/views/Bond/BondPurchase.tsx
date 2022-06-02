@@ -16,7 +16,7 @@ import Zapin from "./Zapin";
 import useToast from '../../hooks/useToast'
 import { AppDispatch, AppState } from 'state'
 import { useTranslation } from "contexts/Localization";
-import { getBalances, loadAccountDetails } from "store/slices/account-slice";
+import { getBalances, loadAccountDetails, calculateUserBondDetails } from "store/slices/account-slice";
 
 interface IBondPurchaseProps {
     bond: IAllBondData;
@@ -32,14 +32,14 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
     const { account, chainId, library } = useWeb3React()
     const address = account
     const provider = library
+    const networkID = chainId
 
-    
     // const maxBondPrice = (await bondContract.maxPayout()) / Math.pow(10, 9)
 
     const maxBondPrice = useSelector<AppState, number>(state => {
         return state.bonding.maxBondPrice;
     });
-    console.log("BondPurchase maxBondPrice:",maxBondPrice)
+    // console.log("BondPurchase maxBondPrice:",maxBondPrice)
 
     const [quantity, setQuantity] = useState(String(maxBondPrice));
     const [useAvax, setUseAvax] = useState(false);
@@ -57,15 +57,17 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
     });
 
     const vestingPeriod = () => {
-        var result = prettifySeconds(bond.vestingTerm, "day");
+        var result = prettifySeconds(bond?.vestingTerm, "day");
         return result;
     };
 
     const bondDetailsDebounce = useDebounce(quantity, 1000);
 
     useEffect(() => {
-        dispatch(calcBondDetails({ bond, value: quantity, provider, networkID: chainId }))
-    }, [bondDetailsDebounce]);
+        dispatch(loadAccountDetails({ networkID, provider, address }))
+        dispatch(calculateUserBondDetails({ address, bond, networkID, provider }))
+        dispatch(calcBondDetails({ bond, value: quantity, provider, networkID }));
+    }, [bondDetailsDebounce, account]);
 
     async function onBond() {
         if (quantity === "") {
@@ -73,7 +75,7 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
             //@ts-ignore
         } else if (isNaN(quantity)) {
             toastWarning("warning", messages.before_minting);
-        } else if (bond.interestDue > 0 || bond.pendingPayout > 0) {
+        } else if (bond?.interestDue > 0 || bond?.pendingPayout > 0) {
             // const shouldProceed = window.confirm(messages.existing_mint);
             // if (shouldProceed) {
             const trimBalance = trim(Number(quantity), 10);
@@ -117,11 +119,11 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
     };
 
     const hasAllowance = useCallback(() => {
-        return bond.allowance > 0;
+        return bond?.allowance > 0;
     }, [bond?.allowance]);
 
     const setMax = () => {
-        let amount: any = Math.min(bond.maxBondPriceToken * 0.9999, bond.balance);
+        let amount: any = Math.min(bond?.maxBondPrice, bond?.balance);
         if (amount) {
             amount = trim(amount);
         }
@@ -143,19 +145,11 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
         setZapinOpen(false);
     };
 
-    const displayUnits = useAvax ? "AVAX" : bond.displayUnits;
+    const displayUnits = bond?.displayUnits;
 
     return (
         <Box display="flex" flexDirection="column">
             <Box display="flex" justifyContent="space-around" flexWrap="wrap">
-                {bond.name === "wavax" && (
-                    <FormControl className="mls-input" variant="outlined" color="primary" fullWidth>
-                        <div className="avax-checkbox">
-                            <input type="checkbox" checked={useAvax} onClick={() => setUseAvax(!useAvax)} />
-                            <p>Use AVAX</p>
-                        </div>
-                    </FormControl>
-                )}
                 <FormControl className="bond-input-wrap" variant="outlined" color="primary" fullWidth>
                     <OutlinedInput
                         placeholder="Referral"
@@ -163,7 +157,7 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
                         onChange={e => setReferral(e.target.value)}
                         labelWidth={0}
                         className="bond-input"
-                        disabled={referral != zeroAddress}
+                        disabled={stateReferral != zeroAddress}
                     />
                 </FormControl>
                 <FormControl className="bond-input-wrap" variant="outlined" color="primary" fullWidth>
@@ -188,21 +182,21 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
                     <div
                         className="transaction-button bond-approve-btn"
                         onClick={async () => {
-                            if (isPendingTxn(pendingTransactions, "bond_" + bond.name)) return;
+                            if (isPendingTxn(pendingTransactions, "bond_" + bond?.name)) return;
                             await onBond();
                         }}
                     >
-                        <p>{txnButtonText(pendingTransactions, "bond_" + bond.name, "Mint")}</p>
+                        <p>{txnButtonText(pendingTransactions, "bond_" + bond?.name, "Mint")}</p>
                     </div>
                 ) : (
                     <div
                         className="transaction-button bond-approve-btn"
                         onClick={async () => {
-                            if (isPendingTxn(pendingTransactions, "approve_" + bond.name)) return;
+                            if (isPendingTxn(pendingTransactions, "approve_" + bond?.name)) return;
                             await onSeekApproval();
                         }}
                     >
-                        <p>{txnButtonText(pendingTransactions, "approve_" + bond.name, "Approve")}</p>
+                        <p>{txnButtonText(pendingTransactions, "approve_" + bond?.name, "Approve")}</p>
                     </div>
                 )}
 
@@ -224,7 +218,7 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
                                 0
                             ) : (
                                 <>
-                                    {trim(bond.balance, 9)} {displayUnits}
+                                    {trim(bond?.balance, 9)} {displayUnits}
                                 </>
                             )}
                         </p>
@@ -232,17 +226,17 @@ function BondPurchase({ bond, slippage }: IBondPurchaseProps) {
 
                     <div className="data-row">
                         <p className="bond-balance-title">{t("You Will Get")}</p>
-                        <p className="price-data bond-balance-title">{isBondLoading ? 0 : `${trim(bond.bondQuote, 4)} MLS`}</p>
+                        <p className="price-data bond-balance-title">{isBondLoading ? 0 : `${trim(bond?.bondQuote, 4)} MLS`}</p>
                     </div>
 
                     <div className={`data-row`}>
                         <p className="bond-balance-title">{t("Max You Can Buy")}</p>
-                        <p className="price-data bond-balance-title">{isBondLoading ? 0 : `${trim(bond.maxBondPrice, 4)} USDT`}</p>
+                        <p className="price-data bond-balance-title">{isBondLoading ? 0 : `${trim(bond?.maxBondPrice, 4)} USDT`}</p>
                     </div>
 
                     <div className="data-row">
                         <p className="bond-balance-title">{t("ROI")}</p>
-                        <p className="bond-balance-title">{isBondLoading ? 0 : `${trim(bond.bondDiscount * 100, 2)}%`}</p>
+                        <p className="bond-balance-title">{isBondLoading ? 0 : `${trim(bond?.bondDiscount * 100, 2)}%`}</p>
                     </div>
 
                     <div className="data-row">

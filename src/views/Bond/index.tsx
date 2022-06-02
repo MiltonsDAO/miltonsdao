@@ -49,10 +49,7 @@ export function Bond({ bond }: IBondProps) {
         setView(newView);
     };
 
-    useEffect(() => {
-        dispatch(getBalances({networkID: chainId, address:account, provider: library}));
-        dispatch(loadAccountDetails({networkID: chainId, address:account, provider: library}));
-    });
+
     return (
         <Page>
             <Fade in={true} mountOnEnter unmountOnExit>
@@ -66,12 +63,12 @@ export function Bond({ bond }: IBondProps) {
                                     <div className="bond-price-data">
                                         <p className="bond-price-data-title">{t("Mint Price")}</p>
                                         <p className="bond-price-data-value">
-                                            {isBondLoading ? <Skeleton /> : bond.isLP || bond.name === "wavax" ? `$${trim(bond.bondPrice, 2)}` : `${trim(bond.bondPrice, 2)} USDT`}
+                                            {isBondLoading ? <Skeleton /> : bond?.isLP || bond?.name === "wavax" ? `$${trim(bond?.bondPrice, 2)}` : `${trim(bond?.bondPrice, 2)} USDT`}
                                         </p>
                                     </div>
                                     <div className="bond-price-data">
                                         <p className="bond-price-data-title">{t("MLS Price")}</p>
-                                        <p className="bond-price-data-value">{isBondLoading ? <Skeleton /> : `$${trim(bond.marketPrice, 2)}`}</p>
+                                        <p className="bond-price-data-value">{isBondLoading ? <Skeleton /> : `$${trim(bond?.marketPrice, 2)}`}</p>
                                     </div>
                                 </Box>
 

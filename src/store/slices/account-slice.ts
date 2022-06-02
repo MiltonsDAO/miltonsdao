@@ -34,8 +34,11 @@ export const getBalances = createAsyncThunk(
   async ({ address, networkID, provider }: IGetBalances): Promise<IAccountBalances> => {
     const addresses = getAddresses(networkID)
 
-    const memoContract = new ethers.Contract(addresses.sOHM_ADDRESS, MemoTokenContract, provider)
-    const memoBalance = await memoContract.balanceOf(address)
+    const smlsContract = new ethers.Contract(addresses.sOHM_ADDRESS, MemoTokenContract, provider)
+    let smlsBalance: BigNumber = await smlsContract.balanceOf(address)
+    const newMemoContract = new ethers.Contract(addresses.NEW_sOHM_ADDRESS, MemoTokenContract, provider)
+    const newSMLSBalance: BigNumber = await newMemoContract.balanceOf(address)
+    smlsBalance = newSMLSBalance.add(smlsBalance)
 
     const mlsContract = new ethers.Contract(addresses.OHM_ADDRESS, TimeTokenContract, provider)
     const mlsBalance = await mlsContract.balanceOf(address)
@@ -46,17 +49,12 @@ export const getBalances = createAsyncThunk(
     const usdtContract = new ethers.Contract(addresses.USDT_ADDRESS, PMLSContract, provider)
     const usdtBalance = await usdtContract.balanceOf(address)
 
-    // const wmemoContract = new ethers.Contract(addresses.WMEMO_ADDRESS, wMemoTokenContract, provider);
-    // const wmemoBalance = await wmemoContract.balanceOf(address);
-    // console.log("wmemoBalance:", wmemoBalance);
-
     return {
       balances: {
-        smls: memoBalance,
+        smls: smlsBalance,
         mls: mlsBalance,
         pmls: pmlsBalance,
         usdt: usdtBalance,
-        // wmemo: ethers.utils.formatEther(wmemoBalance),
       },
     }
   },
@@ -74,13 +72,12 @@ interface IUserAccountDetails {
   referral: string
   registered: boolean
   balances: {
-    mls: number
-    smls: number
-    wmemo: string
+    mls: BigNumber
+    smls: BigNumber
   }
-  staking: {
-    mls: number
-    smls: number
+  allowance: {
+    mls: BigNumber
+    smls: BigNumber
   }
   wrapping: {
     smls: number
@@ -90,16 +87,14 @@ interface IUserAccountDetails {
 export const loadAccountDetails = createAsyncThunk(
   'account/loadAccountDetails',
   async ({ networkID, provider, address }: ILoadAccountDetails): Promise<IUserAccountDetails> => {
-    let timeBalance = 0
-    let memoBalance = 0
+    let mlsBalance = BigNumber.from(0)
+    let smlsBalance = BigNumber.from(0)
 
-    let wmemoBalance = 0
     let memoWmemoAllowance = 0
 
-    let stakeAllowance = 0
-    let unstakeAllowance = 0
+    let stakeAllowance = BigNumber.from(0)
+    let unstakeAllowance = BigNumber.from(0)
 
-    let profit = BigNumber.from(0)
     var totalProfit = 0
     let sonslice: ISonSlice[] = []
     let referral = ''
@@ -108,38 +103,38 @@ export const loadAccountDetails = createAsyncThunk(
 
     if (addresses.OHM_ADDRESS) {
       const mlsContract = new ethers.Contract(addresses.OHM_ADDRESS, TimeTokenContract, provider)
-      timeBalance = await mlsContract.balanceOf(address)
-      stakeAllowance = await mlsContract.allowance(address, addresses.STAKING_HELPER_ADDRESS)
+      mlsBalance = await mlsContract.balanceOf(address)
+      stakeAllowance = await mlsContract.allowance(address, addresses.NEW_STAKING_HELPER_ADDRESS)
     }
     if (addresses.sOHM_ADDRESS) {
-      const memoContract = new ethers.Contract(addresses.sOHM_ADDRESS, MemoTokenContract, provider)
-      memoBalance = await memoContract.balanceOf(address)
-      unstakeAllowance = await memoContract.allowance(address, addresses.STAKING_ADDRESS)
-      // if (addresses.WMEMO_ADDRESS) {
-      //     memoWmemoAllowance = await memoContract.allowance(address, addresses.WMEMO_ADDRESS);
-      // }
+      const smlsContract = new ethers.Contract(addresses.sOHM_ADDRESS, MemoTokenContract, provider)
+      smlsBalance = await smlsContract.balanceOf(address)
+      if (addresses.STAKING_ADDRESS) {
+        unstakeAllowance = await smlsContract.allowance(address, addresses.STAKING_ADDRESS)
+      }
+    }
+    if (addresses.NEW_sOHM_ADDRESS) {
+      const newSMLSContract = new ethers.Contract(addresses.NEW_sOHM_ADDRESS, MemoTokenContract, provider)
+      const newSMLSBalance = await newSMLSContract.balanceOf(address)
+      unstakeAllowance = await newSMLSContract.allowance(address, addresses.NEW_STAKING_ADDRESS)
+      smlsBalance = newSMLSBalance.add(smlsBalance)
     }
     if (addresses.REFERRAL_ADDRESS) {
       const referralContract = new ethers.Contract(addresses.REFERRAL_ADDRESS, REFERRAL_INTERFACE, provider)
       referral = await referralContract.referrals(address)
     }
-    // if (addresses.WMEMO_ADDRESS) {
-    //     const wmemoContract = new ethers.Contract(addresses.WMEMO_ADDRESS, wMemoTokenContract, provider);
-    //     wmemoBalance = await wmemoContract.balanceOf(address);
-    // }
     return {
       totalProfit: totalProfit,
       partners: sonslice,
       referral: referral,
       registered: registered,
       balances: {
-        smls: memoBalance,
-        mls: timeBalance,
-        wmemo: ethers.utils.formatEther(wmemoBalance),
+        smls: smlsBalance,
+        mls: mlsBalance,
       },
-      staking: {
-        mls: Number(stakeAllowance),
-        smls: Number(unstakeAllowance),
+      allowance: {
+        mls: stakeAllowance,
+        smls: unstakeAllowance,
       },
       wrapping: {
         smls: Number(memoWmemoAllowance),
@@ -203,7 +198,6 @@ export const calculateUserBondDetails = createAsyncThunk(
       balance = '0'
 
     allowance = await reserveContract.allowance(address, bond.getAddressForBond(networkID))
-    console.log('reserveContract.allowance for bond:', bond.getAddressForBond(networkID), allowance)
     balance = await reserveContract.balanceOf(address)
     const balanceVal = balance && ethers.utils.formatEther(balance)
     const avaxBalance = await provider.getSigner().getBalance()
@@ -298,14 +292,13 @@ export interface IAccountSlice {
     mls: BigNumber
     pmls: BigNumber
     usdt: BigNumber
-    // wmemo: BigNumber
   }
   loading: boolean
   partners: ISonSlice[]
   referral: string
   registered: boolean
   totalProfit: number
-  staking: {
+  allowance: {
     mls: BigNumber
     smls: BigNumber
   }
@@ -323,7 +316,7 @@ const initialState: IAccountSlice = {
   totalProfit: 0,
   bonds: {},
   balances: { smls: BigNumber.from(0), mls: BigNumber.from(0), pmls: BigNumber.from(0), usdt: BigNumber.from(0) },
-  staking: { mls: BigNumber.from(0), smls: BigNumber.from(0) },
+  allowance: { mls: BigNumber.from(0), smls: BigNumber.from(0) },
   wrapping: { smls: BigNumber.from(0) },
   tokens: {},
 }

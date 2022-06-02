@@ -57,7 +57,7 @@ const persistConfig = {
 const persistedReducer = persistReducer(
   persistConfig,
   combineReducers({
-    account: accountReducer,
+  account: accountReducer,
     bonding: bondingReducer,
     app: appReducer,
     pendingTransactions: pendingTransactionsReducer,
