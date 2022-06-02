@@ -115,7 +115,7 @@ function ChooseBond() {
                 {isMobile && (
                     <div className="ido-view-card-container">
                         <Grid container item spacing={2}>
-                            {bonds.map(bond => (
+                            {bonds.filter(bond => bond.name != "USDM").map(bond => (
                                 <Grid item xs={12} key={bond.name}>
                                     <BondDataCard key={bond.name} bond={bond} />
                                 </Grid>
