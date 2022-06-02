@@ -15,10 +15,7 @@ const NETWORK_CONFIG = {
     name: 'BNB Smart Chain Testnet',
     scanURL: BASE_BSC_SCAN_URLS[ChainId.TESTNET],
   },
-  [ChainId.AVAX_TESTNET]: {
-    name: 'AVAX Chain Testnet',
-    scanURL: BASE_BSC_SCAN_URLS[ChainId.AVAX_TESTNET],
-  },
+
   // [ChainId.HARDHAT]: {
   //   name: 'Hardhat',
   //   scanURL: BASE_BSC_SCAN_URLS[ChainId.HARDHAT],
